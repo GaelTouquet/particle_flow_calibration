@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu May  4 16:25:18 2017
-
-@author: samuel
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
 """
 
 import matplotlib.pyplot as plt
@@ -119,7 +118,7 @@ ymin = min(y)
 ymax = max(y)
 vmin = 0.5
 vmax = 1.5
-im = plt.imshow(z,cmap=plt.cm.seismic, extent=(xmin,xmax,ymin,ymax), origin='lower',vmin=vmin,vmax=vmax,interpolation='bilinear') 
+im = plt.imshow(z,cmap=plt.cm.seismic, extent=(xmin,xmax,ymin,ymax), origin='lower',vmin=vmin,vmax=vmax,interpolation='bilinear')
 plt.colorbar(im)
 plt.show()
 savefig(fig,directory,"calibration_chi2_for_ecal_neq_0.png")

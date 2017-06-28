@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue May  2 14:05:41 2017
-
-@author: samuel
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
 """
+
 import numpy as np
 import time
 import math
 
 class LinearRegression:
-    
+
     def __init__(self,regr1,regr2,lim_min,lim_max,lim):
         self.regr1 = regr1
         self.regr2 = regr2
         self.lim = lim
         self.lim_min = lim_min
         self.lim_max = lim_max
-        
+
     def predictSingleValue(self,e,h):
         """
         To predict the true energie from a couple of ecal, hcal
-        
+
         Parameters
         ----------
         e : the ecal energy
         h : the hcal energy
-        
+
         Returns
         -------
         true : the predicted true energy
@@ -43,12 +43,12 @@ class LinearRegression:
     def predict(self,e,h,timeInfo=False):
         """
         To predict the true energies thanks to couples of ecal, hcal
-        
+
         Parameters
         ----------
         e : a numpy array of ecal energies
         h : a numpy array of hcal energies
-        
+
         Returns
         -------
         true : a numpy array of predicted true energies

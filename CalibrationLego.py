@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Samuel Niang
-For IPNL (Nuclear Physics Institue of Lyon)
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
 """
 
 import numpy as np
@@ -11,11 +11,11 @@ import math
 
 class CalibrationLego:
     """
-    Class to calibrate data 
+    Class to calibrate data
     The aim :
         given one ecal, hcal, what is the true energie?
     The way :
-        The plane (ecal,hcal) is divided in nbLego*nbLego squares an for each 
+        The plane (ecal,hcal) is divided in nbLego*nbLego squares an for each
         square, we estimate the mean value of true energy
     """
     def __init__(self,data,nbLego,timeInfo = False):
@@ -33,7 +33,7 @@ class CalibrationLego:
         # when ecal == 0
         true_calib_lim = []
         precision = []
-        
+
         bins_ecal = np.arange(nbLego-1)
         bins_hcal = np.arange(nbLego-1)
         for i in bins_ecal:
@@ -51,7 +51,7 @@ class CalibrationLego:
                         precision.append(None)
                     ecal_calib.append(np.mean([ecal[i],ecal[i+1]]))
                     hcal_calib.append(np.mean([hcal[j],hcal[j+1]]))
-        # when ecal == 0 
+        # when ecal == 0
         for i in bins_hcal:
             ind_hcal = np.logical_and(data.hcal>= hcal[i],data.hcal<hcal[i+1])
             ind_true = np.logical_and(data.ecal == 0,ind_hcal)
@@ -60,7 +60,7 @@ class CalibrationLego:
                 true_calib_lim.append(np.mean(true))
             else :
                 true_calib_lim.append(0)
-                    
+
         self.ecal = np.array(ecal_calib)
         self.ecal_max = max(self.ecal)
         self.hcal = np.array(hcal_calib)
@@ -71,29 +71,29 @@ class CalibrationLego:
         end = time.time()
         if timeInfo:
             print("Lego profile made in",end-begin,"s")
-        
+
     def predictSingleValue(self,e,h):
         """
         To predict the true energie from a couple of ecal, hcal
-        
+
         Parameters
         ----------
         e : the ecal energy
         h : the hcal energy
-        
+
         Returns
         -------
         true : the predicted true energy
         """
-        
+
         if (e >  self.ecal_max or h > self.hcal_max):
             true = math.nan
         else:
             if e != 0:
                 i_ecal = int(e/self.delta)
                 i_hcal = int(h/self.delta)
-                i = i_hcal + i_ecal*(self.nbLego-1)   
-                true = self.true[i] 
+                i = i_hcal + i_ecal*(self.nbLego-1)
+                true = self.true[i]
             else:
                 i_hcal = int(h/self.delta)
                 true = self.true_lim[i_hcal]
@@ -102,12 +102,12 @@ class CalibrationLego:
     def predict(self,e,h,timeInfo=False):
         """
         To predict the true energies thanks to couples of ecal, hcal
-        
+
         Parameters
         ----------
         e : a numpy array of ecal energies
         h : a numpy array of hcal energies
-        
+
         Returns
         -------
         true : a numpy array of predicted true energies
@@ -119,16 +119,16 @@ class CalibrationLego:
         if timeInfo:
             print("Calibration made in",end-begin,"s")
         return ecalib
-        
+
     def getPrecisionSingleValue(self,e,h):
         """
         To get the relative precision on the true energy from a couple of ecal, hcal
-        
+
         Parameters
         ----------
         e : the ecal energy
         h : the hcal energy
-        
+
         Returns
         -------
         precision : the relative precision on the true energy
@@ -138,19 +138,19 @@ class CalibrationLego:
         else:
             i_ecal = int(e/self.delta)
             i_hcal = int(h/self.delta)
-            i = i_hcal + i_ecal*(self.nbLego-1)   
-            precision = self.precision[i] 
+            i = i_hcal + i_ecal*(self.nbLego-1)
+            precision = self.precision[i]
         return precision
-    
+
     def getPrecision(self,e,h):
         """
         To predict the true energies from couples of ecal, hcal
-        
+
         Parameters
         ----------
         e : a numpy array of ecal energies
         h : a numpy array of hcal energies
-        
+
         Returns
         -------
         precision : a numpy array of relative precisions on the true energies
@@ -158,4 +158,3 @@ class CalibrationLego:
         vect = np.vectorize(self.getPrecisionSingleValue)
         precision = vect(e,h)
         return precision
-        

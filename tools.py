@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
+"""
+
 import numpy as np
 import pickle
 from scipy.optimize import curve_fit
@@ -9,9 +16,9 @@ from os import mkdir
 
 def selectionCone(x,y,z,theta,delta):
     """
-    To select the points whose x and y coordinates are 
+    To select the points whose x and y coordinates are
     in the cone (theta,theta+delta)
-    
+
     Parameters
     ----------
     x : the x coordinates (an array-like)
@@ -19,7 +26,7 @@ def selectionCone(x,y,z,theta,delta):
     z : the z coordinates (an array-like)
     theta : the angle of rotation
     delta :the angle of the cone
-    
+
     Returns
     -------
     a numpy array of the x,y,z coordinates of the points in the cone
@@ -38,7 +45,7 @@ def projectionPlan(x,y,z,theta):
     y :
     z :
     theta :
-    
+
     Returns
     -------
     """
@@ -99,7 +106,7 @@ def exportPickle(filename,objectToSave):
     pickler = pickle.Pickler(dataFile)
     pickler.dump(objectToSave)
     dataFile.close()
-    
+
 def gaussian_param(x,sigma=1,mu=0,k=1):
     return k*np.exp(-(x-mu)**2/(2*sigma**2))
 
@@ -134,12 +141,12 @@ def optimized_binwidth(x_input):
     idx = int(idx[0][0])
     optD = D[idx]
     return optD
-    
-    
-        
-    
+
+
+
+
 def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
-    
+
     with warnings.catch_warnings():
         try:
             #we create the histogram
@@ -147,12 +154,12 @@ def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
             x = x_input[np.invert(np.isnan(x_input))]
             if len(x) == 0:
                 return [math.nan,math.nan,math.nan]
-            
+
             if binwidth == 'optimized':
                 binwidth = optimized_binwidth(x_input)
             bins = np.arange(min(x), max(x) + binwidth, binwidth)
             entries, bin_edges = np.histogram(x,bins=bins)
-            
+
             bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
             bin_middles = bin_middles[entries != 0]
             entries = entries[entries != 0]
@@ -165,7 +172,7 @@ def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
             #we compute the Chi2
             chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
             reduced = chi2/(len(bin_middles)-len(p0))
-           
+
             if info:
                 print("parameters :",parameters)
                 print("diag of cov matrix :",crit)
@@ -199,12 +206,12 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
             x = x_input[np.invert(np.isnan(x_input))]
             if len(x) == 0:
                 return [math.nan,math.nan,math.nan]
-            
+
             if binwidth == 'optimized':
                 binwidth = optimized_binwidth(x_input)
             bins = np.arange(min(x), max(x) + binwidth, binwidth)
             entries, bin_edges = np.histogram(x,bins=bins)
-            
+
             bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
             bin_middles = bin_middles[entries != 0]
             entries = entries[entries != 0]
@@ -215,10 +222,10 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
             # we look if the fit is good
             crit = np.sqrt(np.diag(cov_matrix))
             #we compute the Chi2
-            
+
             chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
             reduced = chi2/(len(bin_middles)-len(parameters))
-           
+
             if info:
                 print("parameters :",parameters)
                 print("diag of cov matrix :",crit)
@@ -264,7 +271,7 @@ def gaussian_fit_normalized(x_input,binwidth = 0.1,info=False,giveChi2 = False):
                 return [math.nan,math.nan]
             bins = np.arange(min(x), max(x) + binwidth, binwidth)
             N, bin_edges = np.histogram(x,bins=bins)
-            
+
             entries, bin_edges = np.histogram(x,bins=bins,normed=True)
             bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
             # we fit the histogram
@@ -298,14 +305,14 @@ def gaussian_fit_normalized(x_input,binwidth = 0.1,info=False,giveChi2 = False):
                 return[math.nan,math.nan], math.nan
             else:
                 return [math.nan,math.nan]
-            
+
 def mean(x_input):
     x = x_input[np.invert(np.isnan(x_input))]
     if len(x) == 0:
         return math.nan
     else:
         return np.mean(x)
-    
+
 def getsigma(x_input):
     x = x_input[np.invert(np.isnan(x_input))]
     if len(x) == 0:
@@ -318,7 +325,7 @@ def savefig(fig,directory,filename):
     director = ""
     for s in splitted:
         if len(s) > 0:
-            director += s+'/' 
+            director += s+'/'
             try:
                 mkdir(director)
             except FileExistsError:

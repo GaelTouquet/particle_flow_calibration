@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Samuel Niang
-For IPNL (Nuclear Physics Institue of Lyon)
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
 """
 import numpy as np
 from sklearn import linear_model
@@ -65,7 +65,7 @@ class EnergyData:
             ind_max = np.ones(len(self.ecal),dtype=bool)
         else:
             ind_max = self.ecal + self.hcal < lim_max
-            
+
         #CASE : ecal != 0
         ind_0 = self.ecal != 0
         ind = np.logical_and(ind_min,ind_max)
@@ -88,7 +88,7 @@ class EnergyData:
         regr2 = linear_model.LinearRegression()
         regr2.fit(X_train,Y_train)
         regr = LinearRegression(regr1,regr2,lim_min, lim_max, lim)
-        
+
         end = time.time()
         print("linearRegression - Calibration made in",end-begin,"s")
         return regr
@@ -103,28 +103,28 @@ class EnergyData:
 
         """
         return CalibrationLego(self,nbLego,timeInfo)
-    
+
     def kNN(self,n_neighbors=1,weights='gaussian',algorithm='auto',sigma=1,lim=-1):
         begin = time.time()
         calib = KNN(self.ecal,self.hcal,self.true,n_neighbors,weights,algorithm,sigma,lim)
         end = time.time()
         print("KNN - Calibration made in",end-begin,"s")
         return calib
-    
+
     def kNNGaussianCleaning(self,n_neighbors=1,weights='gaussian',algorithm='auto',sigma=1,lim=-1,energystep = 5,kind='cubic',cut=2):
         begin = time.time()
         calib = KNNGaussianCleaning(self.ecal,self.hcal,self.true,n_neighbors,weights,algorithm,sigma,lim,energystep,kind,cut)
         end = time.time()
         print("KNNGaussianCleaning - Calibration made in",end-begin,"s")
         return calib
-    
+
     def kNNGaussianFit(self,n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
         begin = time.time()
         calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim,energystep,kind)
         end = time.time()
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib
-    
+
     def splitInTwo(self):
         """
         To split in two sets of datas

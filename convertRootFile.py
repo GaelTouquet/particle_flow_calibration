@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
+"""
+
 import sys
 from rootTools import rootToPython
 

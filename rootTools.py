@@ -1,7 +1,15 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
+"""
+
 import numpy as np
 from ROOT import TFile
 from EnergyData import EnergyData
 from tools import exportPickle
+
 """
 Fuctions using ROOT
 """
