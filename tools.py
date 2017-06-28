@@ -4,8 +4,8 @@ from scipy.optimize import curve_fit
 import math
 import warnings
 from scipy.optimize import OptimizeWarning
-from scipy.optimize import minimize
 import matplotlib.pyplot as plt
+from os import mkdir
 
 def selectionCone(x,y,z,theta,delta):
     """
@@ -305,10 +305,22 @@ def mean(x_input):
         return math.nan
     else:
         return np.mean(x)
+    
 def getsigma(x_input):
     x = x_input[np.invert(np.isnan(x_input))]
     if len(x) == 0:
         return math.nan
     else:
         return np.abs(np.sqrt(np.std(x)))
-            
+
+def savefig(fig,directory,filename):
+    splitted = directory.split('/')
+    director = ""
+    for s in splitted:
+        if len(s) > 0:
+            director += s+'/' 
+            try:
+                mkdir(director)
+            except FileExistsError:
+                pass
+    fig.savefig(directory+filename,bbox_inches='tight')

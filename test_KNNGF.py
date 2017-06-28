@@ -8,7 +8,7 @@ Created on Thu May  4 16:25:18 2017
 
 import matplotlib.pyplot as plt
 import numpy as np
-from tools import importPickle
+from tools import importPickle, savefig
 from tools import gaussian_fit, gaussian_param, mean, optimized_binwidth
 from sklearn import neighbors
 import math
@@ -24,6 +24,11 @@ fontgreen = {'family': 'serif',
         'weight': 'normal',
         'size': 16,
         }
+
+
+directory = "pictures/testKNNGF/"
+
+
 filename = 'charged_hadrons_100k.energydata'
 data1 = importPickle(filename)
 filename = 'prod2_200_400k.energydata'
@@ -65,6 +70,15 @@ def getMeans(energy_x,y):
             reducedChi2.append(reduced)
     return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
 
+
+
+
+
+
+
+
+
+
 KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='cubic')
 
 #chi2 for ecal == 0
@@ -82,6 +96,8 @@ plt.hist(x,bins)
 plt.xlabel(r"$\chi^2/df$",fontsize=15)
 plt.title(r"$\chi^2/df$ for $e_{cal} = 0$",fontsize=15)
 plt.show()
+savefig(fig,directory,"calibration_chi2_for_ecal_eq_0.png")
+
 
 #chi2 for ecal neq 0
 fig = plt.figure(figsize=(5,5))
@@ -93,11 +109,14 @@ plt.hist(x,bins)
 plt.xlabel(r"$\chi^2/df$",fontsize=15)
 plt.title(r"$\chi^2/df$ for $e_{cal} \neq 0$",fontsize=15)
 plt.show() 
+savefig(fig,directory,"calibration_chi2_for_ecal_neq_0.png")
+
 
 #quelques histogrammes for ecal == 0
 fig = plt.figure(figsize=(10,10))
 j = 0
-for i in [1,2,3,4]:
+l = len(KNNGF.evaluatedPoint_hcal_ecal_eq_0)
+for i in [0,int(l/4),int(l*3/4),l-1]:
     j += 1
     plt.subplot(2,2,j)
     e = 0
@@ -112,11 +131,13 @@ for i in [1,2,3,4]:
     plt.xlabel(r"$e_{true}$",fontsize=15)
     plt.title(r"histogram of $e_{true}$ for $(e_{cal}="+str(np.around(e,2))+",h_{cal}="+str(np.around(h,2))+")$",fontsize=12)
 plt.show()
+savefig(fig,directory,"calibration_hist_for_ecal_eq_0.png")
 
 #quelques histogrammes for ecal ≠ 0
 fig = plt.figure(figsize=(10,10))
 j = 0
-for i in [10,20,30,40]:
+l = len(KNNGF.evaluatedPoint_hcal)
+for i in [0,int(l/4),int(l*3/4),l-1]:
     j += 1
     plt.subplot(2,2,j)
     e = KNNGF.evaluatedPoint_ecal[i]
@@ -131,6 +152,7 @@ for i in [10,20,30,40]:
     plt.xlabel(r"$e_{true}$",fontsize=15)
     plt.title(r"histogram of $e_{true}$ for $(e_{cal}="+str(np.around(e,2))+",h_{cal}="+str(np.around(h,2))+")$",fontsize=12)
 plt.show()
+savefig(fig,directory,"calibration_hist_for_ecal_neq_0.png")
 
 #courbe de calibration pour ecal = 0
 hcal_train = KNNGF.hcal_train[KNNGF.ecal_train==0]
@@ -145,6 +167,7 @@ plt.xlabel(r"$h_{cal}$",fontsize=15)
 plt.ylabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.show()
+savefig(fig,directory,"calibration.png")
 
 #ecalib/etrue pour ecal = 0
 h = data2.hcal[data2.ecal == 0]
@@ -178,6 +201,7 @@ plt.xlabel(r"$e_{true}$",fontsize=15)
 plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
 plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.show()
+savefig(fig,directory,"ecalib_over_etrue.png")
 
 #ecalib
 fig = plt.figure(figsize=(5,5))
@@ -248,10 +272,10 @@ bw = optimized_binwidth(x)
 bins = np.arange(min(x), max(x) + bw, bw)
 plt.hist(x,bins)
 plt.xlabel(r"$\chi^2/df$",fontsize=15)
-
  
 plt.show()
 
+savefig(fig,directory,"ecalib_over_etrue_curve.png")
 
 
 

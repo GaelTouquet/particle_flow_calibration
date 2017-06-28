@@ -1,3 +1,5 @@
 *.png
 *.eps
 __pycache__
+pictures
+
