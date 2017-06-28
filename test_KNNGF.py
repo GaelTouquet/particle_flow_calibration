@@ -74,11 +74,6 @@ def getMeans(energy_x,y):
 
 
 
-
-
-
-
-
 KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='linear')
 
 #chi2 for ecal == 0
@@ -100,7 +95,8 @@ savefig(fig,directory,"calibration_chi2_for_ecal_eq_0.png")
 
 
 #chi2 for ecal neq 0
-fig = plt.figure(figsize=(5,5))
+fig = plt.figure(figsize=(12,5))
+plt.subplot(1,2,2)
 x = np.array(KNNGF.evaluatedPoint_reducedchi2)
 x = x[np.invert(np.isnan(x))]
 bw = optimized_binwidth(x)
@@ -108,12 +104,25 @@ bins = np.arange(min(x), max(x) + bw, bw)
 plt.hist(x,bins)
 plt.xlabel(r"$\chi^2/df$",fontsize=15)
 plt.title(r"$\chi^2/df$ for $e_{cal} \neq 0$",fontsize=15)
-plt.show()
-savefig(fig,directory,"calibration_chi2_for_ecal_neq_0.png")
-
-l = len(KNNGF.interpolation_ecal_neq_0.x)
+plt.subplot(1,2,1)
+x = KNNGF.interpolation_ecal_neq_0.x
+y = KNNGF.interpolation_ecal_neq_0.y
+l = len(x)
 z = KNNGF.evaluatedPoint_reducedchi2[1:]
 z = np.resize(z,(l,l))
+xx,yy = np.meshgrid(x,y)
+mask = xx + yy > lim
+z[mask] = math.nan
+xmin = min(x)
+xmax = max(x)
+ymin = min(y)
+ymax = max(y)
+vmin = 0.5
+vmax = 1.5
+im = plt.imshow(z,cmap=plt.cm.seismic, extent=(xmin,xmax,ymin,ymax), origin='lower',vmin=vmin,vmax=vmax,interpolation='bilinear') 
+plt.colorbar(im)
+plt.show()
+savefig(fig,directory,"calibration_chi2_for_ecal_neq_0.png")
 
 #quelques histogrammes for ecal == 0
 fig = plt.figure(figsize=(10,10))
