@@ -9,13 +9,13 @@ from sklearn import neighbors
 import numpy as np
 import math
 from scipy.interpolate import interp2d,interp1d
-from tools import gaussian_param, optimized_binwidth
+from tools import gaussian_param
 from scipy.optimize import curve_fit
 import warnings
 from scipy.optimize import OptimizeWarning
 
 
-class KNNGaussianFit:
+class KNNGaussianFitDirect:
     """
     Class to calibrate the true energy of a particle thanks to training datas.
     We use the a k neareast neighbours method, we fit the histogramm of the
@@ -140,9 +140,9 @@ class KNNGaussianFit:
     evaluatedPoint_bin_middles : array of arrays
     the histograms bin middles of each distributions of neighbours,
     for ecal != 0
-
     """
-    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
+    
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1):
         """
         Parameters
         ----------
@@ -169,22 +169,10 @@ class KNNGaussianFit:
         lim : float
         to reject calibration points with ecal + hcal > lim
         if lim = - 1, there is no limit
-
-        energystep : float
-        step between two points of evaluation
-
-        kind : str or int, optional
-        Specifies the kind of interpolation as a string (‘linear’, ‘nearest’,
-        ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’ where ‘zero’, ‘slinear’,
-        ‘quadratic’ and ‘cubic’ refer to a spline interpolation of zeroth,
-        first, second or third order) or as an integer specifying the order of
-        the spline interpolator to use. Default is ‘linear’
-
         """
 
         self.n_neighbors = n_neighbors
         self.algorithm = algorithm
-        self.kind=kind
         self.evaluatedPoint_hcal_ecal_eq_0 = []
         self.evaluatedPoint_true_ecal_eq_0 = []
         self.evaluatedPoint_neighbours_hcal_ecal_eq_0 = []
@@ -215,140 +203,16 @@ class KNNGaussianFit:
 
         #Case ecal == 0
         self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
-        y = self.hcal_train[self.ecal_train == 0]
-        z = self.true_train[self.ecal_train == 0]
-        self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(y)))
-
-        def forOnePoint_ecal_eq_0(h):
-            # the neighbours of the point (ecal,hcal) = (0,h)
-            dist, ind = self.neigh_ecal_eq_0.kneighbors(X = h)
-            true = z[ind][0]
-            hcal = y[ind][0]
-            binwidth = 1
-            nbins = np.arange(min(true), max(true) + binwidth, binwidth)
-            with warnings.catch_warnings():
-                try:
-                    #we create the histogram
-                    warnings.simplefilter("error", OptimizeWarning)
-                    entries, bin_edges = np.histogram(true,bins=nbins)
-                    bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
-                    bin_middles = bin_middles[entries != 0]
-                    entries = entries[entries != 0]
-                    reduced = math.nan
-
-                    # we fit the histogram
-                    p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
-                    error = np.sqrt(entries)
-                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
-                    res = parameters[1]
-
-                    chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
-                    reduced = chi2/(len(bin_middles)-len(parameters))
-
-                    if reduced > 5:
-                        raise OptimizeWarning
-
-                except (OptimizeWarning, RuntimeError):
-                    parameters = p0
-                    res = parameters[1]
-                    print("calibration issue for ecal = 0, hcal = ",h,"reduced chi2 = ",reduced)
-                finally:
-                    # we save the values in the attributs
-                    self.evaluatedPoint_hcal_ecal_eq_0.append(h)
-                    self.evaluatedPoint_true_ecal_eq_0.append(res)
-                    self.evaluatedPoint_parameters_ecal_eq_0.append(parameters)
-                    self.evaluatedPoint_neighbours_hcal_ecal_eq_0.append(hcal)
-                    self.evaluatedPoint_neighbours_true_ecal_eq_0.append(true)
-                    self.evaluatedPoint_entries_ecal_eq_0.append(entries)
-                    self.evaluatedPoint_bin_middles_ecal_eq_0.append(bin_middles)
-                    self.evaluatedPoint_reducedchi2_ecal_eq_0.append(reduced)
-
-                    return res
-
-        #we define the first point of evaluation
-        dist, ind = self.neigh_ecal_eq_0.kneighbors(X = 0)
-        hcal = y[ind][0]
-        hcal_min = (max(hcal)+min(hcal))/2
-        # we evaluate the true energies
-        hcal = np.arange(hcal_min,self.lim+energystep,energystep)
-        vect = np.vectorize(forOnePoint_ecal_eq_0)
-        true = vect(hcal)
-        hcal = hcal[np.invert(np.isnan(true))]
-        true = true[np.invert(np.isnan(true))]
-        # we create the interpolation
-        self.interpolation_ecal_eq_0 = interp1d(hcal,true,kind=kind,fill_value='extrapolate')
-
+        self.hcal_train_ecal_eq_0 = self.hcal_train[self.ecal_train == 0]
+        self.true_train_ecal_eq_0 = self.true_train[self.ecal_train == 0]
+        self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(self.hcal_train_ecal_eq_0)))
 
         # Case ecal != 0
         self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
-        x = self.ecal_train[self.ecal_train != 0]
-        y = self.hcal_train[self.ecal_train != 0]
-        z = self.true_train[self.ecal_train != 0]
-        self.neigh_ecal_neq_0.fit(np.transpose(np.matrix([x,y])))
-
-        def forOnePoint_ecal_neq_0(e,h):
-            # the neighbours of the point (ecal,hcal) = (e,h)
-            dist, ind = self.neigh_ecal_neq_0.kneighbors([[e,h]])
-            true = z[ind][0]
-            hcal = y[ind][0]
-            ecal = x[ind][0]
-            binwidth = 1
-            nbins = np.arange(min(true), max(true) + binwidth, binwidth)
-            with warnings.catch_warnings():
-                try:
-                    #we create the histogram
-                    warnings.simplefilter("error", OptimizeWarning)
-                    entries, bin_edges = np.histogram(true,bins=nbins)
-                    bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
-                    bin_middles = bin_middles[entries != 0]
-                    entries = entries[entries != 0]
-                    reduced = math.nan
-
-                    # we fit the histogram
-                    p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
-                    error = np.sqrt(entries)
-                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
-                    res = parameters[1]
-
-                    chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
-                    reduced = chi2/(len(bin_middles)-len(parameters))
-
-                    if reduced > 5:
-                        raise OptimizeWarning
-
-                except (OptimizeWarning,RuntimeError):
-                    parameters = p0
-                    res = parameters[1]
-                    if e + h < self.lim:
-                        print("calibration issue for ecal = ",e," hcal = ",h)
-                finally:
-                    # we save the values in the attributs
-                    self.evaluatedPoint_neighbours_ecal.append(ecal)
-                    self.evaluatedPoint_neighbours_hcal.append(hcal)
-                    self.evaluatedPoint_neighbours_true.append(true)
-                    self.evaluatedPoint_entries.append(entries)
-                    self.evaluatedPoint_bin_middles.append(bin_middles)
-                    self.evaluatedPoint_ecal.append(e)
-                    self.evaluatedPoint_hcal.append(h)
-                    self.evaluatedPoint_true.append(res)
-                    self.evaluatedPoint_parameters.append(parameters)
-                    self.evaluatedPoint_reducedchi2.append(reduced)
-                    return res
-
-        #we define the first point of evaluation
-        dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[0,0]])
-        hcal = y[ind][0]
-        ecal = x[ind][0]
-        hcal_min = (max(hcal)+min(hcal))/2
-        ecal_min = (max(ecal)+min(ecal))/2
-        # we evaluate the true energies
-        hcal = np.linspace(hcal_min,self.lim,(self.lim-hcal_min)/energystep)
-        ecal = np.linspace(ecal_min,self.lim,(self.lim-ecal_min)/energystep)
-        eecal, hhcal = np.meshgrid(ecal,hcal)
-        vect = np.vectorize(forOnePoint_ecal_neq_0)
-        true = vect(eecal,hhcal)
-        # we create the interpolation
-        self.interpolation_ecal_neq_0 = interp2d(ecal,hcal,true,kind=kind)
+        self.ecal_train_ecal_neq_0 = self.ecal_train[self.ecal_train != 0]
+        self.hcal_train_ecal_neq_0 = self.hcal_train[self.ecal_train != 0]
+        self.true_train_ecal_neq_0 = self.true_train[self.ecal_train != 0]
+        self.neigh_ecal_neq_0.fit(np.transpose(np.matrix([self.ecal_train_ecal_neq_0,self.hcal_train_ecal_neq_0])))
 
     def predict(self,e,h):
         """
@@ -365,16 +229,47 @@ class KNNGaussianFit:
         the value is NaN if the asked value is off-limit
         """
         def predictSingleValue(ecal,hcal):
-            if ecal+hcal < self.lim:
-                if ecal == 0:
-                    res = self.interpolation_ecal_eq_0(hcal)
-                else:
-                    res = self.interpolation_ecal_neq_0(ecal,hcal)
-                if res < 0:
-                    res = 0
+            if ecal+hcal > self.lim:
+                return math.nan
+            
+            if ecal == 0:
+                dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
+                true = self.true_train_ecal_eq_0[ind][0]
+                hcal = self.hcal_train_ecal_eq_0[ind][0]
+                binwidth = 1
+                nbins = np.arange(min(true), max(true) + binwidth, binwidth)
+                
+                with warnings.catch_warnings():
+                    try:
+                        #we create the histogram
+                        warnings.simplefilter("error", OptimizeWarning)
+                        entries, bin_edges = np.histogram(true,bins=nbins)
+                        bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
+                        bin_middles = bin_middles[entries != 0]
+                        entries = entries[entries != 0]
+    
+                        # we fit the histogram
+                        p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
+                        error = np.sqrt(entries)
+                        parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
+                        res = parameters[1]
+    
+                        chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
+                        reduced = chi2/(len(bin_middles)-len(parameters))
+    
+                        if reduced > 5:
+                            raise OptimizeWarning
+    
+                    except (OptimizeWarning, RuntimeError):
+                        parameters = p0
+                        res = parameters[1]
+                        print("calibration issue for ecal = 0, hcal = ",h,"reduced chi2 = ",reduced)
+                    finally:    
+                        return res
             else:
-                res = math.nan
+                res = 0
             return res
+                    
 
         vect = np.vectorize(predictSingleValue)
         return vect(e,h)
