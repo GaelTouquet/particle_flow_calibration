@@ -179,7 +179,7 @@ def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
                 print("reduced chi2:",reduced)
             abort = False
 
-            if reduced > 2.5:
+            if reduced > 5:
                 abort = True
             if abort:
                 if giveChi2:
@@ -258,51 +258,6 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
                 return[math.nan,math.nan,math.nan], math.nan
             else:
                 return [math.nan,math.nan,math.nan]
-
-def gaussian_fit_normalized(x_input,binwidth = 0.1,info=False,giveChi2 = False):
-    with warnings.catch_warnings():
-        try:
-            #we create the histogram
-            warnings.simplefilter("error", OptimizeWarning)
-            x = x_input[np.invert(np.isnan(x_input))]
-            if len(x) == 0:
-                return [math.nan,math.nan]
-            bins = np.arange(min(x), max(x) + binwidth, binwidth)
-            N, bin_edges = np.histogram(x,bins=bins)
-
-            entries, bin_edges = np.histogram(x,bins=bins,normed=True)
-            bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
-            # we fit the histogram
-            p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)]
-            parameters, cov_matrix = curve_fit(gaussian_param_normalized, bin_middles, entries,p0=p0)
-            # we look if the fit is good
-            crit = np.sqrt(np.diag(cov_matrix))
-            #we compute the Chi2
-            if giveChi2:
-                chi2 = np.sum(((gaussian_param_normalized(bin_middles,*parameters)-entries))**2)
-                reduced = chi2/(len(bin_middles)-len(parameters))
-            abort = False
-            if info:
-                print("parameters :",parameters)
-                print("diag of cov matrix :",crit)
-            if np.abs(crit[0]) > 0.5e-1 or np.abs(crit[1]) > 0.5e-1:
-                abort = True
-            if abort:
-                if giveChi2:
-                    return[math.nan,math.nan], math.nan
-                else:
-                    return [math.nan,math.nan]
-            #sigma has to be > 0
-            parameters[0] = np.abs(parameters[0])
-            if giveChi2:
-                return parameters, reduced
-            else:
-                return parameters
-        except:
-            if giveChi2:
-                return[math.nan,math.nan], math.nan
-            else:
-                return [math.nan,math.nan]
 
 
 def savefig(fig,directory,filename):

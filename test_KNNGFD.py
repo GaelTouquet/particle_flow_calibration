@@ -59,7 +59,7 @@ def getMeans(energy_x,y):
     for e in ener:
         dist, ind = neighborhood.kneighbors(X = e)
         y_ind = y[ind][np.invert(np.isnan(y[ind]))]
-        params,reduced = gaussian_fit(y_ind,giveChi2 = True)
+        params,reduced = gaussian_fit(y_ind,binwidth = 0.1, giveChi2 = True)
         if not(math.isnan(params[1])):
             means.append(np.mean(y_ind))
             sigma_gaussianfit.append(params[0])
@@ -67,7 +67,6 @@ def getMeans(energy_x,y):
             energy.append(e)
             reducedChi2.append(reduced)
     return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
-
 
 
 
@@ -171,64 +170,64 @@ plt.title(r"$e_{true}$ for $e_{cal} \neq 0$",fontsize=15)
 plt.show()
 savefig(fig,directory,"histograms_ecalib_etrue.png")
 
-#fig = plt.figure(figsize=(10,12))
-##mean
-#ax = plt.subplot(3,1,1)
-#plt.plot(energy,mean_gaussianfit,lw=3, label = "r$e_{calib}/e_{true}$")
-#plt.xlabel(r"$e_{true}$",fontsize=15)
-#plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
-#plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=15)
-#plt.legend(loc='upper right')
-#major_ticks = np.arange(0, 200, 50)
-#minor_ticks = np.arange(0, 200, 10)
-#ax.set_xticks(major_ticks)
-#ax.set_xticks(minor_ticks, minor=True)
-## and a corresponding grid
-#ax.grid(which='both')
-## or if you want differnet settings for the grids:
-#ax.grid(which='minor', alpha=0.2)
-#ax.grid(which='major', alpha=1)
-#
-##sigma
-#ax = plt.subplot(3,1,2)
-#plt.plot(energy,sigma_gaussianfit,lw=3, label = "r$e_{calib}/e_{true}$")
-#plt.xlabel(r"$e_{true}$",fontsize=15)
-#plt.ylabel(r"$\sigma (e_{calib}/e_{true})$",fontsize=15)
-#plt.legend(loc='upper right')
-#major_ticks = np.arange(0, 200, 50)
-#minor_ticks = np.arange(0, 200, 10)
-#ax.set_xticks(major_ticks)
-#ax.set_xticks(minor_ticks, minor=True)
-## and a corresponding grid
-#ax.grid(which='both')
-## or if you want differnet settings for the grids:
-#ax.grid(which='minor', alpha=0.2)
-#ax.grid(which='major', alpha=1)
-#
-##chi2
-#ax = plt.subplot(3,2,5)
-#plt.plot(energy,reducedChi2,lw=3, label = r"$\chi^2/df$")
-#plt.xlabel(r"$e_{true}$",fontsize=15)
-#plt.ylabel(r"$\chi^2/df$",fontsize=15)
-#plt.legend(loc='upper right')
-#major_ticks = np.arange(0, 200, 50)
-#minor_ticks = np.arange(0, 200, 10)
-#ax.set_xticks(major_ticks)
-#ax.set_xticks(minor_ticks, minor=True)
-## and a corresponding grid
-#ax.grid(which='both')
-## or if you want differnet settings for the grids:
-#ax.grid(which='minor', alpha=0.2)
-#ax.grid(which='major', alpha=1)
-#
-#ax = plt.subplot(3,2,6)
-#x = np.array(reducedChi2)
-#x = x[np.invert(np.isnan(x))]
-#bw = optimized_binwidth(x)
-#bins = np.arange(min(x), max(x) + bw, bw)
-#plt.hist(x,bins)
-#plt.xlabel(r"$\chi^2/df$",fontsize=15)
-#
-#plt.show()
-#
-#savefig(fig,directory,"ecalib_over_etrue_curve.png")
+fig = plt.figure(figsize=(10,12))
+#mean
+ax = plt.subplot(3,1,1)
+plt.plot(energy,mean_gaussianfit,lw=3, label = "r$e_{calib}/e_{true}$")
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=15)
+plt.legend(loc='upper right')
+major_ticks = np.arange(0, 200, 50)
+minor_ticks = np.arange(0, 200, 10)
+ax.set_xticks(major_ticks)
+ax.set_xticks(minor_ticks, minor=True)
+# and a corresponding grid
+ax.grid(which='both')
+# or if you want differnet settings for the grids:
+ax.grid(which='minor', alpha=0.2)
+ax.grid(which='major', alpha=1)
+
+#sigma
+ax = plt.subplot(3,1,2)
+plt.plot(energy,sigma_gaussianfit,lw=3, label = "r$e_{calib}/e_{true}$")
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.ylabel(r"$\sigma (e_{calib}/e_{true})$",fontsize=15)
+plt.legend(loc='upper right')
+major_ticks = np.arange(0, 200, 50)
+minor_ticks = np.arange(0, 200, 10)
+ax.set_xticks(major_ticks)
+ax.set_xticks(minor_ticks, minor=True)
+# and a corresponding grid
+ax.grid(which='both')
+# or if you want differnet settings for the grids:
+ax.grid(which='minor', alpha=0.2)
+ax.grid(which='major', alpha=1)
+
+#chi2
+ax = plt.subplot(3,2,5)
+plt.plot(energy,reducedChi2,lw=3, label = r"$\chi^2/df$")
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.ylabel(r"$\chi^2/df$",fontsize=15)
+plt.legend(loc='upper right')
+major_ticks = np.arange(0, 200, 50)
+minor_ticks = np.arange(0, 200, 10)
+ax.set_xticks(major_ticks)
+ax.set_xticks(minor_ticks, minor=True)
+# and a corresponding grid
+ax.grid(which='both')
+# or if you want differnet settings for the grids:
+ax.grid(which='minor', alpha=0.2)
+ax.grid(which='major', alpha=1)
+
+ax = plt.subplot(3,2,6)
+x = np.array(reducedChi2)
+x = x[np.invert(np.isnan(x))]
+bw = optimized_binwidth(x)
+bins = np.arange(min(x), max(x) + bw, bw)
+plt.hist(x,bins)
+plt.xlabel(r"$\chi^2/df$",fontsize=15)
+
+plt.show()
+
+savefig(fig,directory,"ecalib_over_etrue_curve.png")
