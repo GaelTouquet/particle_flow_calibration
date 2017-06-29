@@ -3,12 +3,14 @@
 """
 Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
+
+Script to understand how does KNNGF works.
 """
 
 import matplotlib.pyplot as plt
 import numpy as np
 from tools import importPickle, savefig
-from tools import gaussian_fit, gaussian_param, mean, optimized_binwidth
+from tools import gaussian_fit, gaussian_param, optimized_binwidth
 from sklearn import neighbors
 import math
 
@@ -41,7 +43,7 @@ lim = 150
 lim_min = 20
 lim_max = 150
 n_neighbors = 300
-energystep = 2
+energystep = 0.5
 
 def getMeans(energy_x,y):
     ind  = np.invert(np.isnan(y))
@@ -62,7 +64,7 @@ def getMeans(energy_x,y):
         y_ind = y[ind][np.invert(np.isnan(y[ind]))]
         params,reduced = gaussian_fit(y_ind,giveChi2 = True)
         if not(math.isnan(params[1])):
-            means.append(mean(y_ind))
+            means.append(np.mean(y_ind))
             sigma_gaussianfit.append(params[0])
             mean_gaussianfit.append(params[1])
             energy.append(e)
@@ -73,7 +75,7 @@ def getMeans(energy_x,y):
 
 
 
-KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='linear')
+KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='cubic')
 
 #chi2 for ecal == 0
 fig = plt.figure(figsize=(10,5))
@@ -181,8 +183,8 @@ plt.show()
 savefig(fig,directory,"calibration.png")
 
 #ecalib/etrue pour ecal = 0
-h = data2.hcal[data2.ecal == 0]
-t = data2.true[data2.ecal == 0]
+h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
+t = data2.true[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
 e = np.zeros(len(h))
 c = KNNGF.predict(e,h)
 r = c/t
@@ -197,9 +199,9 @@ plt.xlabel(r"$e_{true}$",fontsize=15)
 plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
 plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
 
-h2 = data2.hcal[data2.ecal != 0]
-t2 = data2.true[data2.ecal != 0]
-e2 = data2.ecal[data2.ecal != 0]
+h2 = data2.hcal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+t2 = data2.true[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+e2 = data2.ecal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
 c2 = KNNGF.predict(e2,h2)
 r2 = c2/t2
 
@@ -214,17 +216,42 @@ plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.show()
 savefig(fig,directory,"ecalib_over_etrue.png")
 
-#ecalib
-fig = plt.figure(figsize=(5,5))
+#histogram of ecalib and etrue
+fig = plt.figure(figsize=(10,10))
+plt.subplot(2,2,1)
 c = c[np.invert(np.isnan(c))]
 c = np.array(c)
 bw = optimized_binwidth(c)
 bw = np.arange(min(c), max(c) + bw, bw)
-plt.bar(KNNGF.interpolation_ecal_eq_0.y,1000*np.ones(len(KNNGF.interpolation_ecal_eq_0.y)),color='yellow')
 plt.hist(c,bw)
 plt.xlabel(r"$e_{calib}$",fontsize=15)
 plt.title(r"$e_{calib}$ for $e_{cal} = 0$",fontsize=15)
+plt.subplot(2,2,2)
+c2 = c2[np.invert(np.isnan(c2))]
+c2 = np.array(c2)
+bw = optimized_binwidth(c2)
+bw = np.arange(min(c2), max(c2) + bw, bw)
+plt.hist(c2,bw)
+plt.xlabel(r"$e_{calib}$",fontsize=15)
+plt.title(r"$e_{calib}$ for $e_{cal} \neq 0$",fontsize=15)
+plt.subplot(2,2,3)
+t = t[np.invert(np.isnan(t))]
+t = np.array(t)
+bw = optimized_binwidth(t)
+bw = np.arange(min(t), max(t) + bw, bw)
+plt.hist(t,bw)
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.subplot(2,2,4)
+t2 = t2[np.invert(np.isnan(t2))]
+t2 = np.array(t2)
+bw = optimized_binwidth(t2)
+bw = np.arange(min(t2), max(t2) + bw, bw)
+plt.hist(t2,bw)
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} \neq 0$",fontsize=15)
 plt.show()
+savefig(fig,directory,"histograms_ecalib_etrue.png")
 
 fig = plt.figure(figsize=(10,12))
 #mean

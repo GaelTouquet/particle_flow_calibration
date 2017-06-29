@@ -41,11 +41,8 @@ class KNNGaussianFit:
     if lim = - 1, there is no limit
 
     kind : str or int, optional
-    Specifies the kind of interpolation as a string (‘linear’, ‘nearest’,
-    ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’ where ‘zero’, ‘slinear’,
-    ‘quadratic’ and ‘cubic’ refer to a spline interpolation of zeroth,
-    first, second or third order) or as an integer specifying the order of
-    the spline interpolator to use. Default is ‘linear’
+    Specifies the kind of interpolation as a string (‘linear’, 'cubic')
+    Default is 'cubic'
 
     ecal_train : array
     ecal value to train the calibration
@@ -144,11 +141,6 @@ class KNNGaussianFit:
     the histograms bin middles of each distributions of neighbours,
     for ecal != 0
 
-    evaluatedPoint_true_min : array
-    true energy corresponding to mu - cut * sigma, for ecal != 0
-
-    evaluatedPoint_true_max : array
-    true energy corresponding to mu + cut * sigma, for ecal != 0
     """
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
         """
@@ -200,8 +192,6 @@ class KNNGaussianFit:
         self.evaluatedPoint_parameters_ecal_eq_0 = []
         self.evaluatedPoint_entries_ecal_eq_0 = []
         self.evaluatedPoint_bin_middles_ecal_eq_0 = []
-        self.evaluatedPoint_true_min_ecal_eq_0 = []
-        self.evaluatedPoint_true_max_ecal_eq_0 = []
         self.evaluatedPoint_ecal = []
         self.evaluatedPoint_hcal = []
         self.evaluatedPoint_true = []

@@ -230,8 +230,6 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
                 print("parameters :",parameters)
                 print("diag of cov matrix :",crit)
             abort = False
-#            if np.abs(crit[0]) > 0.5e-1 or np.abs(crit[1]) > 0.5e-1:
-#                abort = True
             if reduced > 5:
                 abort = True
             if abort:
@@ -306,21 +304,20 @@ def gaussian_fit_normalized(x_input,binwidth = 0.1,info=False,giveChi2 = False):
             else:
                 return [math.nan,math.nan]
 
-def mean(x_input):
-    x = x_input[np.invert(np.isnan(x_input))]
-    if len(x) == 0:
-        return math.nan
-    else:
-        return np.mean(x)
-
-def getsigma(x_input):
-    x = x_input[np.invert(np.isnan(x_input))]
-    if len(x) == 0:
-        return math.nan
-    else:
-        return np.abs(np.sqrt(np.std(x)))
 
 def savefig(fig,directory,filename):
+    """
+    To save a figure 
+    Parameters
+    ----------
+    fig : pyplot.figure
+    the figure to save
+    directory : string 
+    the path and the name of the directory
+    filename : string 
+    the name of the image saved. 
+    Do not forget the extension (.png, .eps ...)
+    """
     splitted = directory.split('/')
     director = ""
     for s in splitted:
