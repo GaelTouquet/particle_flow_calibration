@@ -142,6 +142,13 @@ def optimized_binwidth(x_input):
     optD = D[idx]
     return optD
 
+def binwidth_array(x_input,binwidth = 'optimized'):
+    x = x_input[np.invert(np.isnan(x_input))]
+    if binwidth == 'optimized':
+        binwidth = optimized_binwidth(x_input)
+        
+    return np.arange(min(x), max(x) + binwidth, binwidth)
+
 
 
 
