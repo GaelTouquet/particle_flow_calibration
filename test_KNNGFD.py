@@ -9,8 +9,8 @@ Script to understand how does KNNGFD works.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from tools import importPickle, savefig
-from tools import gaussian_fit, gaussian_param, optimized_binwidth
+from pfcalibration.tools import importPickle, savefig
+from pfcalibration.tools import gaussian_fit, optimized_binwidth
 from sklearn import neighbors
 import math
 

@@ -6,12 +6,12 @@ For IPNL (Nuclear Physics Institute of Lyon)
 """
 import numpy as np
 from sklearn import linear_model
-from CalibrationLego import CalibrationLego
-from LinearRegression import LinearRegression
-from KNN import KNN
-from KNNGaussianCleaning import KNNGaussianCleaning
-from KNNGaussianFit import KNNGaussianFit
-from KNNGaussianFitDirect import KNNGaussianFitDirect
+from pfcalibration.CalibrationLego import CalibrationLego
+from pfcalibration.LinearRegression import LinearRegression
+from pfcalibration.KNN import KNN
+from pfcalibration.KNNGaussianCleaning import KNNGaussianCleaning
+from pfcalibration.KNNGaussianFit import KNNGaussianFit
+from pfcalibration.KNNGaussianFitDirect import KNNGaussianFitDirect
 import time
 
 class EnergyData:
@@ -125,14 +125,14 @@ class EnergyData:
         end = time.time()
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib
-    
+
     def kNNGaussianFitDirect(self,n_neighbors=1,algorithm='auto',lim=-1):
         begin = time.time()
         calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim)
         end = time.time()
         print("KNNGaussianFitDirect - Calibration made in",end-begin,"s")
         return calib
-    
+
     def splitInTwo(self):
         """
         To split in two sets of datas

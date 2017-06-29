@@ -6,7 +6,7 @@ For IPNL (Nuclear Physics Institute of Lyon)
 """
 
 import sys
-from rootTools import rootToPython
+from pfcalibration.rootTools import rootToPython
 
 """
     Convertir un fichier root en fichier binaire importable par pickle

@@ -262,15 +262,15 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
 
 def savefig(fig,directory,filename):
     """
-    To save a figure 
+    To save a figure
     Parameters
     ----------
     fig : pyplot.figure
     the figure to save
-    directory : string 
+    directory : string
     the path and the name of the directory
-    filename : string 
-    the name of the image saved. 
+    filename : string
+    the name of the image saved.
     Do not forget the extension (.png, .eps ...)
     """
     splitted = directory.split('/')

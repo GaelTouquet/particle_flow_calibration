@@ -8,7 +8,7 @@ For IPNL (Nuclear Physics Institute of Lyon)
 from sklearn import neighbors
 import numpy as np
 import math
-from tools import gaussian_param
+from pfcalibration.tools import gaussian_param
 from scipy.optimize import curve_fit
 import warnings
 from scipy.optimize import OptimizeWarning
@@ -47,7 +47,7 @@ class KNNGaussianFitDirect:
 
     true_train : array
     ecal value to train the calibration
-    
+
     ecal_train_ecal_eq_0 : array
     ecal value to train the calibration
     for ecal == 0
@@ -59,7 +59,7 @@ class KNNGaussianFitDirect:
     true_train_ecal_eq_0 : array
     ecal value to train the calibration
     for ecal == 0
-    
+
     ecal_train_ecal_neq_0 : array
     ecal value to train the calibration
     for ecal != 0
@@ -67,11 +67,11 @@ class KNNGaussianFitDirect:
     hcal_train_ecal_neq_0 : array
     ecal value to train the calibration
     for ecal != 0
-    
+
     true_train_ecal_neq_0 : array
     ecal value to train the calibration
     for ecal != 0
-    
+
     neigh_ecal_neq_0 : sklearn.neighbors.NearestNeighbors
     the sklearn.neighbors.NearestNeighbors for ecal != 0
 
@@ -79,7 +79,7 @@ class KNNGaussianFitDirect:
     the sklearn.neighbors.NearestNeighbors for ecal == 0
 
     """
-    
+
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1):
         """
         Parameters
@@ -151,14 +151,14 @@ class KNNGaussianFitDirect:
         def predictSingleValue(ecal,hcal):
             if ecal+hcal > self.lim:
                 return math.nan
-            
+
             if ecal == 0:
                 dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
                 true = self.true_train_ecal_eq_0[ind][0]
                 hcal = self.hcal_train_ecal_eq_0[ind][0]
                 binwidth = 1
                 nbins = np.arange(min(true), max(true) + binwidth, binwidth)
-                
+
                 with warnings.catch_warnings():
                     try:
                         #we create the histogram
@@ -167,24 +167,24 @@ class KNNGaussianFitDirect:
                         bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
                         bin_middles = bin_middles[entries != 0]
                         entries = entries[entries != 0]
-    
+
                         # we fit the histogram
                         p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
                         error = np.sqrt(entries)
                         parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
                         res = parameters[1]
-    
+
                         chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
                         reduced = chi2/(len(bin_middles)-len(parameters))
-    
+
                         if reduced > 5:
                             raise OptimizeWarning
-    
+
                     except (OptimizeWarning, RuntimeError):
                         parameters = p0
                         res = parameters[1]
                         print("calibration issue for ecal = 0, hcal = ",h,"reduced chi2 = ",reduced)
-                    finally:    
+                    finally:
                         return res
             else:
                 dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])
@@ -193,7 +193,7 @@ class KNNGaussianFitDirect:
                 hcal = self.hcal_train_ecal_neq_0[ind][0]
                 binwidth = 1
                 nbins = np.arange(min(true), max(true) + binwidth, binwidth)
-                
+
                 with warnings.catch_warnings():
                     try:
                         #we create the histogram
@@ -202,25 +202,25 @@ class KNNGaussianFitDirect:
                         bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
                         bin_middles = bin_middles[entries != 0]
                         entries = entries[entries != 0]
-    
+
                         # we fit the histogram
                         p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
                         error = np.sqrt(entries)
                         parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
                         res = parameters[1]
-    
+
                         chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
                         reduced = chi2/(len(bin_middles)-len(parameters))
-    
+
                         if reduced > 5:
                             raise OptimizeWarning
-    
+
                     except (OptimizeWarning, RuntimeError):
                         parameters = p0
                         res = parameters[1]
                         print("calibration issue for ecal = ",e,", hcal = ",h,"reduced chi2 = ",reduced)
-                    finally:    
-                        return res                    
+                    finally:
+                        return res
 
         vect = np.vectorize(predictSingleValue)
         return vect(e,h)

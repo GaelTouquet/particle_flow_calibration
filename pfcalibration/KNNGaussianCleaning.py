@@ -8,7 +8,7 @@ from sklearn import neighbors
 import numpy as np
 import math
 from scipy.interpolate import interp2d, interp1d
-from tools import gaussian_param
+from pfcalibration.tools import gaussian_param
 from scipy.optimize import curve_fit, OptimizeWarning
 import warnings
 

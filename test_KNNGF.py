@@ -9,8 +9,8 @@ Script to understand how does KNNGF works.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from tools import importPickle, savefig
-from tools import gaussian_fit, gaussian_param, optimized_binwidth
+from pfcalibration.tools import importPickle, savefig
+from pfcalibration.tools import gaussian_fit, gaussian_param, optimized_binwidth
 from sklearn import neighbors
 import math
 
@@ -171,7 +171,7 @@ true_train = KNNGF.true_train[KNNGF.ecal_train==0]
 h = np.arange(min(hcal_train),lim,0.1)
 e = np.zeros(len(h))
 t = KNNGF.predict(e,h)
-fig = plt.figure(figsize=(8,5))
+fig = plt.figure(figsize=(12,5))
 plt.subplot(1,2,1)
 plt.plot(hcal_train,true_train,'.',markersize=1)
 plt.plot(h,t,lw=3)
