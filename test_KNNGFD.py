@@ -117,23 +117,23 @@ plt.xlabel(r"$e_{true}$",fontsize=15)
 plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
 plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
 
-#h2 = data2.hcal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-#t2 = data2.true[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-#e2 = data2.ecal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-#c2 = KNNGFD.predict(e2,h2)
-#r2 = c2/t2
-#
-#energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t2,r2)
-#plt.subplot(1,2,2)
-#plt.plot(t2,r2,'.',markersize=1)
-#plt.axis([0,200,0,2])
-#plt.plot(energy,mean_gaussianfit,lw=3)
-#plt.xlabel(r"$e_{true}$",fontsize=15)
-#plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
-#plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
-#plt.show()
-#savefig(fig,directory,"ecalib_over_etrue.png")
-#
+h2 = data2.hcal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+t2 = data2.true[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+e2 = data2.ecal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+c2 = KNNGFD.predict(e2,h2)
+r2 = c2/t2
+
+energy2, means2, mean_gaussianfit2, sigma_gaussianfit2, reducedChi22 = getMeans(t2,r2)
+plt.subplot(1,2,2)
+plt.plot(t2,r2,'.',markersize=1)
+plt.axis([0,200,0,2])
+plt.plot(energy2,mean_gaussianfit2,lw=3)
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
+plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.show()
+savefig(fig,directory,"ecalib_over_etrue.png")
+
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,10))
 plt.subplot(2,2,1)
@@ -144,14 +144,14 @@ bw = np.arange(min(c), max(c) + bw, bw)
 plt.hist(c,bw)
 plt.xlabel(r"$e_{calib}$",fontsize=15)
 plt.title(r"$e_{calib}$ for $e_{cal} = 0$",fontsize=15)
-#plt.subplot(2,2,2)
-#c2 = c2[np.invert(np.isnan(c2))]
-#c2 = np.array(c2)
-#bw = optimized_binwidth(c2)
-#bw = np.arange(min(c2), max(c2) + bw, bw)
-#plt.hist(c2,bw)
-#plt.xlabel(r"$e_{calib}$",fontsize=15)
-#plt.title(r"$e_{calib}$ for $e_{cal} \neq 0$",fontsize=15)
+plt.subplot(2,2,2)
+c2 = c2[np.invert(np.isnan(c2))]
+c2 = np.array(c2)
+bw = optimized_binwidth(c2)
+bw = np.arange(min(c2), max(c2) + bw, bw)
+plt.hist(c2,bw)
+plt.xlabel(r"$e_{calib}$",fontsize=15)
+plt.title(r"$e_{calib}$ for $e_{cal} \neq 0$",fontsize=15)
 plt.subplot(2,2,3)
 t = t[np.invert(np.isnan(t))]
 t = np.array(t)
@@ -160,17 +160,17 @@ bw = np.arange(min(t), max(t) + bw, bw)
 plt.hist(t,bw)
 plt.xlabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
-#plt.subplot(2,2,4)
-#t2 = t2[np.invert(np.isnan(t2))]
-#t2 = np.array(t2)
-#bw = optimized_binwidth(t2)
-#bw = np.arange(min(t2), max(t2) + bw, bw)
-#plt.hist(t2,bw)
-#plt.xlabel(r"$e_{true}$",fontsize=15)
-#plt.title(r"$e_{true}$ for $e_{cal} \neq 0$",fontsize=15)
-#plt.show()
-#savefig(fig,directory,"histograms_ecalib_etrue.png")
-#
+plt.subplot(2,2,4)
+t2 = t2[np.invert(np.isnan(t2))]
+t2 = np.array(t2)
+bw = optimized_binwidth(t2)
+bw = np.arange(min(t2), max(t2) + bw, bw)
+plt.hist(t2,bw)
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} \neq 0$",fontsize=15)
+plt.show()
+savefig(fig,directory,"histograms_ecalib_etrue.png")
+
 #fig = plt.figure(figsize=(10,12))
 ##mean
 #ax = plt.subplot(3,1,1)
