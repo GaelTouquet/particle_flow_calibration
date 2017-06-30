@@ -224,3 +224,36 @@ class KNNGaussianFitDirect:
 
         vect = np.vectorize(predictSingleValue)
         return vect(e,h)
+    
+    def neighborhood(self,e,h):
+        """
+        neingbourhood of a point ecal, hcal
+
+        Parameters
+        ----------
+        e : a numpy array of ecal energies
+        h : a numpy array of hcal energies
+
+        Returns
+        -------
+        true : a numpy array of predicted true energies
+        the value is NaN if the asked value is off-limit
+        """
+        def neighborhoodSingleValue(ecal,hcal):
+            if ecal+hcal > self.lim:
+                return math.nan
+
+            if ecal == 0:
+                dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
+                true = self.true_train_ecal_eq_0[ind][0]
+                hcal = self.hcal_train_ecal_eq_0[ind][0]
+                ecal = np.zeros(len(hcal))
+            else:
+                dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])
+                true = self.true_train_ecal_neq_0[ind][0]
+                ecal = self.ecal_train_ecal_neq_0[ind][0]
+                hcal = self.hcal_train_ecal_neq_0[ind][0]
+            return [ecal,hcal,true]
+
+        vect = np.vectorize(neighborhoodSingleValue)
+        return vect(e,h)
