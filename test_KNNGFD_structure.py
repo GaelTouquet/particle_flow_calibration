@@ -148,5 +148,7 @@ plt.ylabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.axis([min(h[index]),max(h[index]),0,2*borne_sup])
 
+plt.subplot(2,2,4)
+neigh = KNNGFD.neighborhood(ecal_calib,hcal_calib)
 
 savefig(fig,directory,"calibration.png")
