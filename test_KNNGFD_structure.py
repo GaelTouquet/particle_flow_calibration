@@ -149,6 +149,16 @@ plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.axis([min(h[index]),max(h[index]),0,2*borne_sup])
 
 plt.subplot(2,2,4)
-neigh = KNNGFD.neighborhood(ecal_calib,hcal_calib)
+neighborhood = KNNGFD.neighborhood(e[index],h[index])
+plt.plot(hcal_train,true_train,'.',markersize=1,label=r"training data")
+plt.plot(h[index],t[index],'.',label=r"$e_{calib} \in ["+str(np.around(borne_inf,2))+","+str(np.around(borne_sup,2))+"[$")
+plt.plot(hcal_calib,calib,lw=3,label = "calibration")
+for neigh in neighborhood:
+    plt.plot(neigh[1],neigh[2],'.')
+plt.xlabel(r"$h_{cal}$",fontsize=15)
+plt.ylabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.axis([min(h[index]),max(h[index]),0,2*borne_sup])
+
 
 savefig(fig,directory,"calibration.png")

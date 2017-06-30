@@ -103,7 +103,7 @@ savefig(fig,directory,"calibration.png")
 h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
 t = data2.true[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
 e = np.zeros(len(h))
-neigh = KNNGFD.neighborhood(e,h)
+
 c = KNNGFD.predict(e,h)
 r = c/t
 
