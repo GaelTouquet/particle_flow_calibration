@@ -121,7 +121,7 @@ def optimized_binwidth(x_input):
     x = x_input[np.invert(np.isnan(x_input))]
     x_max = max(x)
     x_min = min(x)
-    N_MIN = 4   #Minimum number of bins (integer)
+    N_MIN = 1   #Minimum number of bins (integer)
                 #N_MIN must be more than 1 (N_MIN > 1).
     N_MAX = 200  #Maximum number of bins (integer)
     N = range(N_MIN,N_MAX) # #of Bins

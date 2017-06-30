@@ -223,11 +223,9 @@ class KNNGaussianFit:
             # the neighbours of the point (ecal,hcal) = (0,h)
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = h)
             dist = dist[0]
-            ind = ind[0]
-            ind = ind[dist < 1] 
+            ind = ind[0] 
             true = z[ind]
             hcal = y[ind]
-            print(len(true))
             binwidth = 1
             reduced = math.nan
             with warnings.catch_warnings():

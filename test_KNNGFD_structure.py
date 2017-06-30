@@ -4,7 +4,7 @@
 Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
 
-Script to understand how does KNNGF works and why there is a structure in ecalib/etrue .
+Script to understand how does KNNGFD works and why there is a structure in ecalib/etrue .
 """
 
 import matplotlib.pyplot as plt
@@ -27,7 +27,7 @@ fontgreen = {'family': 'serif',
         }
 
 
-directory = "pictures/testKNNGF_structure/"
+directory = "pictures/testKNNGFD_structure/"
 
 
 filename = 'charged_hadrons_100k.energydata'
@@ -41,7 +41,6 @@ data1,data2 = data1.splitInTwo()
 # paramètres de calibration
 lim = 150
 n_neighbors = 250
-energystep = 1
 
 def getMeans(energy_x,y):
     ind  = np.invert(np.isnan(y))
@@ -73,13 +72,13 @@ def getMeans(energy_x,y):
 
 
 
-KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='cubic')
+KNNGFD = data1.kNNGaussianFitDirect(n_neighbors=n_neighbors,lim=lim)
 
 #ecalib/etrue pour ecal = 0
 h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
 t = data2.true[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
 e = np.zeros(len(h))
-c = KNNGF.predict(e,h)
+c = KNNGFD.predict(e,h)
 r = c/t
 
 energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r)
@@ -117,17 +116,17 @@ borne_sup = bins[imax+1]
 index = np.logical_and(c >= borne_inf,c < borne_sup)
 ecalibs = c[index]
 fig = plt.figure(figsize=(10,5))
-plt.hist(ecalibs,binwidth_array(ecalibs))
+plt.hist(ecalibs)
 plt.xlabel(r"$e_{calib}$",fontsize=15)
 plt.title(r"$e_{calib}$ for the highest bar",fontsize=15)
 savefig(fig,directory,"histograms_ecalib_etrue_highest.png")
 
 #courbe de calibration pour ecal = 0
-hcal_train = KNNGF.hcal_train[KNNGF.ecal_train==0]
-true_train = KNNGF.true_train[KNNGF.ecal_train==0]
+hcal_train = KNNGFD.hcal_train[KNNGFD.ecal_train==0]
+true_train = KNNGFD.true_train[KNNGFD.ecal_train==0]
 hcal_calib = np.arange(min(hcal_train),lim,0.1)
 ecal_calib = np.zeros(len(hcal_calib))
-calib = KNNGF.predict(ecal_calib,hcal_calib)
+calib = KNNGFD.predict(ecal_calib,hcal_calib)
 
 fig = plt.figure(figsize=(10,10))
 plt.subplot(2,1,1)
