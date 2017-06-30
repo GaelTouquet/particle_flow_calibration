@@ -225,6 +225,22 @@ class KNNGaussianFitDirect:
         vect = np.vectorize(predictSingleValue)
         return vect(e,h)
     
+    def neighborhoodSingleValue(self,ecal,hcal):
+        if ecal+hcal > self.lim:
+            return math.nan
+
+        if ecal == 0:
+            dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
+            true_neigh = self.true_train_ecal_eq_0[ind][0]
+            hcal_neigh = self.hcal_train_ecal_eq_0[ind][0]
+            ecal_neigh = np.zeros(len(hcal_neigh))
+        else:
+            dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])
+            true_neigh = self.true_train_ecal_neq_0[ind][0]
+            ecal_neigh = self.ecal_train_ecal_neq_0[ind][0]
+            hcal_neigh = self.hcal_train_ecal_neq_0[ind][0]
+        return [ecal_neigh,hcal_neigh,true_neigh]
+        
     def neighborhood(self,e,h):
         """
         neingbourhood of a point ecal, hcal
@@ -239,21 +255,8 @@ class KNNGaussianFitDirect:
         true : a numpy array of predicted true energies
         the value is NaN if the asked value is off-limit
         """
-        def neighborhoodSingleValue(ecal,hcal):
-            if ecal+hcal > self.lim:
-                return math.nan
-
-            if ecal == 0:
-                dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
-                true = self.true_train_ecal_eq_0[ind][0]
-                hcal = self.hcal_train_ecal_eq_0[ind][0]
-                ecal = np.zeros(len(hcal))
-            else:
-                dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])
-                true = self.true_train_ecal_neq_0[ind][0]
-                ecal = self.ecal_train_ecal_neq_0[ind][0]
-                hcal = self.hcal_train_ecal_neq_0[ind][0]
-            return [ecal,hcal,true]
-
-        vect = np.vectorize(neighborhoodSingleValue)
-        return vect(e,h)
+        
+        res = []
+        for i in np.arange(len(e)):
+            res.append(self.neighborhoodSingleValue(e[i],h[i]))
+        return res
