@@ -27,12 +27,12 @@ from pfcalibration.rootTools import rootToPython
 for arg in sys.argv:
     splited = arg.split('.')
     if splited[len(splited)-1] == "root":
-        print("Conversion de",arg)
+        print("Conversion of",arg)
         rootToPython(arg)
-        print("Fichier converti")
+        print("file converted")
 
 if len(sys.argv) <= 1:
-    arg = input("Fichier a convertir : ")
-    print("Conversion de",arg)
+    arg = input("File to convert : ")
+    print("Conversion of",arg)
     rootToPython(arg)
-    print("Fichier converti")
+    print("file converted"")
