@@ -23,7 +23,7 @@ Step 3 : you can use the new files in '`.energydata`' in the other programs
 
 ### To create a calibration
 # Example with KNNGF method
-```
+```markdown
 # we import the data files
 filename = 'charged_hadrons_100k.energydata'
 data1 = importPickle(filename)
