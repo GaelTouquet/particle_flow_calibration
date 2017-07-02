@@ -40,6 +40,7 @@ data1,data2 = data1.splitInTwo()
 lim = 150 # reject the points with ecal + hcal > lim
 n_neighbors = 250 # number of neighbors to do the average
 energystep = 1 # step of the grid of evaluation
+kind = 'cubic' # kind of interpolation
 
-KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='cubic')
+KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind=kind)
 ```
