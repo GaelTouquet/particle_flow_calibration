@@ -21,9 +21,8 @@ example with `prod2_200_400k.root` and `charged_hadrons_100k.root`
 
 Step 3 : you can use the new files in '`.energydata`' in the other programs
 
-##To create a calibration
-
-###Example with KNNGF method
+## To create a calibration
+### Example with KNNGF method
 ```python
 # we import the data files
 filename = 'charged_hadrons_100k.energydata'
