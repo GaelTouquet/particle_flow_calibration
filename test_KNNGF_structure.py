@@ -37,6 +37,7 @@ filename = 'prod2_200_400k.energydata'
 data1 = data1.mergeWith(importPickle(filename))
 #on sépare data en 2
 data1,data2 = data1.splitInTwo()
+data2,data2 = data2.splitInTwo()
 
 # paramètres de calibration
 lim = 150

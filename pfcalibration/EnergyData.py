@@ -112,21 +112,21 @@ class EnergyData:
         print("KNN - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianCleaning(self,n_neighbors=1,weights='gaussian',algorithm='auto',sigma=1,lim=-1,energystep = 5,kind='cubic',cut=2):
+    def kNNGaussianCleaning(self,n_neighbors=2000,weights='gaussian',algorithm='auto',sigma=1,lim=-1,energystep = 5,kind='cubic',cut=2):
         begin = time.time()
         calib = KNNGaussianCleaning(self.ecal,self.hcal,self.true,n_neighbors,weights,algorithm,sigma,lim,energystep,kind,cut)
         end = time.time()
         print("KNNGaussianCleaning - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianFit(self,n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
+    def kNNGaussianFit(self,n_neighbors=2000,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
         begin = time.time()
         calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim,energystep,kind)
         end = time.time()
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianFitDirect(self,n_neighbors=1,algorithm='auto',lim=-1):
+    def kNNGaussianFitDirect(self,n_neighbors=2000,algorithm='auto',lim=-1):
         begin = time.time()
         calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim)
         end = time.time()

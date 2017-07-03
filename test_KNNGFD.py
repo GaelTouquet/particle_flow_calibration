@@ -40,7 +40,7 @@ data1,data2 = data1.splitInTwo()
 
 # paramètres de calibration
 lim = 150
-n_neighbors = 250
+n_neighbors = 2000
 
 def getMeans(energy_x,y):
     ind  = np.invert(np.isnan(y))
@@ -87,7 +87,7 @@ plt.plot(h,t,lw=2)
 plt.xlabel(r"$h_{cal}$",fontsize=15)
 plt.ylabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
-plt.axis([0,max(hcal_train),0,max(true_train)])
+plt.axis([0,max(h),0,max(t)])
 
 plt.subplot(1,2,2)
 plt.plot(hcal_train,true_train,'.',markersize=1)

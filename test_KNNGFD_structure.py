@@ -40,7 +40,7 @@ data1,data2 = data1.splitInTwo()
 
 # paramètres de calibration
 lim = 150
-n_neighbors = 250
+n_neighbors = 2000
 
 def getMeans(energy_x,y):
     ind  = np.invert(np.isnan(y))
@@ -91,6 +91,34 @@ plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
 plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
 savefig(fig,directory,"ecalib_over_etrue.png")
 
+#courbe de calibration pour ecal = 0
+hcal_train = KNNGFD.hcal_train[KNNGFD.ecal_train==0]
+true_train = KNNGFD.true_train[KNNGFD.ecal_train==0]
+hcal_calib = np.arange(min(hcal_train),lim,0.1)
+ecal_calib = np.zeros(len(hcal_calib))
+calib = KNNGFD.predict(ecal_calib,hcal_calib)
+fig = plt.figure(figsize=(10,5))
+plt.subplot(1,2,1)
+plt.plot(hcal_train,true_train,'.',markersize=1,label=r"training data")
+plt.plot(hcal_calib,calib,lw=3,label = "calibration")
+plt.xlabel(r"$h_{cal}$",fontsize=15)
+plt.ylabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.axis([0,lim,0,max(calib)])
+plt.legend(loc = "upper right")
+plt.subplot(1,2,2)
+plt.plot(hcal_train,true_train,'.',markersize=1,label=r"training data")
+plt.plot(hcal_calib,calib,lw=3,label = "calibration")
+plt.xlabel(r"$h_{cal}$",fontsize=15)
+plt.ylabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.axis([0,15,0,15])
+plt.legend(loc = "upper right")
+savefig(fig,directory,"calibration.png")
+
+
+
+
 #histogram of hcal
 fig = plt.figure(figsize=(10,5))
 bw = binwidth_array(h)
@@ -100,10 +128,18 @@ plt.title(r"$h_{cal}$ for $e_{cal} = 0$",fontsize=15)
 plt.show()
 savefig(fig,directory,"histograms_hcal.png")
 
+#histogram of etrue
+fig = plt.figure(figsize=(10,5))
+bw = binwidth_array(t)
+entries, bins, other = plt.hist(h,bw)
+plt.xlabel(r"$e_{true}$",fontsize=15)
+plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
+plt.show()
+savefig(fig,directory,"histograms_etrue.png")
+
 #histogram of ecalib
 fig = plt.figure(figsize=(10,5))
-#bw = binwidth_array(c)
-bw = binwidth_array(c,0.01)
+bw = binwidth_array(c)
 entries, bins, other = plt.hist(c,bw)
 plt.xlabel(r"$e_{calib}$",fontsize=15)
 plt.title(r"$e_{calib}$ for $e_{cal} = 0$",fontsize=15)
@@ -115,10 +151,17 @@ borne_inf = bins[imax]
 borne_sup = bins[imax+1]
 index = np.logical_and(c >= borne_inf,c < borne_sup)
 ecalibs = c[index]
+hcals = h[index]
 fig = plt.figure(figsize=(10,5))
+plt.subplot(1,2,1)
 plt.hist(ecalibs)
 plt.xlabel(r"$e_{calib}$",fontsize=15)
 plt.title(r"$e_{calib}$ for the highest bar",fontsize=15)
+plt.subplot(1,2,2)
+m = np.mean(hcals)
+plt.hist(hcals-m)
+plt.xlabel(r"$h_{cal} - "+str(np.round(m,2))+"$",fontsize=15)
+plt.title(r"$h_{cal} - \mu(h_{cal})$ for the highest bar",fontsize=15)
 savefig(fig,directory,"histograms_ecalib_etrue_highest.png")
 
 #courbe de calibration pour ecal = 0
@@ -136,7 +179,7 @@ plt.plot(hcal_calib,calib,lw=3,label = "calibration")
 plt.xlabel(r"$h_{cal}$",fontsize=15)
 plt.ylabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
-plt.axis([0,max(hcal_train),0,max(true_train)])
+plt.axis([0,lim,0,max(calib)])
 plt.legend(loc = "upper right")
 
 plt.subplot(2,2,3)
@@ -159,6 +202,4 @@ plt.xlabel(r"$h_{cal}$",fontsize=15)
 plt.ylabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.axis([min(h[index]),max(h[index]),0,2*borne_sup])
-
-
-savefig(fig,directory,"calibration.png")
+savefig(fig,directory,"calibration_neigh.png")
