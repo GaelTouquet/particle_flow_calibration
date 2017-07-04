@@ -126,9 +126,9 @@ class EnergyData:
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianFitDirect(self,n_neighbors=2000,algorithm='auto',lim=-1):
+    def kNNGaussianFitDirect(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1):
         begin = time.time()
-        calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim)
+        calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim)
         end = time.time()
         print("KNNGaussianFitDirect - Calibration made in",end-begin,"s")
         return calib

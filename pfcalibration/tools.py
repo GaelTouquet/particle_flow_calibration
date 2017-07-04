@@ -152,7 +152,7 @@ def binwidth_array(x_input,binwidth = 'optimized'):
 
 
 
-def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
+def gaussian_fit(x_input,binwidth = 'optimized',giveReducedChi2 = False, reducedChi2Max = 5,info=False):
 
     with warnings.catch_warnings():
         try:
@@ -184,28 +184,25 @@ def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
                 print("parameters :",parameters)
                 print("diag of cov matrix :",crit)
                 print("reduced chi2:",reduced)
-            abort = False
 
-            if reduced > 5:
-                abort = True
-            if abort:
-                if giveChi2:
+            if reduced > reducedChi2Max:
+                if giveReducedChi2:
                     return[math.nan,math.nan,math.nan], math.nan
                 else:
                     return [math.nan,math.nan,math.nan]
             #sigma has to be > 0
             parameters[0] = np.abs(parameters[0])
-            if giveChi2:
+            if giveReducedChi2:
                 return parameters, reduced
             else:
                 return parameters
         except:
-            if giveChi2:
+            if giveReducedChi2:
                 return[math.nan,math.nan,math.nan], math.nan
             else:
                 return [math.nan,math.nan,math.nan]
 
-def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2 = False):
+def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveReducedChi2 = False):
     with warnings.catch_warnings():
         try:
             #we create the histogram
@@ -250,18 +247,18 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
                 plt.plot(xplot,gaussian_param(xplot,*parameters),lw=3)
                 plt.show()
                 fig.savefig(filename,bbox_inches='tight')
-                if giveChi2:
+                if giveReducedChi2:
                     return[math.nan,math.nan,math.nan], math.nan
                 else:
                     return [math.nan,math.nan,math.nan]
             #sigma has to be > 0
             parameters[0] = np.abs(parameters[0])
-            if giveChi2:
+            if giveReducedChi2:
                 return parameters, reduced
             else:
                 return parameters
         except:
-            if giveChi2:
+            if giveReducedChi2:
                 return[math.nan,math.nan,math.nan], math.nan
             else:
                 return [math.nan,math.nan,math.nan]

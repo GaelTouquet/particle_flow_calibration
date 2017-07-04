@@ -40,14 +40,15 @@ data1,data2 = data1.splitInTwo()
 
 # paramètres de calibration
 lim = 150
-n_neighbors = 2000
+n_neighbors_ecal_eq_0=2000
+n_neighbors_ecal_neq_0=250
 
-def getMeans(energy_x,y):
+def getMeans(energy_x,y,n_neighbors=500):
     ind  = np.invert(np.isnan(y))
     y = y[ind]
     energy_x = energy_x[ind]
 
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=500)
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=n_neighbors)
     neighborhood.fit(np.transpose(np.matrix(energy_x)))
     step = 0.5
     ener = np.arange(min(energy_x),max(energy_x),step)
@@ -59,7 +60,7 @@ def getMeans(energy_x,y):
     for e in ener:
         dist, ind = neighborhood.kneighbors(X = e)
         y_ind = y[ind][np.invert(np.isnan(y[ind]))]
-        params,reduced = gaussian_fit(y_ind,giveChi2 = True)
+        params,reduced = gaussian_fit(y_ind,binwidth = 0.1,giveReducedChi2 = True,reducedChi2Max = 10)
         if not(math.isnan(params[1])):
             means.append(np.mean(y_ind))
             sigma_gaussianfit.append(params[0])
@@ -72,7 +73,7 @@ def getMeans(energy_x,y):
 
 
 
-KNNGFD = data1.kNNGaussianFitDirect(n_neighbors=n_neighbors,lim=lim)
+KNNGFD = data1.kNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,lim=lim)
 
 #ecalib/etrue pour ecal = 0
 h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
@@ -81,7 +82,7 @@ e = np.zeros(len(h))
 c = KNNGFD.predict(e,h)
 r = c/t
 
-energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r)
+energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r,n_neighbors = 1000)
 fig = plt.figure(figsize=(10,5))
 plt.plot(t,r,'.',markersize=1)
 plt.axis([0,200,0,2])
@@ -203,3 +204,4 @@ plt.ylabel(r"$e_{true}$",fontsize=15)
 plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=15)
 plt.axis([min(h[index]),max(h[index]),0,2*borne_sup])
 savefig(fig,directory,"calibration_neigh.png")
+    

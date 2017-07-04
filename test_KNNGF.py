@@ -40,7 +40,7 @@ data1,data2 = data1.splitInTwo()
 
 # paramètres de calibration
 lim = 150
-n_neighbors = 250
+n_neighbors = 1500
 energystep = 1
 
 def getMeans(energy_x,y):
