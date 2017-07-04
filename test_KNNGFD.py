@@ -41,7 +41,7 @@ data1,data2 = data1.splitInTwo()
 # paramètres de calibration
 lim = 150
 n_neighbors_ecal_eq_0=2000
-n_neighbors_ecal_neq_0=250
+n_neighbors_ecal_neq_0=200
 
 
 def getMeans(energy_x,y,n_neighbors=500):
@@ -135,63 +135,95 @@ plt.axis([0,12,0,15])
 plt.show()
 savefig(fig,directory,"calibration.png")
 
-#ecalib/etrue pour ecal = 0
-h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
-t = data2.true[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
-e = np.zeros(len(h))
-
-c = KNNGFD.predict(e,h)
-r = c/t
-
-energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r)
-fig = plt.figure(figsize=(10,5))
-plt.subplot(1,2,1)
-plt.plot(t,r,'.',markersize=1)
-plt.axis([0,200,0,2])
-plt.plot(energy,mean_gaussianfit,lw=3)
-plt.xlabel(r"$e_{true}$",fontsize=15)
-plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
-plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
-
-h2 = data2.hcal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-t2 = data2.true[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-e2 = data2.ecal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-c2 = KNNGFD.predict(e2,h2)
-r2 = c2/t2
-
-energy2, means2, mean_gaussianfit2, sigma_gaussianfit2, reducedChi22 = getMeans(t2,r2)
-plt.subplot(1,2,2)
-plt.plot(t2,r2,'.',markersize=1)
-plt.axis([0,200,0,2])
-plt.plot(energy2,mean_gaussianfit2,lw=3)
-plt.xlabel(r"$e_{true}$",fontsize=15)
-plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
-plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
+#neigh for ecal == 0
+h_neigh = np.arange(10,lim,50)
+e_neigh = np.zeros(len(h_neigh))
+neigh = KNNGFD.neighborhood(e_neigh,h_neigh)
+fig = plt.figure(figsize=(10,10))
+plt.plot(hcal_train,true_train,'.',markersize=1)
+plt.plot(h,t,lw=2)
+plt.xlabel(r"$h_{cal}$",fontsize=15)
+plt.ylabel(r"$e_{true}$",fontsize=15)
+for i in np.arange(len(neigh)):
+    plt.plot(neigh[i][1],neigh[i][2],'.',color='red',markersize=1)
+plt.axis([0,max(h),0,max(t)])
 plt.show()
-savefig(fig,directory,"ecalib_over_etrue_functionof_etrue.png")
+savefig(fig,directory,"neighborhood_ecal_eq_0.png")
 
-#ecalib/etrue in function of ecal,hcal
-fig = plt.figure(figsize=(20,8))
-plt.subplot(1,2,1)
-plt.title(classname+r" $e_{cal} = 0$",fontsize = 15)
-plt.plot(h,r,'.',markersize=1,label=r"$e_{calib}/e_{true}$")
-plt.plot([0,200],[1,1],'--',lw = 3, color = "yellow")
-plt.ylabel(r"$e_{calib}/e_{true}$",fontsize = 15)
-plt.xlabel(r"$h_{cal}$",fontsize = 15)
-plt.axis([0,lim,0,2])
-energy_ecal_eq_0, means_ecal_eq_0, mean_gaussianfit_ecal_eq_0, sigma_gaussianfit_ecal_eq_0, reducedChi2_ecal_eq_0 = getMeans(h,r)
-plt.plot(energy_ecal_eq_0,mean_gaussianfit_ecal_eq_0,lw=3,label="mean (gaussian fit)")
-plt.plot(energy_ecal_eq_0,means_ecal_eq_0,lw=3,label="mean")
-plt.legend(loc='upper right')
-plt.subplot(1,2,2)
-Z_mean, Z_sigma = getMeans2D(e2,h2,r2)
-im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,lim,0,lim), origin='lower',vmin=0.9,vmax=1.1)
-plt.colorbar(im)
-plt.title(r" $e_{calib}/e_{true}$ for $e_{cal} \neq 0$",fontsize = 15)
-plt.xlabel(r"$e_{cal}$",fontsize = 15)
-plt.ylabel(r"$h_{cal}$",fontsize = 15)
+#neigh for ecal != 0
+h_neigh = np.arange(1,lim,10)
+e_neigh = np.arange(1,lim,10)
+h_neigh,e_neigh = np.meshgrid(h_neigh,e_neigh)
+e_neigh = np.concatenate(e_neigh)
+h_neigh =np.concatenate(h_neigh)
+neigh = KNNGFD.neighborhood(e_neigh,h_neigh)
+fig = plt.figure(figsize=(10,10))
+plt.xlabel(r"$e_{cal}$",fontsize=15)
+plt.ylabel(r"$h_{cal}$",fontsize=15)
+for i in np.arange(len(neigh)):
+    if len(neigh[i][0]) != 0 :
+        plt.plot(neigh[i][0],neigh[i][1],'.',markersize=1)
+plt.axis([0,lim,0,lim])
 plt.show()
-savefig(fig,directory,"ecalib_over_etrue_functionof_ecal_hcal.png")
+savefig(fig,directory,"neighborhood_ecal_neq_0.png")
+
+##ecalib/etrue pour ecal = 0
+#h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
+#t = data2.true[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
+#e = np.zeros(len(h))
+#
+#c = KNNGFD.predict(e,h)
+#r = c/t
+#
+#energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r)
+#fig = plt.figure(figsize=(10,5))
+#plt.subplot(1,2,1)
+#plt.plot(t,r,'.',markersize=1)
+#plt.axis([0,200,0,2])
+#plt.plot(energy,mean_gaussianfit,lw=3)
+#plt.xlabel(r"$e_{true}$",fontsize=15)
+#plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
+#plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
+
+#h2 = data2.hcal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+#t2 = data2.true[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+#e2 = data2.ecal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
+#c2 = KNNGFD.predict(e2,h2)
+#r2 = c2/t2
+
+#energy2, means2, mean_gaussianfit2, sigma_gaussianfit2, reducedChi22 = getMeans(t2,r2)
+#plt.subplot(1,2,2)
+#plt.plot(t2,r2,'.',markersize=1)
+#plt.axis([0,200,0,2])
+#plt.plot(energy2,mean_gaussianfit2,lw=3)
+#plt.xlabel(r"$e_{true}$",fontsize=15)
+#plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
+#plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=15)
+#plt.show()
+#savefig(fig,directory,"ecalib_over_etrue_functionof_etrue.png")
+#
+##ecalib/etrue in function of ecal,hcal
+#fig = plt.figure(figsize=(20,8))
+#plt.subplot(1,2,1)
+#plt.title(classname+r" $e_{cal} = 0$",fontsize = 15)
+#plt.plot(h,r,'.',markersize=1,label=r"$e_{calib}/e_{true}$")
+#plt.plot([0,200],[1,1],'--',lw = 3, color = "yellow")
+#plt.ylabel(r"$e_{calib}/e_{true}$",fontsize = 15)
+#plt.xlabel(r"$h_{cal}$",fontsize = 15)
+#plt.axis([0,lim,0,2])
+#energy_ecal_eq_0, means_ecal_eq_0, mean_gaussianfit_ecal_eq_0, sigma_gaussianfit_ecal_eq_0, reducedChi2_ecal_eq_0 = getMeans(h,r)
+#plt.plot(energy_ecal_eq_0,mean_gaussianfit_ecal_eq_0,lw=3,label="mean (gaussian fit)")
+#plt.plot(energy_ecal_eq_0,means_ecal_eq_0,lw=3,label="mean")
+#plt.legend(loc='upper right')
+#plt.subplot(1,2,2)
+#Z_mean, Z_sigma = getMeans2D(e2,h2,r2)
+#im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,lim,0,lim), origin='lower',vmin=0.9,vmax=1.1)
+#plt.colorbar(im)
+#plt.title(r" $e_{calib}/e_{true}$ for $e_{cal} \neq 0$",fontsize = 15)
+#plt.xlabel(r"$e_{cal}$",fontsize = 15)
+#plt.ylabel(r"$h_{cal}$",fontsize = 15)
+#plt.show()
+#savefig(fig,directory,"ecalib_over_etrue_functionof_ecal_hcal.png")
 
 #
 ##histogram of ecalib and etrue

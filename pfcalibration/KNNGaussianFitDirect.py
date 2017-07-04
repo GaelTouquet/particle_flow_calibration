@@ -243,7 +243,7 @@ class KNNGaussianFitDirect:
     
     def neighborhoodSingleValue(self,ecal,hcal):
         if ecal+hcal > self.lim:
-            return math.nan
+            return [[],[],[]]
 
         if ecal == 0:
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
