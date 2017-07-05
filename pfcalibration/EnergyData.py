@@ -168,7 +168,25 @@ class EnergyData:
         data2 = EnergyData(np.array(true2),np.array(p2),np.array(ecal2),np.array(hcal2),np.array(eta2))
         return data1, data2
 
-
+    def oneOverTen(self):
+        """
+        To keep only one over ten particules
+        """
+        true1 = []
+        p1 = []
+        ecal1 = []
+        hcal1 = []
+        eta1 = []
+        for i in np.arange(len(self.ecal)):
+            if i%10 == 0:
+                true1.append(self.true[i])
+                p1.append(self.p[i])
+                ecal1.append(self.ecal[i])
+                hcal1.append(self.hcal[i])
+                eta1.append(self.eta[i])
+        data1 = EnergyData(np.array(true1),np.array(p1),np.array(ecal1),np.array(hcal1),np.array(eta1))
+        return data1
+    
     def mergeWith(self,another):
         """
         Fusionne les données de self et de another
