@@ -14,22 +14,7 @@ from pfcalibration.tools import gaussian_fit, binwidth_array
 from sklearn import neighbors
 import math
 
-
-font = {'family': 'serif',
-        'color':  'darkred',
-        'weight': 'normal',
-        'size': 16,
-        }
-fontgreen = {'family': 'serif',
-        'color':  'green',
-        'weight': 'normal',
-        'size': 16,
-        }
-
-
 directory = "pictures/testKNNGFD_structure/"
-
-
 filename = 'charged_hadrons_100k.energydata'
 data1 = importPickle(filename)
 filename = 'prod2_200_400k.energydata'
@@ -43,14 +28,14 @@ lim = 150
 n_neighbors_ecal_eq_0=2000
 n_neighbors_ecal_neq_0=250
 
-def getMeans(energy_x,y,n_neighbors=500):
+def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
     ind  = np.invert(np.isnan(y))
     y = y[ind]
     energy_x = energy_x[ind]
 
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=n_neighbors)
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=1000)
     neighborhood.fit(np.transpose(np.matrix(energy_x)))
-    step = 0.5
+    step = 0.1
     ener = np.arange(min(energy_x),max(energy_x),step)
     sigma_gaussianfit = []
     mean_gaussianfit = []
@@ -68,9 +53,6 @@ def getMeans(energy_x,y,n_neighbors=500):
             energy.append(e)
             reducedChi2.append(reduced)
     return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
-
-
-
 
 
 KNNGFD = data1.kNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,lim=lim)
