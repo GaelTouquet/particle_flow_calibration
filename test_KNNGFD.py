@@ -14,20 +14,6 @@ from sklearn import neighbors
 import math
 from matplotlib import gridspec
 
-
-
-font = {'family': 'serif',
-        'color':  'darkred',
-        'weight': 'normal',
-        'size': 16,
-        }
-fontgreen = {'family': 'serif',
-        'color':  'green',
-        'weight': 'normal',
-        'size': 16,
-        }
-
-
 directory = "pictures/testKNNGFD/"
 
 
@@ -210,9 +196,8 @@ savefig(fig,directory,classname+"ecalib_over_etrue_functionof_etrue.png")
 
 
 #ecalib/etrue in function of ecal,hcal
-fig = plt.figure(figsize=(12,5))
-gs = gridspec.GridSpec(1, 2, width_ratios=[2, 3]) 
-plt.subplot(gs[0])
+fig = plt.figure(figsize=(10,5))
+plt.subplot(1,2,1)
 plt.title(classname+r" $e_{cal} = 0$",fontsize = 15)
 plt.plot(h,r,'.',markersize=1,label=r"$e_{calib}/e_{true}$")
 plt.plot([0,200],[1,1],'--',lw = 3, color = "yellow")
@@ -223,7 +208,7 @@ energy_ecal_eq_0, means_ecal_eq_0, mean_gaussianfit_ecal_eq_0, sigma_gaussianfit
 plt.plot(energy_ecal_eq_0,mean_gaussianfit_ecal_eq_0,lw=3,label="mean (gaussian fit)")
 plt.plot(energy_ecal_eq_0,means_ecal_eq_0,lw=3,label="mean")
 plt.legend(loc='upper right')
-plt.subplot(gs[1])
+plt.subplot(1,2,2)
 Z_mean, Z_sigma = getMeans2D(e2,h2,r2)
 im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,lim,0,lim), origin='lower',vmin=0.9,vmax=1.1)
 plt.colorbar(im)
