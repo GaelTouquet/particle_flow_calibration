@@ -81,7 +81,7 @@ def getMeans2D(energy_x,energy_y,z):
 
     neighborhood = neighbors.NearestNeighbors(n_neighbors=n_neighbors_ecal_neq_0)
     neighborhood.fit(np.transpose(np.matrix([energy_x,energy_y])))
-    step = 2
+    step = 0.5
     ener_x = np.arange(0,lim+step,step)
     ener_y = np.arange(0,lim+step,step)
     sigma_gaussianfit = []
