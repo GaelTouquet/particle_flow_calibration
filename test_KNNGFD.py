@@ -128,7 +128,7 @@ plt.show()
 savefig(fig,directory,classname+"calibration.png")
 
 #neigh for ecal == 0
-h_neigh = np.arange(10,lim,50)
+h_neigh = np.arange(10,lim,30)
 e_neigh = np.zeros(len(h_neigh))
 neigh = KNNGFD.neighborhood(e_neigh,h_neigh)
 fig = plt.figure(figsize=(10,4))

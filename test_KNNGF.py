@@ -352,6 +352,7 @@ plt.ylabel(r"$e_{true}$",fontsize=12)
 for i in np.arange(len(neigh_hcal_ecal_eq_0)):
     plt.plot(neigh_hcal_ecal_eq_0[i],neigh_true_ecal_eq_0[i],'.',color='red',markersize=1)
 plt.title(r"neighbors for $e_{cal} = 0$",fontsize=12)
+plt.axis([0,lim,0,lim])
 
 
 #neigh for ecal != 0
