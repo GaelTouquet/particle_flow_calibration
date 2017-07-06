@@ -4,54 +4,46 @@
 Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
 
-Script to understand how does KNNGF works and why there is a structure in ecalib/etrue .
+Script to understand how does KNNGF works.
 """
 
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 import numpy as np
 from pfcalibration.tools import importPickle, savefig
-from pfcalibration.tools import gaussian_fit, binwidth_array
+from pfcalibration.tools import gaussian_fit, gaussian_param, binwidth_array
 from sklearn import neighbors
 import math
 
 
-font = {'family': 'serif',
-        'color':  'darkred',
-        'weight': 'normal',
-        'size': 16,
-        }
-fontgreen = {'family': 'serif',
-        'color':  'green',
-        'weight': 'normal',
-        'size': 16,
-        }
-
-
-directory = "pictures/testKNNGF_structure/"
-
-
+# file to save the pictures
+directory = "pictures/testKNNGF/"
+#importation of simulated particles
 filename = 'charged_hadrons_100k.energydata'
 data1 = importPickle(filename)
 filename = 'prod2_200_400k.energydata'
-#on fusionne les 2 jeux de données
+data2 = importPickle(filename)
+# we merge the 2 sets of data
 data1 = data1.mergeWith(importPickle(filename))
-#on sépare data en 2
+# we split the data in 2 sets
 data1,data2 = data1.splitInTwo()
-data2,data2 = data2.splitInTwo()
+#data 1 -> training data
+#data 2 -> data to predict
 
-# paramètres de calibration
+# parameters of the calibration
 lim = 150
-n_neighbors = 250
+n_neighbors_ecal_eq_0=2000
+n_neighbors_ecal_neq_0=200
 energystep = 1
 
-def getMeans(energy_x,y):
+def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
     ind  = np.invert(np.isnan(y))
     y = y[ind]
     energy_x = energy_x[ind]
 
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=500)
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=1000)
     neighborhood.fit(np.transpose(np.matrix(energy_x)))
-    step = 0.5
+    step = 0.1
     ener = np.arange(min(energy_x),max(energy_x),step)
     sigma_gaussianfit = []
     mean_gaussianfit = []
@@ -61,7 +53,7 @@ def getMeans(energy_x,y):
     for e in ener:
         dist, ind = neighborhood.kneighbors(X = e)
         y_ind = y[ind][np.invert(np.isnan(y[ind]))]
-        params,reduced = gaussian_fit(y_ind,giveChi2 = True)
+        params,reduced = gaussian_fit(y_ind,binwidth = 0.1,giveReducedChi2 = True,reducedChi2Max = 10)
         if not(math.isnan(params[1])):
             means.append(np.mean(y_ind))
             sigma_gaussianfit.append(params[0])
@@ -70,11 +62,44 @@ def getMeans(energy_x,y):
             reducedChi2.append(reduced)
     return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
 
+def getMeans2D(energy_x,energy_y,z):
+    ind  = np.invert(np.isnan(z))
+    z = z[ind]
+    energy_x = energy_x[ind]
+    energy_y = energy_y[ind]
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=n_neighbors_ecal_neq_0)
+    neighborhood.fit(np.transpose(np.matrix([energy_x,energy_y])))
+    step = 0.5
+    ener_x = np.arange(0,lim+step,step)
+    ener_y = np.arange(0,lim+step,step)
+    sigma_gaussianfit = []
+    mean_gaussianfit = []
+    
+    for y in ener_y:
+        line_mean = []
+        line_sigma = []
+        for x in ener_x:
+            if x+y < lim:
+                dist, ind = neighborhood.kneighbors(X = [[x,y]])
+                z_ind = z[ind]
+                params = gaussian_fit(z_ind,binwidth=0.1,reducedChi2Max = 10)
+                if math.isnan(params[0]):
+                    line_mean.append(np.mean(z_ind))
+                    line_sigma.append(np.sqrt(np.std(z_ind)))
+                else:
+                    line_mean.append(params[1])
+                    line_sigma.append(params[0])
+            else:
+                line_mean.append(math.nan)
+                line_sigma.append(math.nan)
+        mean_gaussianfit.append(line_mean)
+        sigma_gaussianfit.append(line_sigma)
+    return mean_gaussianfit, sigma_gaussianfit
 
 
-
-
-KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind='cubic')
+KNNGF = data1.kNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+                             n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
+                             lim=lim,energystep=energystep,kind='cubic')
 
 #ecalib/etrue pour ecal = 0
 h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]

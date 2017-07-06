@@ -119,9 +119,9 @@ class EnergyData:
         print("KNNGaussianCleaning - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianFit(self,n_neighbors=2000,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
+    def kNNGaussianFit(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
         begin = time.time()
-        calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim,energystep,kind)
+        calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim,energystep,kind)
         end = time.time()
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib

@@ -94,7 +94,9 @@ def getMeans2D(energy_x,energy_y,z):
     return mean_gaussianfit, sigma_gaussianfit
 
 
-KNNGFD = data1.kNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,lim=lim)
+KNNGFD = data1.kNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+                                    n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
+                                    lim=lim)
 classname = type(KNNGFD).__name__
 
 

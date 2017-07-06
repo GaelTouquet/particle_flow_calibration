@@ -119,6 +119,7 @@ def optimized_binwidth(x_input):
     Optimized binwidth with the Shimazaki and Shinomoto methods
     """
     x = x_input[np.invert(np.isnan(x_input))]
+    x = np.array(x)
     x_max = max(x)
     x_min = min(x)
     N_MIN = 1   #Minimum number of bins (integer)
@@ -143,9 +144,10 @@ def optimized_binwidth(x_input):
     return optD
 
 def binwidth_array(x_input,binwidth = 'optimized'):
-    x = x_input[np.invert(np.isnan(x_input))]
+    x = np.array(x_input)
+    x = x[np.invert(np.isnan(x))]
     if binwidth == 'optimized':
-        binwidth = optimized_binwidth(x_input)
+        binwidth = optimized_binwidth(x)
         
     return np.arange(min(x), max(x) + binwidth, binwidth)
 

@@ -142,7 +142,9 @@ class KNNGaussianFit:
     for ecal != 0
 
     """
-    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
+                 n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
+                 algorithm='auto',lim=-1,energystep = 1,kind='cubic'):
         """
         Parameters
         ----------
@@ -155,8 +157,13 @@ class KNNGaussianFit:
         true_train : array-like
         true value to train the calibration
 
-        n_neighbors: int
+        n_neighbors_ecal_eq_0: int
         Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
 
         algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
         Algorithm used to compute the nearest neighbors:
@@ -182,7 +189,8 @@ class KNNGaussianFit:
 
         """
 
-        self.n_neighbors = n_neighbors
+        self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
+        self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
         self.kind=kind
         self.evaluatedPoint_hcal_ecal_eq_0 = []
@@ -214,8 +222,9 @@ class KNNGaussianFit:
 
 
         #Case ecal == 0
-        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_eq_0, algorithm=algorithm)
         y = self.hcal_train[self.ecal_train == 0]
+        self.hcal_train_ecal_eq_0_min = min(y)
         z = self.true_train[self.ecal_train == 0]
         self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(y)))
 
@@ -223,7 +232,9 @@ class KNNGaussianFit:
             # the neighbours of the point (ecal,hcal) = (0,h)
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = h)
             dist = dist[0]
-            ind = ind[0] 
+            ind = ind[0]
+            dlim = h-self.hcal_train_ecal_eq_0_min + 0.1
+            ind = ind[dist <= dlim]
             true = z[ind]
             hcal = y[ind]
             binwidth = 1
@@ -290,7 +301,7 @@ class KNNGaussianFit:
 
 
         # Case ecal != 0
-        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_neq_0, algorithm=algorithm)
         x = self.ecal_train[self.ecal_train != 0]
         y = self.hcal_train[self.ecal_train != 0]
         z = self.true_train[self.ecal_train != 0]
