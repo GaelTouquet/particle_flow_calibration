@@ -8,12 +8,12 @@ Script to understand how does KNNGF works.
 """
 
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
 import numpy as np
+import pfcalibration.usualplots as usplt
 from pfcalibration.tools import importPickle, savefig
 from pfcalibration.tools import gaussian_fit, gaussian_param, binwidth_array
-from sklearn import neighbors
 import math
+from sklearn import neighbors
 
 
 # file to save the pictures
@@ -36,38 +36,13 @@ n_neighbors_ecal_eq_0=2000
 n_neighbors_ecal_neq_0=200
 energystep = 1
 
-def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
-    ind  = np.invert(np.isnan(y))
-    y = y[ind]
-    energy_x = energy_x[ind]
-
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=1000)
-    neighborhood.fit(np.transpose(np.matrix(energy_x)))
-    step = 0.1
-    ener = np.arange(min(energy_x),max(energy_x),step)
-    sigma_gaussianfit = []
-    mean_gaussianfit = []
-    means = []
-    energy = []
-    reducedChi2 = []
-    for e in ener:
-        dist, ind = neighborhood.kneighbors(X = e)
-        y_ind = y[ind][np.invert(np.isnan(y[ind]))]
-        params,reduced = gaussian_fit(y_ind,binwidth = 0.1,giveReducedChi2 = True,reducedChi2Max = 10)
-        if not(math.isnan(params[1])):
-            means.append(np.mean(y_ind))
-            sigma_gaussianfit.append(params[0])
-            mean_gaussianfit.append(params[1])
-            energy.append(e)
-            reducedChi2.append(reduced)
-    return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
 
 def getMeans2D(energy_x,energy_y,z):
     ind  = np.invert(np.isnan(z))
     z = z[ind]
     energy_x = energy_x[ind]
     energy_y = energy_y[ind]
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=n_neighbors_ecal_neq_0)
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=250)
     neighborhood.fit(np.transpose(np.matrix([energy_x,energy_y])))
     step = 0.5
     ener_x = np.arange(0,lim+step,step)
@@ -96,11 +71,28 @@ def getMeans2D(energy_x,energy_y,z):
         sigma_gaussianfit.append(line_sigma)
     return mean_gaussianfit, sigma_gaussianfit
 
-
 KNNGF = data1.kNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep=energystep,kind='cubic')
 classname = type(KNNGF).__name__
+
+#courbe de calibration pour ecal = 0
+fig = plt.figure(figsize=(10,4))
+usplt.plotCalibrationCurve(KNNGF)
+#plt.show()
+savefig(fig,directory,classname+"calibration.png")
+
+#ecalib/true in function of etrue
+fig = plt.figure(figsize=(10,4))
+usplt.ecalib_over_etrue_functionof_etrue(KNNGF,data2)
+#plt.show()
+savefig(fig,directory,classname+"ecalib_over_etrue.png")
+
+#histogram of ecalib and etrue
+fig = plt.figure(figsize=(10,8))
+usplt.hist_ecalib(KNNGF,data2)
+savefig(fig,directory,classname+"histograms_ecalib_etrue.png")
+
 
 #chi2 for each point of the calibration
 hcal_ecal_eq_0 = KNNGF.evaluatedPoint_hcal_ecal_eq_0
@@ -144,7 +136,7 @@ plt.tight_layout()
 plt.show()
 savefig(fig,directory,classname+"chi2_calib.png")
 
-#quelques histogrammes
+# some histograms
 i1 = int(len(KNNGF.evaluatedPoint_hcal_ecal_eq_0)/2)
 i2 = int(len(KNNGF.evaluatedPoint_hcal)/5)
 e1 = 0
@@ -177,166 +169,102 @@ plt.tight_layout()
 plt.show()
 savefig(fig,directory,classname+"hist_calib.png")
 
-#courbe de calibration pour ecal = 0
-hcal_train = KNNGF.hcal_train[KNNGF.ecal_train == 0]
-true_train = KNNGF.true_train[KNNGF.ecal_train == 0]
-h = np.arange(min(hcal_train),lim,0.1)
-e = np.zeros(len(h))
-t = KNNGF.predict(e,h)
-fig = plt.figure(figsize=(10,4))
-gs = gridspec.GridSpec(1, 2, width_ratios=[3, 1]) 
-plt.subplot(gs[0])
-plt.plot(hcal_train,true_train,'.',markersize=1)
-plt.plot(h,t,lw=2)
-plt.xlabel(r"$h_{cal}$",fontsize=12)
-plt.ylabel(r"$e_{true}$",fontsize=12)
-plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=12)
-plt.axis([0,max(h),0,max(t)])
-plt.subplot(gs[1])
-plt.plot(hcal_train,true_train,'.',markersize=1)
-plt.plot(h,t,lw=2)
-plt.xlabel(r"$h_{cal}$",fontsize=12)
-plt.ylabel(r"$e_{true}$",fontsize=12)
-plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=12)
-plt.axis([0,12,0,15])
-plt.tight_layout()
-plt.show()
-savefig(fig,directory,classname+"calibration.png")
-
-#ecalib/etrue 
-h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
-t = data2.true[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
-e = np.zeros(len(h))
-h2 = data2.hcal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-t2 = data2.true[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-e2 = data2.ecal[np.logical_and(data2.ecal != 0,data2.ecal+data2.hcal < lim)]
-
-c = KNNGF.predict(e,h) 
-r = c/t
-c2 = KNNGF.predict(e2,h2)
-r2 = c2/t2
-
-energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r)
-energy2, means2, mean_gaussianfit2, sigma_gaussianfit2, reducedChi22 = getMeans(t2,r2)
-
-fig = plt.figure(figsize=(10,4))
-plt.subplot(1,2,1)
-plt.plot(t,r,'.',markersize=1)
-plt.axis([0,200,0,2])
-plt.plot(energy,mean_gaussianfit,lw=3)
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=12)
-plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=12)
-plt.subplot(1,2,2)
-plt.plot(t2,r2,'.',markersize=1)
-plt.axis([0,200,0,2])
-plt.plot(energy2,mean_gaussianfit2,lw=3)
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=12)
-plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=12)
-plt.tight_layout()
-plt.show()
-savefig(fig,directory,classname+"ecalib_over_etrue.png")
-
-
-#histogram of ecalib and etrue
-fig = plt.figure(figsize=(10,8))
-plt.subplot(2,2,1)
-plt.hist(c,binwidth_array(c))
-plt.xlabel(r"$e_{calib}$",fontsize=12)
-plt.title(r"$e_{calib}$ for $e_{cal} = 0$",fontsize=12)
-plt.subplot(2,2,2)
-c2 = c2[np.invert(np.isnan(c2))]
-plt.hist(c2,binwidth_array(c2))
-plt.xlabel(r"$e_{calib}$",fontsize=12)
-plt.title(r"$e_{calib}$ for $e_{cal} \neq 0$",fontsize=12)
-plt.subplot(2,2,3)
-t = t[np.invert(np.isnan(t))]
-plt.hist(t,binwidth_array(t))
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.title(r"$e_{true}$ for $e_{cal} = 0$",fontsize=12)
-plt.subplot(2,2,4)
-t2 = t2[np.invert(np.isnan(t2))]
-plt.hist(t2,binwidth_array(t2))
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.title(r"$e_{true}$ for $e_{cal} \neq 0$",fontsize=12)
-plt.tight_layout()
-plt.show()
-savefig(fig,directory,classname+"histograms_ecalib_etrue.png")
-
-
-
-fig = plt.figure(figsize=(10,12))
-#mean
-ax = plt.subplot(4,1,1)
-plt.plot(energy,mean_gaussianfit,lw=3, label = r"$e_{cal} = 0$")
-plt.plot(energy2,mean_gaussianfit2,lw=3, label = r"$e_{cal} \neq 0$")
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=12)
-plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=12)
-plt.legend(loc='upper right')
-major_ticks = np.arange(0, 200, 50)
-minor_ticks = np.arange(0, 200, 10)
-ax.set_xticks(major_ticks)
-ax.set_xticks(minor_ticks, minor=True)
-# and a corresponding grid
-ax.grid(which='both')
-# or if you want differnet settings for the grids:
-ax.grid(which='minor', alpha=0.2)
-ax.grid(which='major', alpha=1)
-#sigma
-ax = plt.subplot(4,1,2)
-plt.plot(energy,sigma_gaussianfit,lw=3, label = r"$e_{cal} = 0$")
-plt.plot(energy2,sigma_gaussianfit2,lw=3, label = r"$e_{cal} \neq 0$")
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.ylabel(r"$\sigma (e_{calib}/e_{true})$",fontsize=12)
-plt.legend(loc='upper right')
-major_ticks = np.arange(0, 200, 50)
-minor_ticks = np.arange(0, 200, 10)
-ax.set_xticks(major_ticks)
-ax.set_xticks(minor_ticks, minor=True)
-# and a corresponding grid
-ax.grid(which='both')
-# or if you want differnet settings for the grids:
-ax.grid(which='minor', alpha=0.2)
-ax.grid(which='major', alpha=1)
-#chi2
-ax = plt.subplot(4,1,3)
-plt.plot(energy,reducedChi2,lw=3, label = r"$e_{cal} = 0$")
-plt.plot(energy2,reducedChi22,lw=3, label = r"$e_{cal} \neq 0$")
-plt.xlabel(r"$e_{true}$",fontsize=12)
-plt.ylabel(r"$\chi^2/df$",fontsize=12)
-plt.legend(loc='upper right')
-major_ticks = np.arange(0, 200, 50)
-minor_ticks = np.arange(0, 200, 10)
-ax.set_xticks(major_ticks)
-ax.set_xticks(minor_ticks, minor=True)
-# and a corresponding grid
-ax.grid(which='both')
-# or if you want differnet settings for the grids:
-ax.grid(which='minor', alpha=0.2)
-ax.grid(which='major', alpha=1)
-#hist chi2/df for ecal == 0
-ax = plt.subplot(4,2,7)
-x = np.array(reducedChi2)
-x = x[np.invert(np.isnan(x))]
-bins = binwidth_array(x,binwidth = 0.5)
-plt.hist(x,bins,label = r"$e_{cal} = 0$")
-plt.xlabel(r"$\chi^2/df$",fontsize=12)
-plt.legend(loc='upper right')
-#hist chi2/df for ecal != 0
-ax = plt.subplot(4,2,8)
-x = np.array(reducedChi22)
-x = x[np.invert(np.isnan(x))]
-bins = binwidth_array(x,binwidth = 0.5)
-plt.hist(x,bins,label = r"$e_{cal} \neq 0$")
-plt.xlabel(r"$\chi^2/df$",fontsize=12)
-plt.legend(loc='upper right')
-plt.tight_layout()
-plt.show()
-savefig(fig,directory,classname+"ecalib_over_etrue_curve.png")
-
-
+##ecalib/etrue in function of ecal,hcal
+#fig = plt.figure(figsize=(10,5))
+#plt.subplot(1,2,1)
+#plt.title(classname+r" $e_{cal} = 0$",fontsize = 15)
+#plt.plot(h,r,'.',markersize=1,label=r"$e_{calib}/e_{true}$")
+#plt.plot([0,200],[1,1],'--',lw = 3, color = "yellow")
+#plt.ylabel(r"$e_{calib}/e_{true}$",fontsize = 15)
+#plt.xlabel(r"$h_{cal}$",fontsize = 15)
+#plt.axis([0,lim,0,2])
+#energy_ecal_eq_0, means_ecal_eq_0, mean_gaussianfit_ecal_eq_0, sigma_gaussianfit_ecal_eq_0, reducedChi2_ecal_eq_0 = getMeans(h,r)
+#plt.plot(energy_ecal_eq_0,mean_gaussianfit_ecal_eq_0,lw=3,label="mean (gaussian fit)")
+#plt.plot(energy_ecal_eq_0,means_ecal_eq_0,lw=3,label="mean")
+#plt.legend(loc='upper right')
+#plt.subplot(1,2,2)
+#Z_mean, Z_sigma = getMeans2D(e2,h2,r2)
+#im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,lim,0,lim), origin='lower',vmin=0.9,vmax=1.1)
+#plt.colorbar(im)
+#plt.title(r" $e_{calib}/e_{true}$ for $e_{cal} \neq 0$",fontsize = 15)
+#plt.xlabel(r"$e_{cal}$",fontsize = 15)
+#plt.ylabel(r"$h_{cal}$",fontsize = 15)
+#plt.tight_layout()
+#plt.show()
+#savefig(fig,directory,classname+"ecalib_over_etrue_functionof_ecal_hcal.png")
+#
+#
+#fig = plt.figure(figsize=(10,12))
+##mean
+#ax = plt.subplot(4,1,1)
+#plt.plot(energy,mean_gaussianfit,lw=3, label = r"$e_{cal} = 0$")
+#plt.plot(energy2,mean_gaussianfit2,lw=3, label = r"$e_{cal} \neq 0$")
+#plt.xlabel(r"$e_{true}$",fontsize=12)
+#plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=12)
+#plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=12)
+#plt.legend(loc='upper right')
+#major_ticks = np.arange(0, 200, 50)
+#minor_ticks = np.arange(0, 200, 10)
+#ax.set_xticks(major_ticks)
+#ax.set_xticks(minor_ticks, minor=True)
+## and a corresponding grid
+#ax.grid(which='both')
+## or if you want differnet settings for the grids:
+#ax.grid(which='minor', alpha=0.2)
+#ax.grid(which='major', alpha=1)
+##sigma
+#ax = plt.subplot(4,1,2)
+#plt.plot(energy,sigma_gaussianfit,lw=3, label = r"$e_{cal} = 0$")
+#plt.plot(energy2,sigma_gaussianfit2,lw=3, label = r"$e_{cal} \neq 0$")
+#plt.xlabel(r"$e_{true}$",fontsize=12)
+#plt.ylabel(r"$\sigma (e_{calib}/e_{true})$",fontsize=12)
+#plt.legend(loc='upper right')
+#major_ticks = np.arange(0, 200, 50)
+#minor_ticks = np.arange(0, 200, 10)
+#ax.set_xticks(major_ticks)
+#ax.set_xticks(minor_ticks, minor=True)
+## and a corresponding grid
+#ax.grid(which='both')
+## or if you want differnet settings for the grids:
+#ax.grid(which='minor', alpha=0.2)
+#ax.grid(which='major', alpha=1)
+##chi2
+#ax = plt.subplot(4,1,3)
+#plt.plot(energy,reducedChi2,lw=3, label = r"$e_{cal} = 0$")
+#plt.plot(energy2,reducedChi22,lw=3, label = r"$e_{cal} \neq 0$")
+#plt.xlabel(r"$e_{true}$",fontsize=12)
+#plt.ylabel(r"$\chi^2/df$",fontsize=12)
+#plt.legend(loc='upper right')
+#major_ticks = np.arange(0, 200, 50)
+#minor_ticks = np.arange(0, 200, 10)
+#ax.set_xticks(major_ticks)
+#ax.set_xticks(minor_ticks, minor=True)
+## and a corresponding grid
+#ax.grid(which='both')
+## or if you want differnet settings for the grids:
+#ax.grid(which='minor', alpha=0.2)
+#ax.grid(which='major', alpha=1)
+##hist chi2/df for ecal == 0
+#ax = plt.subplot(4,2,7)
+#x = np.array(reducedChi2)
+#x = x[np.invert(np.isnan(x))]
+#bins = binwidth_array(x,binwidth = 0.5)
+#plt.hist(x,bins,label = r"$e_{cal} = 0$")
+#plt.xlabel(r"$\chi^2/df$",fontsize=12)
+#plt.legend(loc='upper right')
+##hist chi2/df for ecal != 0
+#ax = plt.subplot(4,2,8)
+#x = np.array(reducedChi22)
+#x = x[np.invert(np.isnan(x))]
+#bins = binwidth_array(x,binwidth = 0.5)
+#plt.hist(x,bins,label = r"$e_{cal} \neq 0$")
+#plt.xlabel(r"$\chi^2/df$",fontsize=12)
+#plt.legend(loc='upper right')
+#plt.tight_layout()
+#plt.show()
+#savefig(fig,directory,classname+"ecalib_over_etrue_curve.png")
+#
+#
 #NEIGHBORS
 fig = plt.figure(figsize=(10,4))
 #neigh for ecal == 0
@@ -345,6 +273,8 @@ KNNGF = data1.kNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              lim=lim,energystep=30,kind='cubic')
 neigh_hcal_ecal_eq_0 = KNNGF.evaluatedPoint_neighbours_hcal_ecal_eq_0
 neigh_true_ecal_eq_0 = KNNGF.evaluatedPoint_neighbours_true_ecal_eq_0
+hcal_train = KNNGF.hcal_train[KNNGF.ecal_train == 0]
+true_train = KNNGF.true_train[KNNGF.ecal_train == 0]
 plt.subplot(1,2,1)
 plt.plot(hcal_train,true_train,'.',markersize=1)
 plt.xlabel(r"$h_{cal}$",fontsize=12)

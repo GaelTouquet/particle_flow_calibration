@@ -33,7 +33,7 @@ n_neighbors_ecal_eq_0=2000
 n_neighbors_ecal_neq_0=200
 
 
-def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
+def getMeans(energy_x,y,n_neighbors):
     ind  = np.invert(np.isnan(y))
     y = y[ind]
     energy_x = energy_x[ind]
