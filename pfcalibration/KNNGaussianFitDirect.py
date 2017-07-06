@@ -80,7 +80,7 @@ class KNNGaussianFitDirect:
 
     """
 
-    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1):
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1):
         """
         Parameters
         ----------
@@ -93,8 +93,13 @@ class KNNGaussianFitDirect:
         true_train : array-like
         true value to train the calibration
 
-        n_neighbors: int
+        n_neighbors_ecal_eq_0: int
         Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
 
         algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
         Algorithm used to compute the nearest neighbors:
@@ -109,31 +114,37 @@ class KNNGaussianFitDirect:
         if lim = - 1, there is no limit
         """
 
-        self.n_neighbors = n_neighbors
+        self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
+        self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
 
         # we reject calibration points with ecal + hcal > lim
         if lim == -1:
             lim = max(max(ecal_train),max(hcal_train))
         self.lim = lim
-        self.ecal_train = ecal_train[ecal_train+hcal_train<=lim]
-        self.hcal_train = hcal_train[ecal_train+hcal_train<=lim]
-        self.true_train = true_train[ecal_train+hcal_train<=lim]
+        self.ecal_train = ecal_train
+        self.hcal_train = hcal_train
+        self.true_train = true_train
 
 
         #Case ecal == 0
-        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_eq_0, algorithm=algorithm)
         self.hcal_train_ecal_eq_0 = self.hcal_train[self.ecal_train == 0]
+        self.hcal_train_ecal_eq_0_min = min(self.hcal_train_ecal_eq_0)
         self.true_train_ecal_eq_0 = self.true_train[self.ecal_train == 0]
         self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(self.hcal_train_ecal_eq_0)))
+        
 
         # Case ecal != 0
-        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_neq_0, algorithm=algorithm)
         self.ecal_train_ecal_neq_0 = self.ecal_train[self.ecal_train != 0]
         self.hcal_train_ecal_neq_0 = self.hcal_train[self.ecal_train != 0]
         self.true_train_ecal_neq_0 = self.true_train[self.ecal_train != 0]
+        self.hcal_train_ecal_neq_0_min = min(self.hcal_train_ecal_neq_0)
+        self.ecal_train_ecal_neq_0_min = min(self.ecal_train_ecal_neq_0)
         self.neigh_ecal_neq_0.fit(np.transpose(np.matrix([self.ecal_train_ecal_neq_0,self.hcal_train_ecal_neq_0])))
-
+        
+        
     def predict(self,e,h):
         """
         To predict the true energies thanks to couples of ecal, hcal
@@ -151,19 +162,23 @@ class KNNGaussianFitDirect:
         def predictSingleValue(ecal,hcal):
             if ecal+hcal > self.lim:
                 return math.nan
-
+            reduced = math.nan
             if ecal == 0:
                 dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
-                true = self.true_train_ecal_eq_0[ind][0]
-                hcal = self.hcal_train_ecal_eq_0[ind][0]
+                dist = dist[0]
+                ind = ind[0]
+                dlim = hcal-self.hcal_train_ecal_eq_0_min + 0.1
+                ind = ind[dist <= dlim]
+
+                true_neigh = self.true_train_ecal_eq_0[ind]
                 binwidth = 1
-                nbins = np.arange(min(true), max(true) + binwidth, binwidth)
+                nbins = np.arange(min(true_neigh), max(true_neigh) + binwidth, binwidth)
 
                 with warnings.catch_warnings():
                     try:
                         #we create the histogram
                         warnings.simplefilter("error", OptimizeWarning)
-                        entries, bin_edges = np.histogram(true,bins=nbins)
+                        entries, bin_edges = np.histogram(true_neigh,bins=nbins)
                         bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
                         bin_middles = bin_middles[entries != 0]
                         entries = entries[entries != 0]
@@ -177,62 +192,67 @@ class KNNGaussianFitDirect:
                         chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
                         reduced = chi2/(len(bin_middles)-len(parameters))
 
-                        if reduced > 5:
+                        if reduced > 10:
                             raise OptimizeWarning
 
                     except (OptimizeWarning, RuntimeError):
                         parameters = p0
                         res = parameters[1]
-                        print("calibration issue for ecal = 0, hcal = ",h,"reduced chi2 = ",reduced)
+                        print("calibration issue for ecal = 0, hcal = ",hcal,"reduced chi2 = ",reduced)
                     finally:
                         return res
             else:
                 dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])
-                true = self.true_train_ecal_neq_0[ind][0]
-                ecal = self.ecal_train_ecal_neq_0[ind][0]
-                hcal = self.hcal_train_ecal_neq_0[ind][0]
+                dist = dist[0]
+                ind = ind[0]
+#                dlim = min(hcal-self.ecal_train_ecal_neq_0_min ,hcal-self.hcal_train_ecal_neq_0_min)
+#                true_neigh = self.true_train_ecal_neq_0[ind[dist <= dlim]]
+                true_neigh = self.true_train_ecal_neq_0[ind]
                 binwidth = 1
-                nbins = np.arange(min(true), max(true) + binwidth, binwidth)
+                nbins = np.arange(min(true_neigh), max(true_neigh) + binwidth, binwidth)
+                
+                try:
+                    #we create the histogram
+                    warnings.simplefilter("error", OptimizeWarning)
+                    entries, bin_edges = np.histogram(true_neigh,bins=nbins)
+                    bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
+                    bin_middles = bin_middles[entries != 0]
+                    entries = entries[entries != 0]
 
-                with warnings.catch_warnings():
-                    try:
-                        #we create the histogram
-                        warnings.simplefilter("error", OptimizeWarning)
-                        entries, bin_edges = np.histogram(true,bins=nbins)
-                        bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
-                        bin_middles = bin_middles[entries != 0]
-                        entries = entries[entries != 0]
+                    # we fit the histogram
+                    p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
+                    error = np.sqrt(entries)
+                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
+                    res = parameters[1]
+                    
+                    chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
+                    reduced = chi2/(len(bin_middles)-len(parameters))
 
-                        # we fit the histogram
-                        p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
-                        error = np.sqrt(entries)
-                        parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
-                        res = parameters[1]
-
-                        chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
-                        reduced = chi2/(len(bin_middles)-len(parameters))
-
-                        if reduced > 5:
-                            raise OptimizeWarning
-
-                    except (OptimizeWarning, RuntimeError):
-                        parameters = p0
-                        res = parameters[1]
-                        print("calibration issue for ecal = ",e,", hcal = ",h,"reduced chi2 = ",reduced)
-                    finally:
-                        return res
+                    if reduced > 10:
+                        raise OptimizeWarning
+                except (OptimizeWarning, RuntimeError):                            
+                    parameters = p0
+                    res = parameters[1]
+                    print("calibration issue for ecal = ",ecal,", hcal = ",hcal,"reduced chi2 = ",reduced,"remained neighbours = ",len(true_neigh))
+                finally:
+                    return res
 
         vect = np.vectorize(predictSingleValue)
+        
         return vect(e,h)
     
     def neighborhoodSingleValue(self,ecal,hcal):
         if ecal+hcal > self.lim:
-            return math.nan
+            return [[],[],[]]
 
         if ecal == 0:
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
-            true_neigh = self.true_train_ecal_eq_0[ind][0]
-            hcal_neigh = self.hcal_train_ecal_eq_0[ind][0]
+            dist = dist[0]
+            ind = ind[0]
+            dlim = hcal-self.hcal_train_ecal_eq_0_min + 0.1
+            ind = ind[dist <= dlim]
+            true_neigh = self.true_train_ecal_eq_0[ind]
+            hcal_neigh = self.hcal_train_ecal_eq_0[ind]
             ecal_neigh = np.zeros(len(hcal_neigh))
         else:
             dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])

@@ -119,9 +119,10 @@ def optimized_binwidth(x_input):
     Optimized binwidth with the Shimazaki and Shinomoto methods
     """
     x = x_input[np.invert(np.isnan(x_input))]
+    x = np.array(x)
     x_max = max(x)
     x_min = min(x)
-    N_MIN = 4   #Minimum number of bins (integer)
+    N_MIN = 1   #Minimum number of bins (integer)
                 #N_MIN must be more than 1 (N_MIN > 1).
     N_MAX = 200  #Maximum number of bins (integer)
     N = range(N_MIN,N_MAX) # #of Bins
@@ -143,16 +144,17 @@ def optimized_binwidth(x_input):
     return optD
 
 def binwidth_array(x_input,binwidth = 'optimized'):
-    x = x_input[np.invert(np.isnan(x_input))]
+    x = np.array(x_input)
+    x = x[np.invert(np.isnan(x))]
     if binwidth == 'optimized':
-        binwidth = optimized_binwidth(x_input)
+        binwidth = optimized_binwidth(x)
         
     return np.arange(min(x), max(x) + binwidth, binwidth)
 
 
 
 
-def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
+def gaussian_fit(x_input,binwidth = 'optimized',giveReducedChi2 = False, reducedChi2Max = 5,info=False):
 
     with warnings.catch_warnings():
         try:
@@ -184,28 +186,25 @@ def gaussian_fit(x_input,binwidth = 'optimized',info=False,giveChi2 = False):
                 print("parameters :",parameters)
                 print("diag of cov matrix :",crit)
                 print("reduced chi2:",reduced)
-            abort = False
 
-            if reduced > 5:
-                abort = True
-            if abort:
-                if giveChi2:
+            if reduced > reducedChi2Max:
+                if giveReducedChi2:
                     return[math.nan,math.nan,math.nan], math.nan
                 else:
                     return [math.nan,math.nan,math.nan]
             #sigma has to be > 0
             parameters[0] = np.abs(parameters[0])
-            if giveChi2:
+            if giveReducedChi2:
                 return parameters, reduced
             else:
                 return parameters
         except:
-            if giveChi2:
+            if giveReducedChi2:
                 return[math.nan,math.nan,math.nan], math.nan
             else:
                 return [math.nan,math.nan,math.nan]
 
-def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2 = False):
+def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveReducedChi2 = False):
     with warnings.catch_warnings():
         try:
             #we create the histogram
@@ -250,18 +249,18 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveChi2
                 plt.plot(xplot,gaussian_param(xplot,*parameters),lw=3)
                 plt.show()
                 fig.savefig(filename,bbox_inches='tight')
-                if giveChi2:
+                if giveReducedChi2:
                     return[math.nan,math.nan,math.nan], math.nan
                 else:
                     return [math.nan,math.nan,math.nan]
             #sigma has to be > 0
             parameters[0] = np.abs(parameters[0])
-            if giveChi2:
+            if giveReducedChi2:
                 return parameters, reduced
             else:
                 return parameters
         except:
-            if giveChi2:
+            if giveReducedChi2:
                 return[math.nan,math.nan,math.nan], math.nan
             else:
                 return [math.nan,math.nan,math.nan]

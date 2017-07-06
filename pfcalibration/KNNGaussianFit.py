@@ -142,7 +142,9 @@ class KNNGaussianFit:
     for ecal != 0
 
     """
-    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
+                 n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
+                 algorithm='auto',lim=-1,energystep = 1,kind='cubic'):
         """
         Parameters
         ----------
@@ -155,8 +157,13 @@ class KNNGaussianFit:
         true_train : array-like
         true value to train the calibration
 
-        n_neighbors: int
+        n_neighbors_ecal_eq_0: int
         Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
 
         algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
         Algorithm used to compute the nearest neighbors:
@@ -182,7 +189,8 @@ class KNNGaussianFit:
 
         """
 
-        self.n_neighbors = n_neighbors
+        self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
+        self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
         self.kind=kind
         self.evaluatedPoint_hcal_ecal_eq_0 = []
@@ -208,33 +216,41 @@ class KNNGaussianFit:
         if lim == -1:
             lim = max(max(ecal_train),max(hcal_train))
         self.lim = lim
-        self.ecal_train = ecal_train[ecal_train+hcal_train<=lim]
-        self.hcal_train = hcal_train[ecal_train+hcal_train<=lim]
-        self.true_train = true_train[ecal_train+hcal_train<=lim]
+        self.ecal_train = ecal_train
+        self.hcal_train = hcal_train
+        self.true_train = true_train
 
 
         #Case ecal == 0
-        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_eq_0, algorithm=algorithm)
         y = self.hcal_train[self.ecal_train == 0]
+        self.hcal_train_ecal_eq_0_min = min(y)
         z = self.true_train[self.ecal_train == 0]
         self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(y)))
 
         def forOnePoint_ecal_eq_0(h):
             # the neighbours of the point (ecal,hcal) = (0,h)
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = h)
-            true = z[ind][0]
-            hcal = y[ind][0]
+            dist = dist[0]
+            ind = ind[0]
+            dlim = h-self.hcal_train_ecal_eq_0_min + 0.1
+            ind = ind[dist <= dlim]
+            true = z[ind]
+            hcal = y[ind]
             binwidth = 1
-            nbins = np.arange(min(true), max(true) + binwidth, binwidth)
+            reduced = math.nan
             with warnings.catch_warnings():
                 try:
+                    if len(true) == 0:
+                        raise UserWarning
+                    nbins = np.arange(min(true), max(true) + binwidth, binwidth)
                     #we create the histogram
                     warnings.simplefilter("error", OptimizeWarning)
                     entries, bin_edges = np.histogram(true,bins=nbins)
                     bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
                     bin_middles = bin_middles[entries != 0]
                     entries = entries[entries != 0]
-                    reduced = math.nan
+                    
 
                     # we fit the histogram
                     p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
@@ -245,9 +261,14 @@ class KNNGaussianFit:
                     chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
                     reduced = chi2/(len(bin_middles)-len(parameters))
 
-                    if reduced > 5:
+                    if reduced > 10:
                         raise OptimizeWarning
-
+                except UserWarning:
+                    parameters = math.nan
+                    entries = math.nan
+                    res = math.nan
+                    bin_middles = math.nan
+                    print("calibration issue for ecal = 0, hcal = ",h,"reduced chi2 = ",reduced)
                 except (OptimizeWarning, RuntimeError):
                     parameters = p0
                     res = parameters[1]
@@ -280,7 +301,7 @@ class KNNGaussianFit:
 
 
         # Case ecal != 0
-        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_neq_0, algorithm=algorithm)
         x = self.ecal_train[self.ecal_train != 0]
         y = self.hcal_train[self.ecal_train != 0]
         z = self.true_train[self.ecal_train != 0]
@@ -313,7 +334,7 @@ class KNNGaussianFit:
                     chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
                     reduced = chi2/(len(bin_middles)-len(parameters))
 
-                    if reduced > 5:
+                    if reduced > 10:
                         raise OptimizeWarning
 
                 except (OptimizeWarning,RuntimeError):

@@ -112,23 +112,23 @@ class EnergyData:
         print("KNN - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianCleaning(self,n_neighbors=1,weights='gaussian',algorithm='auto',sigma=1,lim=-1,energystep = 5,kind='cubic',cut=2):
+    def kNNGaussianCleaning(self,n_neighbors=2000,weights='gaussian',algorithm='auto',sigma=1,lim=-1,energystep = 5,kind='cubic',cut=2):
         begin = time.time()
         calib = KNNGaussianCleaning(self.ecal,self.hcal,self.true,n_neighbors,weights,algorithm,sigma,lim,energystep,kind,cut)
         end = time.time()
         print("KNNGaussianCleaning - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianFit(self,n_neighbors=1,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
+    def kNNGaussianFit(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1,energystep = 3,kind='cubic'):
         begin = time.time()
-        calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim,energystep,kind)
+        calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim,energystep,kind)
         end = time.time()
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib
 
-    def kNNGaussianFitDirect(self,n_neighbors=1,algorithm='auto',lim=-1):
+    def kNNGaussianFitDirect(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1):
         begin = time.time()
-        calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors,algorithm,lim)
+        calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim)
         end = time.time()
         print("KNNGaussianFitDirect - Calibration made in",end-begin,"s")
         return calib
@@ -168,7 +168,25 @@ class EnergyData:
         data2 = EnergyData(np.array(true2),np.array(p2),np.array(ecal2),np.array(hcal2),np.array(eta2))
         return data1, data2
 
-
+    def oneOverTen(self):
+        """
+        To keep only one over ten particules
+        """
+        true1 = []
+        p1 = []
+        ecal1 = []
+        hcal1 = []
+        eta1 = []
+        for i in np.arange(len(self.ecal)):
+            if i%10 == 0:
+                true1.append(self.true[i])
+                p1.append(self.p[i])
+                ecal1.append(self.ecal[i])
+                hcal1.append(self.hcal[i])
+                eta1.append(self.eta[i])
+        data1 = EnergyData(np.array(true1),np.array(p1),np.array(ecal1),np.array(hcal1),np.array(eta1))
+        return data1
+    
     def mergeWith(self,another):
         """
         Fusionne les données de self et de another
