@@ -10,7 +10,7 @@ import math
 from matplotlib import gridspec
 import matplotlib.pyplot as plt
 from sklearn import neighbors
-from pfcalibration.tools import gaussian_fit, gaussian_param, binwidth_array
+from pfcalibration.tools import gaussian_fit, binwidth_array
 
 
 def plotCalibrationCurve(calib):

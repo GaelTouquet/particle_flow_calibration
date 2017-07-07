@@ -14,7 +14,9 @@ class KNN:
     """
 
     """
-    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,weights='gaussian',algorithm='auto',sigma=1,lim=-1):
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
+                 n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
+                 weights='gaussian',algorithm='auto',sigma=1,lim=-1):
 
 
         if weights == 'gaussian':
@@ -24,7 +26,8 @@ class KNN:
         else:
             self.weights = weights
 
-        self.n_neighbors = n_neighbors
+        self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
+        self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
         self.sigma = sigma
         self.lim = lim
@@ -44,7 +47,7 @@ class KNN:
         Y_train = true_train[ecal_train!=0]
         self.Y_train1 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        regr1 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors, weights=self.weights, algorithm=self.algorithm)
+        regr1 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_neq_0, weights=self.weights, algorithm=self.algorithm)
         regr1.fit(X_train,Y_train)
 
         #case ecal == 0
@@ -54,7 +57,7 @@ class KNN:
         Y_train = true_train[ecal_train==0]
         self.Y_train2 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        regr2 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors, weights=self.weights, algorithm=algorithm)
+        regr2 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_eq_0, weights=self.weights, algorithm=algorithm)
         regr2.fit(X_train,Y_train)
 
         self.regr1 = regr1

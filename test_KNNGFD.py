@@ -31,7 +31,7 @@ n_neighbors_ecal_eq_0=2000
 n_neighbors_ecal_neq_0=200
 
 
-KNNGFD = data1.kNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+KNNGFD = data1.KNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                                     n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                                     lim=lim)
 classname = type(KNNGFD).__name__

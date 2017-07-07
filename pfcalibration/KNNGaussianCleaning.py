@@ -171,7 +171,10 @@ class KNNGaussianCleaning:
     evaluatedPoint_true_max : array
     true energy corresponding to mu + cut * sigma, for ecal != 0
     """
-    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],n_neighbors=1,weights='gaussian',algorithm='auto',sigma=1,lim=-1,energystep = 3,kind='cubic',cut=2):
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
+                 n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
+                 weights='gaussian',algorithm='auto',sigma=1,lim=-1,
+                 energystep = 1,kind='cubic',cut=2):
         """
         Parameters
         ----------
@@ -231,7 +234,8 @@ class KNNGaussianCleaning:
         of the gaussian fit)
         """
 
-        self.n_neighbors = n_neighbors
+        self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
+        self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
         self.sigma = sigma
         self.kind=kind
@@ -277,7 +281,7 @@ class KNNGaussianCleaning:
 
 
         #Case ecal == 0
-        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors_ecal_eq_0, algorithm=algorithm)
         y = self.hcal_train[self.ecal_train == 0]
         z = self.true_train[self.ecal_train == 0]
         self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(y)))
@@ -348,7 +352,7 @@ class KNNGaussianCleaning:
 
 
         # Case ecal != 0
-        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors, algorithm=algorithm)
+        self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=n_neighbors_ecal_neq_0, algorithm=algorithm)
         x = self.ecal_train[self.ecal_train != 0]
         y = self.hcal_train[self.ecal_train != 0]
         z = self.true_train[self.ecal_train != 0]

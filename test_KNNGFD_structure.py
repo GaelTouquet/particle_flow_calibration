@@ -55,7 +55,7 @@ def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
     return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
 
 
-KNNGFD = data1.kNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,lim=lim)
+KNNGFD = data1.KNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,lim=lim)
 
 #ecalib/etrue pour ecal = 0
 h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]

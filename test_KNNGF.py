@@ -37,7 +37,7 @@ energystep = 1
 
 
 
-KNNGF = data1.kNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep=energystep,kind='cubic')
 classname = type(KNNGF).__name__

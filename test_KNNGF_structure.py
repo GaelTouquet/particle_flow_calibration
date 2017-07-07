@@ -8,10 +8,9 @@ Script to understand how does KNNGF works.
 """
 
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
 import numpy as np
 from pfcalibration.tools import importPickle, savefig
-from pfcalibration.tools import gaussian_fit, gaussian_param, binwidth_array
+from pfcalibration.tools import gaussian_fit, binwidth_array
 from sklearn import neighbors
 import math
 
@@ -97,7 +96,7 @@ def getMeans2D(energy_x,energy_y,z):
     return mean_gaussianfit, sigma_gaussianfit
 
 
-KNNGF = data1.kNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep=energystep,kind='cubic')
 
