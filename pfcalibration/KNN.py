@@ -16,7 +16,7 @@ class KNN:
     """
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
                  n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
-                 weights='gaussian',algorithm='auto',sigma=1,lim=-1):
+                 weights='gaussian',algorithm='auto',sigma=5,lim=-1):
 
 
         if weights == 'gaussian':
@@ -34,9 +34,9 @@ class KNN:
 
         if lim == -1:
             lim = max(max(ecal_train),max(hcal_train))
-        self.ecal_train = ecal_train[ecal_train+hcal_train<=lim]
-        self.hcal_train = hcal_train[ecal_train+hcal_train<=lim]
-        self.true_train = true_train[ecal_train+hcal_train<=lim]
+        self.ecal_train = ecal_train
+        self.hcal_train = hcal_train
+        self.true_train = true_train
 
         self.recalibrated = False
 
