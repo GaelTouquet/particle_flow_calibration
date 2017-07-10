@@ -34,7 +34,7 @@ data1,data2 = data1.splitInTwo()
 # parameters of the calibration
 lim = 150                   # if ecal + hcal > lim, ecalib = math.nan
 n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
-n_neighbors_ecal_neq_0=1000  # number of neighbors for ecal ≠ 0
+n_neighbors_ecal_neq_0=500  # number of neighbors for ecal ≠ 0
 energystep = 1
 # We create the calibration
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
@@ -176,7 +176,7 @@ plt.axis([0,lim,0,lim])
 #neigh for ecal != 0
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
-                             lim=lim,energystep=10,kind='cubic')
+                             lim=lim,energystep=14,kind='cubic')
 neigh_ecal_ecal_neq_0 = np.array(KNNGF.evaluatedPoint_neighbours_ecal)
 neigh_ecal_ecal_neq_0 = neigh_ecal_ecal_neq_0[np.array(KNNGF.evaluatedPoint_ecal)+np.array(KNNGF.evaluatedPoint_hcal)<lim]
 neigh_hcal_ecal_neq_0 = np.array(KNNGF.evaluatedPoint_neighbours_hcal)
