@@ -44,10 +44,30 @@ data1,data2 = data1.splitInTwo()
 # parameters of the calibration
 lim = 150                   # if ecal + hcal > lim, ecalib = math.nan
 n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
-n_neighbors_ecal_neq_0=200  # number of neighbors for ecal ≠ 0
+n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
 energystep = 1
 # We create the calibration
-KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep=energystep,kind='cubic')
+```
+
+## To use a calibration
+### Example with KNNGF method
+```python
+# with one point
+ecal = 60
+hcal = 60
+ecalib = calibration.predict(ecal,hcal)
+
+# with a numpy array
+ecal = np.arange(0,lim,1)
+hcal = np.arange(0,lim,1)
+ecalib = calibration.predict(ecal,hcal)
+
+# with a meshgrid
+ecal = np.arange(0,lim,1)
+hcal = np.arange(0,lim,1)
+ecal,hcal = np.meshgrid(ecal,hcal)
+ecalib = calibration.predict(ecal,hcal)
 ```
