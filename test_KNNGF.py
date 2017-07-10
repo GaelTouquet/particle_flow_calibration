@@ -45,18 +45,19 @@ classname = type(KNNGF).__name__
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(KNNGF)
-#plt.show()
+plt.show()
 savefig(fig,directory,classname+"_calibration.png")
 
 #ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(KNNGF,data2)
-#plt.show()
+plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
 
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,8))
 usplt.hist_ecalib(KNNGF,data2)
+plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
 
 #ecalib/etrue in function of ecal,hcal
