@@ -96,6 +96,7 @@ usplt.plotCalibrationCurve(calibration)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
 ```
+![optional caption text](img_index/KNNGaussianFit_calibration.png)
 
 ```python
 #ecalib/true in function of etrue
