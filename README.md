@@ -11,13 +11,17 @@ For this you have to use the program '`convertRootFile.py`'
 
 Step 1 : make the file as executable
 
-`chmod +x convertRootFile.py`
+```shell
+chmod +x convertRootFile.py
+```
 
 Step 2 : launch the program
 
 example with `prod2_200_400k.root` and `charged_hadrons_100k.root`
 
-`./convertRootFile.py prod2_200_400k.root charged_hadrons_100k.root`
+```shell
+./convertRootFile.py prod2_200_400k.root charged_hadrons_100k.root
+```
 
 Step 3 : you can use the new files in '`.energydata`' in the other programs
 

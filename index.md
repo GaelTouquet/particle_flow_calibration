@@ -19,7 +19,9 @@ Step 2 : launch the program
 
 example with `prod2_200_400k.root` and `charged_hadrons_100k.root`
 
-`./convertRootFile.py prod2_200_400k.root charged_hadrons_100k.root`
+```shell
+./convertRootFile.py prod2_200_400k.root charged_hadrons_100k.root
+```
 
 Step 3 : you can use the new files in '`.energydata`' in the other programs
 
