@@ -144,7 +144,7 @@ class KNNGaussianFit:
     """
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
                  n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
-                 algorithm='auto',lim=-1,energystep = 1,kind='cubic'):
+                 algorithm='auto',lim=-1,energystep_ecal_eq_0 = 1, energystep_ecal_neq_0 = 5,kind='cubic'):
         """
         Parameters
         ----------
@@ -177,8 +177,13 @@ class KNNGaussianFit:
         to reject calibration points with ecal + hcal > lim
         if lim = - 1, there is no limit
 
-        energystep : float
+        energystep_ecal_eq_0 : float
         step between two points of evaluation
+        for ecal == 0
+        
+        energystep_ecal_neq_0 : float
+        step between two points of evaluation
+        for ecal != 0
 
         kind : str or int, optional
         Specifies the kind of interpolation as a string (‘linear’, ‘nearest’,
@@ -291,7 +296,7 @@ class KNNGaussianFit:
         hcal = y[ind][0]
         hcal_min = (max(hcal)+min(hcal))/2
         # we evaluate the true energies
-        hcal = np.arange(hcal_min,self.lim+energystep,energystep)
+        hcal = np.arange(hcal_min,self.lim+energystep_ecal_eq_0,energystep_ecal_eq_0)
         vect = np.vectorize(forOnePoint_ecal_eq_0)
         true = vect(hcal)
         hcal = hcal[np.invert(np.isnan(true))]
@@ -363,8 +368,8 @@ class KNNGaussianFit:
         hcal_min = (max(hcal)+min(hcal))/2
         ecal_min = (max(ecal)+min(ecal))/2
         # we evaluate the true energies
-        hcal = np.linspace(hcal_min,self.lim,(self.lim-hcal_min)/energystep)
-        ecal = np.linspace(ecal_min,self.lim,(self.lim-ecal_min)/energystep)
+        hcal = np.linspace(hcal_min,self.lim,(self.lim-hcal_min)/energystep_ecal_neq_0)
+        ecal = np.linspace(ecal_min,self.lim,(self.lim-ecal_min)/energystep_ecal_eq_0)
         eecal, hhcal = np.meshgrid(ecal,hcal)
         vect = np.vectorize(forOnePoint_ecal_neq_0)
         true = vect(eecal,hhcal)

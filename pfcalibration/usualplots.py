@@ -188,22 +188,22 @@ def hist_ecalib(calib,dataToPredict):
     c2 = calib.predict(e2,h2)
 
     plt.subplot(2,2,1)
-    plt.hist(c,binwidth_array(c))
+    plt.hist(c,binwidth_array(c,2))
     plt.xlabel(r"$e_{calib}$",fontsize=15)
     plt.title(r"$e_{cal} = 0$",fontsize=15)
     plt.subplot(2,2,2)
     c2 = c2[np.invert(np.isnan(c2))]
-    plt.hist(c2,binwidth_array(c2))
+    plt.hist(c2,binwidth_array(c2,2))
     plt.xlabel(r"$e_{calib}$",fontsize=15)
     plt.title(r"$e_{cal} \neq 0$",fontsize=15)
     plt.subplot(2,2,3)
     t = t[np.invert(np.isnan(t))]
-    plt.hist(t,binwidth_array(t))
+    plt.hist(t,binwidth_array(t,2))
     plt.xlabel(r"$e_{true}$",fontsize=15)
     plt.title(r"$e_{cal} = 0$",fontsize=15)
     plt.subplot(2,2,4)
     t2 = t2[np.invert(np.isnan(t2))]
-    plt.hist(t2,binwidth_array(t2))
+    plt.hist(t2,binwidth_array(t2,2))
     plt.xlabel(r"$e_{true}$",fontsize=15)
     plt.title(r"$e_{cal} \neq 0$",fontsize=15)
     plt.tight_layout()
