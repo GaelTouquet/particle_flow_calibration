@@ -90,50 +90,50 @@ directory = "pictures/testcalibration/"
 ```
 
 ```python
-#courbe de calibration pour ecal = 0
+# calibration curve for ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(calibration)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
 ```
-![optional caption text](img_index/KNNGaussianFit_calibration.png)
+![calibration curve for ecal = 0](img_index/KNNGaussianFit_calibration.png)
 
 
 ```python
-#ecalib/true in function of etrue
+# ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
 ```
-![optional caption text](img_index/KNNGaussianFit_ecalib_over_etrue.png)
+![ecalib/true in function of etrue](img_index/KNNGaussianFit_ecalib_over_etrue.png)
 
 
 ```python
-#histogram of ecalib and etrue
+# histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,8))
 usplt.hist_ecalib(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
 ```
-![optional caption text](img_index/KNNGaussianFit_histograms_ecalib_etrue.png)
+![histogram of ecalib and etrue](img_index/KNNGaussianFit_histograms_ecalib_etrue.png)
 
 
 ```python
-#ecalib/etrue in function of ecal,hcal
+# ecalib/etrue in function of ecal,hcal
 fig = plt.figure(figsize=(10,5))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 ```
-![optional caption text](img_index/KNNGaussianFit_ecalib_over_etrue_functionof_ecal_hcal.png)
+![ecalib/etrue in function of ecal,hcal](img_index/KNNGaussianFit_ecalib_over_etrue_functionof_ecal_hcal.png)
 
 
 ```python
-#ecalib/etrue gaussian fit curve
+# ecalib/etrue gaussian fit curve
 fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
 ```
-![optional caption text](img_index/KNNGaussianFit_ecalib_over_etrue_curve.png)
+![ecalib/etrue gaussian fit curve](img_index/KNNGaussianFit_ecalib_over_etrue_curve.png)
