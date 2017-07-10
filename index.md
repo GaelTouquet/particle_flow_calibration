@@ -58,12 +58,16 @@ calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
 ecal = 60
 hcal = 60
 ecalib = calibration.predict(ecal,hcal)
+```
 
+```python
 # with a numpy array
 ecal = np.arange(0,lim,1)
 hcal = np.arange(0,lim,1)
 ecalib = calibration.predict(ecal,hcal)
+```
 
+```python
 # with a meshgrid
 ecal = np.arange(0,lim,1)
 hcal = np.arange(0,lim,1)
