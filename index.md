@@ -135,4 +135,5 @@ fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
-```![optional caption text](img_index/KNNGaussianFit_ecalib_over_etrue_curve.png)
+```
+![optional caption text](img_index/KNNGaussianFit_ecalib_over_etrue_curve.png)
