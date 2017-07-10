@@ -11,7 +11,9 @@ For this you have to use the program '`convertRootFile.py`'
 
 Step 1 : make the file as executable
 
-`chmod +x convertRootFile.py`
+```shell
+chmod +x convertRootFile.py
+```
 
 Step 2 : launch the program
 
