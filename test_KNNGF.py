@@ -159,7 +159,7 @@ fig = plt.figure(figsize=(10,4))
 #neigh for ecal == 0
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
-                             lim=lim,energystep=30,kind='cubic')
+                             lim=lim,energystep_ecal_eq_0=30,energystep_ecal_neq_0=14,kind='cubic')
 neigh_hcal_ecal_eq_0 = KNNGF.evaluatedPoint_neighbours_hcal_ecal_eq_0
 neigh_true_ecal_eq_0 = KNNGF.evaluatedPoint_neighbours_true_ecal_eq_0
 hcal_train = KNNGF.hcal_train[KNNGF.ecal_train == 0]
@@ -175,9 +175,6 @@ plt.axis([0,lim,0,lim])
 
 
 #neigh for ecal != 0
-KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
-                             n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
-                             lim=lim,energystep=14,kind='cubic')
 neigh_ecal_ecal_neq_0 = np.array(KNNGF.evaluatedPoint_neighbours_ecal)
 neigh_ecal_ecal_neq_0 = neigh_ecal_ecal_neq_0[np.array(KNNGF.evaluatedPoint_ecal)+np.array(KNNGF.evaluatedPoint_hcal)<lim]
 neigh_hcal_ecal_neq_0 = np.array(KNNGF.evaluatedPoint_neighbours_hcal)
