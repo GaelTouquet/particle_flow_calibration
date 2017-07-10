@@ -47,30 +47,35 @@ fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(KNNGF)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
+savefig(fig,'img_index',classname+"_calibration.png")
 
 #ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
+savefig(fig,'img_index',classname+"_ecalib_over_etrue.png")
 
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,8))
 usplt.hist_ecalib(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
+savefig(fig,'img_index',classname+"_histograms_ecalib_etrue.png")
 
 #ecalib/etrue in function of ecal,hcal
 fig = plt.figure(figsize=(10,5))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
+savefig(fig,'img_index',classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 
 #ecalib/etrue gaussian fit curve
 fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
+savefig(fig,'img_index',classname+"_ecalib_over_etrue_curve.png")
 
 #chi2 for each point of the calibration
 hcal_ecal_eq_0 = KNNGF.evaluatedPoint_hcal_ecal_eq_0

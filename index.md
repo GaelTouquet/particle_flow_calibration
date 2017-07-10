@@ -126,7 +126,7 @@ usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 ```
-![optional caption text](img_index/_ecalib_over_etrue_functionof_ecal_hcal.png)
+![optional caption text](img_index/KNNGaussianFit_ecalib_over_etrue_functionof_ecal_hcal.png)
 
 
 ```python
