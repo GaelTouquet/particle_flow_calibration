@@ -34,14 +34,12 @@ lim = 150
 n_neighbors_ecal_eq_0=2000
 n_neighbors_ecal_neq_0=200
 energystep = 1
-
-
-
+# We create the calibration
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep=energystep,kind='cubic')
-classname = type(KNNGF).__name__
 
+classname = type(KNNGF).__name__
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(KNNGF)

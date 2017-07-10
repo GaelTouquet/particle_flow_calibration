@@ -22,25 +22,32 @@ example with `prod2_200_400k.root` and `charged_hadrons_100k.root`
 Step 3 : you can use the new files in '`.energydata`' in the other programs
 
 ## To create a calibration
-### Example with KNNGF method
+### Importation of data
 ```python
-# we import the data files
+# file to save the pictures
+directory = "pictures/testKNNGF/"
+#importation of simulated particles
 filename = 'charged_hadrons_100k.energydata'
 data1 = importPickle(filename)
 filename = 'prod2_200_400k.energydata'
 data2 = importPickle(filename)
-
-# we merge
-data1 = data1.mergeWith(data2)
-
-# We split
+# we merge the 2 sets of data
+data1 = data1.mergeWith(importPickle(filename))
+# we split the data in 2 sets
 data1,data2 = data1.splitInTwo()
+#data 1 -> training data
+#data 2 -> data to predict
+```
 
-# we create the calibration
-lim = 150 # reject the points with ecal + hcal > lim
-n_neighbors = 250 # number of neighbors to do the average
-energystep = 1 # step of the grid of evaluation
-kind = 'cubic' # kind of interpolation
-
-KNNGF = data1.kNNGaussianFit(n_neighbors=n_neighbors,lim=lim,energystep=energystep,kind=kind)
+### Example with KNNGF method
+```python
+# parameters of the calibration
+lim = 150
+n_neighbors_ecal_eq_0=2000
+n_neighbors_ecal_neq_0=200
+energystep = 1
+# We create the calibration
+KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+                             n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
+                             lim=lim,energystep=energystep,kind='cubic')
 ```
