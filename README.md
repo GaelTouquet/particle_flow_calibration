@@ -26,8 +26,6 @@ Step 3 : you can use the new files in '`.energydata`' in the other programs
 ```python
 from pfcalibration.tools import importPickle # to import binary data
 
-# file to save the pictures
-directory = "pictures/testcalibration/"
 #importation of simulated particles
 filename = 'charged_hadrons_100k.energydata'
 data1 = importPickle(filename)
@@ -79,30 +77,43 @@ import pfcalibration.usualplots as usplt  # usual plots function
 from pfcalibration.tools import savefig   # to save a figure
 
 classname = type(calibration).__name__
+# file to save the pictures
+directory = "pictures/testcalibration/"
+```
+
+```python
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(calibration)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
+```
 
+```python
 #ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
+```
 
+```python
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,8))
 usplt.hist_ecalib(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
+```
 
+```python
 #ecalib/etrue in function of ecal,hcal
 fig = plt.figure(figsize=(10,5))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(calibration,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
+```
 
+```python
 #ecalib/etrue gaussian fit curve
 fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calibration,data2)
