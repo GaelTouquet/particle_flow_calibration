@@ -1,6 +1,7 @@
 # How does it works
 For the particles flow we need to know the energies of the particles thanks to the hadronic calorimeter and electromagnetic calorimeter.
 We use simulated particles to creates models to obtains a calibrate energy thanks to simulated particles.
+
 ![ecalib/true in function of etrue](img_index/KNNGaussianFit_plot3D_training.png)
 ![ecalib/true in function of etrue](img_index/KNNGaussianFit_plot3D_surf.png)
 ## Root file to python
