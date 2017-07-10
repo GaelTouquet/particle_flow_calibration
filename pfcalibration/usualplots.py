@@ -306,7 +306,7 @@ def plot3D_training(data1):
     ax.set_xlabel(r'$e_{cal}$',fontsize=15)
     ax.set_ylabel(r'$h_{cal}$',fontsize=15)
     ax.set_zlabel(r'$e_{true}$',fontsize=15)
-    plt.tight_layout()
+
     
 def plot3D_surf(calib,data1):
     ecal = np.arange(0,calib.lim,2)
@@ -323,4 +323,3 @@ def plot3D_surf(calib,data1):
     ax.set_xlabel(r'$e_{cal}$',fontsize=15)
     ax.set_ylabel(r'$h_{cal}$',fontsize=15)
     ax.set_zlabel(r'$e_{true}$',fontsize=15)
-    plt.tight_layout()
