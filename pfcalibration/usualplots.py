@@ -11,6 +11,8 @@ from matplotlib import gridspec
 import matplotlib.pyplot as plt
 from sklearn import neighbors
 from pfcalibration.tools import gaussian_fit, binwidth_array
+from mpl_toolkits.mplot3d import Axes3D
+
 
 
 def plotCalibrationCurve(calib):
@@ -291,4 +293,34 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
     plt.hist(x,bins,label = r"$e_{cal} \neq 0$")
     plt.xlabel(r"$\chi^2/df$",fontsize=15)
     plt.legend(loc='upper right')
+    plt.tight_layout()
+
+def plot3D_training(data1):
+    ax = plt.axes(projection='3d')
+    ax.scatter(data1.ecal, data1.hcal, data1.true,s=1)
+    ax.view_init(10,280)
+    ax.set_xlim([0,data1.ecal_max])
+    ax.set_ylim([0,data1.hcal_max])
+    ax.set_zlim([0,data1.true_max])
+    ax.set_title("Training points")
+    ax.set_xlabel(r'$e_{cal}$',fontsize=15)
+    ax.set_ylabel(r'$h_{cal}$',fontsize=15)
+    ax.set_zlabel(r'$e_{true}$',fontsize=15)
+    plt.tight_layout()
+    
+def plot3D_surf(calib,data1):
+    ecal = np.arange(0,calib.lim,2)
+    hcal = np.arange(0,calib.lim,2)
+    ecal,hcal = np.meshgrid(ecal,hcal)
+    ecalib = calib.predict(ecal,hcal)
+    ax = plt.axes(projection='3d')
+    ax.plot_wireframe(ecal,hcal,ecalib,color='red')
+    ax.view_init(10,280)
+    ax.set_xlim([0,data1.ecal_max])
+    ax.set_ylim([0,data1.hcal_max])
+    ax.set_zlim([0,data1.true_max])
+    ax.set_title("Calibration surface")
+    ax.set_xlabel(r'$e_{cal}$',fontsize=15)
+    ax.set_ylabel(r'$h_{cal}$',fontsize=15)
+    ax.set_zlabel(r'$e_{true}$',fontsize=15)
     plt.tight_layout()

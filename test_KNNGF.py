@@ -17,6 +17,7 @@ from pfcalibration.tools import binwidth_array
 import math
 
 
+
 # file to save the pictures
 directory = "pictures/testKNNGF/"
 #importation of simulated particles
@@ -43,6 +44,20 @@ KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind='cubic')
 
 classname = type(KNNGF).__name__
+#plot 3D Training points
+fig = plt.figure(1,figsize=(5, 5))
+usplt.plot3D_training(data1)
+plt.show()
+savefig(fig,directory,classname+"_plot3D_training.png")
+savefig(fig,'img_index/',classname+"_plot3D_training.png")
+
+#plot 3D surface calibration
+fig = plt.figure(1,figsize=(5, 5))
+usplt.plot3D_surf(KNNGF,data1)
+plt.show()
+savefig(fig,directory,classname+"_plot3D_surf.png")
+savefig(fig,'img_index/',classname+"_plot3D_surf.png")
+
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(KNNGF)
