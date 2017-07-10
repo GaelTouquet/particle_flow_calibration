@@ -24,6 +24,8 @@ Step 3 : you can use the new files in '`.energydata`' in the other programs
 ## To create a calibration
 ### Importation of data
 ```python
+from pfcalibration.tools import importPickle # to import binary data
+
 # file to save the pictures
 directory = "pictures/testKNNGF/"
 #importation of simulated particles
@@ -53,7 +55,6 @@ calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
 ```
 
 ## To use a calibration
-### Example with KNNGF method
 ```python
 # with one point
 ecal = 60
@@ -70,4 +71,10 @@ ecal = np.arange(0,lim,1)
 hcal = np.arange(0,lim,1)
 ecal,hcal = np.meshgrid(ecal,hcal)
 ecalib = calibration.predict(ecal,hcal)
+```
+
+## Usual plots
+```python
+import pfcalibration.usualplots as usplt  # usual plots function 
+from pfcalibration.tools import savefig   # to save a figure
 ```

@@ -8,10 +8,12 @@ Script to understand how does KNNGF works.
 """
 
 import matplotlib.pyplot as plt
-import pfcalibration.usualplots as usplt
 import numpy as np
-from pfcalibration.tools import importPickle, savefig
-from pfcalibration.tools import gaussian_param, binwidth_array
+import pfcalibration.usualplots as usplt     # usual plots function 
+from pfcalibration.tools import importPickle # to import binary data
+from pfcalibration.tools import savefig      # to save a figure
+from pfcalibration.tools import gaussian_param
+from pfcalibration.tools import binwidth_array
 import math
 
 
