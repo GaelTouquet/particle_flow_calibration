@@ -369,7 +369,7 @@ class KNNGaussianFit:
         ecal_min = (max(ecal)+min(ecal))/2
         # we evaluate the true energies
         hcal = np.linspace(hcal_min,self.lim,(self.lim-hcal_min)/energystep_ecal_neq_0)
-        ecal = np.linspace(ecal_min,self.lim,(self.lim-ecal_min)/energystep_ecal_eq_0)
+        ecal = np.linspace(ecal_min,self.lim,(self.lim-ecal_min)/energystep_ecal_neq_0)
         eecal, hhcal = np.meshgrid(ecal,hcal)
         vect = np.vectorize(forOnePoint_ecal_neq_0)
         true = vect(eecal,hhcal)
