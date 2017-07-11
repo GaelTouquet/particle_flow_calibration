@@ -92,7 +92,6 @@ def importPickle(filename):
     mon_depickler = pickle.Unpickler(datafile)
     data = mon_depickler.load()
     datafile.close()
-    print("the datas include",len(data.ecal),"particles")
     return data
 
 def exportPickle(filename,objectToSave):
@@ -106,6 +105,20 @@ def exportPickle(filename,objectToSave):
     pickler = pickle.Pickler(dataFile)
     pickler.dump(objectToSave)
     dataFile.close()
+    
+def importData(filename):
+    data = importPickle(filename)
+    print("Data imported and includes",len(data.ecal),"particles")
+    return data
+
+def importCalib(filename):
+    calib = importPickle(filename)
+    print(calib.classname+" imported")
+    for e in calib.__dict__:
+            if isinstance(calib.__dict__[e],(int,float )) and e != "numberPart" :
+                print(e+" : "+str(calib.__dict__[e]))
+    return calib
+
 
 def gaussian_param(x,sigma=1,mu=0,k=1):
     return k*np.exp(-(x-mu)**2/(2*sigma**2))
@@ -266,7 +279,7 @@ def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveRedu
                 return [math.nan,math.nan,math.nan]
 
 
-def savefig(fig,directory,filename):
+def savefig(fig,directory="img/",filename="img.png"):
     """
     To save a figure
     Parameters

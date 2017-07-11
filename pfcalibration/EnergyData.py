@@ -40,7 +40,6 @@ class EnergyData:
         self.hcal_min = np.min(hcal)
         self.ener_max = max(self.ecal_max,self.hcal_max)
         self.true_max = np.max(true)
-        print("the datas include",len(self.ecal),"particles")
 
     def LinearRegression(self,lim_min = 20, lim_max=80, lim=150):
         """
@@ -49,7 +48,7 @@ class EnergyData:
         begin = time.time()
         calib = LinearRegression(self.ecal,self.hcal,self.true,lim_min, lim_max, lim)
         end = time.time()
-        print("linearRegression - Calibration made in",end-begin,"s")
+        print("LinearRegression - Calibration made in",end-begin,"s")
         return calib
 
     def calibrationLego(self,nbLego,timeInfo = True):

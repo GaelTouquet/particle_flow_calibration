@@ -4,6 +4,9 @@
 Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
 """
+from os import mkdir
+from pfcalibration.tools import exportPickle
+import collections
 
 class Calibration:
     """
@@ -47,9 +50,28 @@ class Calibration:
         if  len(self.hcal_train) != self.numberPart or len(self.true_train) != self.numberPart or len(self.hcal_train) != len(self.true_train):
             raise ValueError("ecal_train, hcal_train and true_train do not have the same length")
             
-        self.numberPart_str = str(int(self.numberPart/1000))+"k"
+        self.numberPart_str = str(int(self.numberPart/1000))+"K"
         
         self.classname = type(self).__name__
     
-    def saveCalib(self):
-        return 0
+    def saveCalib(self,directory = "calibrations"):
+        
+        splitted = directory.split('/')
+        director = ""
+        
+        for s in splitted:
+            if len(s) > 0:
+                director += s+'/'
+                try:
+                    mkdir(director)
+                except FileExistsError:
+                    pass
+        filename  = director      
+        filename += self.classname+"_"
+        filename += str(self.numberPart_str)+"part"
+        od = collections.OrderedDict(sorted((self.__dict__).items()))
+        for elem, value in od.items():
+            if isinstance(value,(int,float)) and elem != "numberPart_str" and elem != "numberPart" :
+                filename +="_"+elem+"_"+str(value)
+        filename += '.calibration'
+        exportPickle(filename,self)
