@@ -1,32 +1,40 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Developed by Samuel Niang
-For IPNL (Nuclear Physics Institute of Lyon)
-
-Script to understand how does KNNGFD works and why there is a structure in ecalib/etrue .
-"""
-
 import matplotlib.pyplot as plt
-import numpy as np
-from pfcalibration.tools import importPickle, savefig
 from pfcalibration.tools import gaussian_fit, binwidth_array
 from sklearn import neighbors
 import math
+import numpy as np
+from pfcalibration.tools import importData,importCalib # to import binary data
+from pfcalibration.tools import savefig                # to save a figure
 
+# file to save the pictures
 directory = "pictures/testKNNGFD_structure/"
-filename = 'charged_hadrons_100k.energydata'
-data1 = importPickle(filename)
-filename = 'prod2_200_400k.energydata'
-#on fusionne les 2 jeux de données
-data1 = data1.mergeWith(importPickle(filename))
-#on sépare data en 2
-data1,data2 = data1.splitInTwo()
-
-# paramètres de calibration
-lim = 150
-n_neighbors_ecal_eq_0=2000
-n_neighbors_ecal_neq_0=250
+try:
+    filename = "calibrations/KNNGaussianFitDirect_162Kpart_ecal_train_ecal_neq_0_min_0.292026728392_hcal_train_ecal_eq_0_min_1.00043606758_hcal_train_ecal_neq_0_min_1.00002634525_lim_150_n_neighbors_ecal_eq_0_2000_n_neighbors_ecal_neq_0_250.calibration"
+    KNNGFD = importCalib(filename)
+except FileNotFoundError:
+    #importation of simulated particles
+    filename = 'charged_hadrons_100k.energydata'
+    data1 = importData(filename)
+    filename = 'prod2_200_400k.energydata'
+    data2 = importData(filename)
+    # we merge the 2 sets of data
+    data1 = data1.mergeWith(data2)
+    # we split the data in 2 sets
+    data1,data2 = data1.splitInTwo()
+    #data 1 -> training data
+    #data 2 -> data to predict
+    
+    # parameters of the calibration
+    lim = 150                   # if ecal + hcal > lim, ecalib = math.nan
+    n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
+    n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
+    energystep_ecal_eq_0 = 1
+    energystep_ecal_neq_0 = 5
+    # We create the calibration
+    KNNGFD = data1.KNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+                                        n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
+                                        lim=lim)
+    KNNGFD.saveCalib()
 
 def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
     ind  = np.invert(np.isnan(y))
@@ -53,9 +61,6 @@ def getMeans(energy_x,y,n_neighbors=n_neighbors_ecal_eq_0):
             energy.append(e)
             reducedChi2.append(reduced)
     return energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2
-
-
-KNNGFD = data1.KNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,lim=lim)
 
 #ecalib/etrue pour ecal = 0
 h = data2.hcal[np.logical_and(data2.ecal == 0,data2.ecal+data2.hcal < lim)]
