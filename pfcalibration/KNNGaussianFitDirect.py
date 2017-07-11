@@ -9,12 +9,13 @@ from sklearn import neighbors
 import numpy as np
 import math
 from pfcalibration.tools import gaussian_param
+from pfcalibration.Calibration import Calibration
 from scipy.optimize import curve_fit
 import warnings
 from scipy.optimize import OptimizeWarning
 
 
-class KNNGaussianFitDirect:
+class KNNGaussianFitDirect(Calibration):
     """
     Class to calibrate the true energy of a particle thanks to training datas.
     We use the a k neareast neighbours method, we fit the histogramm of the
@@ -24,6 +25,19 @@ class KNNGaussianFitDirect:
 
     Attributs
     ---------
+    ecal_train : array
+    ecal value to train the calibration
+
+    hcal_train : array
+    ecal value to train the calibration
+
+    true_train : array
+    ecal value to train the calibration
+
+    lim : float
+    to reject calibration points with ecal + hcal > lim
+    if lim = - 1, there is no limit
+    
     n_neighbors: int
     Number of neighbors to use by default for k_neighbors queries.
 
@@ -35,23 +49,10 @@ class KNNGaussianFitDirect:
     'auto' will attempt to decide the most appropriate algorithm based
     on the values passed to fit method.
 
-    lim : float
-    to reject calibration points with ecal + hcal > lim
-    if lim = - 1, there is no limit
-
-    ecal_train : array
-    ecal value to train the calibration
-
-    hcal_train : array
-    ecal value to train the calibration
-
-    true_train : array
-    ecal value to train the calibration
-
     ecal_train_ecal_eq_0 : array
     ecal value to train the calibration
     for ecal == 0
-
+    
     hcal_train_ecal_eq_0 : array
     ecal value to train the calibration
     for ecal == 0
@@ -114,18 +115,11 @@ class KNNGaussianFitDirect:
         if lim = - 1, there is no limit
         """
 
+        Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
+        
         self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
         self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
-
-        # we reject calibration points with ecal + hcal > lim
-        if lim == -1:
-            lim = max(max(ecal_train),max(hcal_train))
-        self.lim = lim
-        self.ecal_train = ecal_train
-        self.hcal_train = hcal_train
-        self.true_train = true_train
-
 
         #Case ecal == 0
         self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_eq_0, algorithm=algorithm)
@@ -205,8 +199,7 @@ class KNNGaussianFitDirect:
                 dist, ind = self.neigh_ecal_neq_0.kneighbors(X = [[ecal,hcal]])
                 dist = dist[0]
                 ind = ind[0]
-#                dlim = min(hcal-self.ecal_train_ecal_neq_0_min ,hcal-self.hcal_train_ecal_neq_0_min)
-#                true_neigh = self.true_train_ecal_neq_0[ind[dist <= dlim]]
+
                 true_neigh = self.true_train_ecal_neq_0[ind]
                 binwidth = 1
                 nbins = np.arange(min(true_neigh), max(true_neigh) + binwidth, binwidth)
