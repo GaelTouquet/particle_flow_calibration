@@ -5,7 +5,6 @@ Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
 """
 import numpy as np
-from sklearn import linear_model
 from pfcalibration.CalibrationLego import CalibrationLego
 from pfcalibration.LinearRegression import LinearRegression
 from pfcalibration.KNN import KNN
@@ -43,56 +42,15 @@ class EnergyData:
         self.true_max = np.max(true)
         print("the datas include",len(self.ecal),"particles")
 
-    def linearRegression(self,lim_min = -1, lim_max=-1, lim=-1):
+    def LinearRegression(self,lim_min = 20, lim_max=80, lim=150):
         """
-        Linear regression of true = f(ecal,hcal)
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-        regr : sklearn.linear_model.LinearRegression()
 
         """
         begin = time.time()
-        if lim == -1:
-            lim = self.ener_max
-        if lim_min == -1:
-            ind_min = np.ones(len(self.ecal),dtype=bool)
-        else:
-            ind_min = self.ecal + self.hcal > lim_min
-        if lim_max == -1:
-            ind_max = np.ones(len(self.ecal),dtype=bool)
-        else:
-            ind_max = self.ecal + self.hcal < lim_max
-
-        #CASE : ecal != 0
-        ind_0 = self.ecal != 0
-        ind = np.logical_and(ind_min,ind_max)
-        ind = np.logical_and(ind,ind_0)
-        X_train = [self.ecal[ind],self.hcal[ind]]
-        X_train = np.transpose(np.matrix(X_train))
-        Y_train = self.true[ind]
-        Y_train = np.transpose(np.matrix(Y_train))
-        regr1 = linear_model.LinearRegression()
-        regr1.fit(X_train,Y_train)
-
-        #CASE : ecal == 0
-        ind_0 = self.ecal == 0
-        ind = np.logical_and(ind_min,ind_max)
-        ind = np.logical_and(ind,ind_0)
-        X_train = self.hcal[ind]
-        X_train = np.transpose(np.matrix(X_train))
-        Y_train = self.true[ind]
-        Y_train = np.transpose(np.matrix(Y_train))
-        regr2 = linear_model.LinearRegression()
-        regr2.fit(X_train,Y_train)
-        regr = LinearRegression(regr1,regr2,lim_min, lim_max, lim)
-
+        calib = LinearRegression(self.ecal,self.hcal,self.true,lim_min, lim_max, lim)
         end = time.time()
         print("linearRegression - Calibration made in",end-begin,"s")
-        return regr
+        return calib
 
     def calibrationLego(self,nbLego,timeInfo = True):
         """
