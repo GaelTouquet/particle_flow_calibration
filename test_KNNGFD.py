@@ -67,7 +67,7 @@ savefig(fig,directory,classname+"_ecalib_over_etrue.png")
 
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,6))
-usplt.hist_ecalib(KNNGF,data2)
+usplt.hist_ecalib(KNNGFD,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
 
