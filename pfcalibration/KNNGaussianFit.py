@@ -6,6 +6,7 @@ For IPNL (Nuclear Physics Institute of Lyon)
 """
 
 from sklearn import neighbors
+from pfcalibration.Calibration import Calibration
 import numpy as np
 import math
 from scipy.interpolate import interp2d,interp1d
@@ -15,16 +16,30 @@ import warnings
 from scipy.optimize import OptimizeWarning
 
 
-class KNNGaussianFit:
+class KNNGaussianFit(Calibration):
     """
     Class to calibrate the true energy of a particle thanks to training datas.
     We use the a k neareast neighbours method, we fit the histogramm of the
     true energy of the neighbours by a gaussian and consider the mean of the
     gaussian distribution is the approximation of the true energy.
     We do an iterpolation to determine the other values.
-
+    Inherit from Calibration
     Attributs
     ---------
+    
+    ecal_train : array
+    ecal value to train the calibration
+
+    hcal_train : array
+    ecal value to train the calibration
+
+    true_train : array
+    ecal value to train the calibration
+    
+    lim : float
+    to reject calibration points with ecal + hcal > lim
+    if lim = - 1, there is no limit
+    
     n_neighbors: int
     Number of neighbors to use by default for k_neighbors queries.
 
@@ -36,22 +51,13 @@ class KNNGaussianFit:
     'auto' will attempt to decide the most appropriate algorithm based
     on the values passed to fit method.
 
-    lim : float
-    to reject calibration points with ecal + hcal > lim
-    if lim = - 1, there is no limit
+    
 
     kind : str or int, optional
     Specifies the kind of interpolation as a string (‘linear’, 'cubic')
     Default is 'cubic'
 
-    ecal_train : array
-    ecal value to train the calibration
-
-    hcal_train : array
-    ecal value to train the calibration
-
-    true_train : array
-    ecal value to train the calibration
+    
 
     neigh_ecal_neq_0 : sklearn.neighbors.NearestNeighbors
     the sklearn.neighbors.NearestNeighbors for ecal != 0
@@ -193,7 +199,9 @@ class KNNGaussianFit:
         the spline interpolator to use. Default is ‘linear’
 
         """
-
+        
+        Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
+        
         self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
         self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
@@ -216,14 +224,7 @@ class KNNGaussianFit:
         self.evaluatedPoint_bin_middles = []
         self.evaluatedPoint_reducedchi2 = []
         self.evaluatedPoint_reducedchi2_ecal_eq_0 = []
-
-        # we reject calibration points with ecal + hcal > lim
-        if lim == -1:
-            lim = max(max(ecal_train),max(hcal_train))
-        self.lim = lim
-        self.ecal_train = ecal_train
-        self.hcal_train = hcal_train
-        self.true_train = true_train
+        
 
 
         #Case ecal == 0
