@@ -9,16 +9,123 @@ from sklearn import neighbors
 import time
 import numpy as np
 from math import nan
+from pfcalibration.Calibration import Calibration
 
-class KNN:
+class KNN(Calibration):
     """
+    Inherit from Calibration.
+    
+    Class to calibrate the true energy of a particle thanks to training datas.
+    We use the a k neareast neighbours method.
+    We do the pondered mean of the true energies of k neareast neighbours.
 
+    Attributs
+    ---------
+    ecal_train : array
+    ecal value to train the calibration
+
+    hcal_train : array
+    ecal value to train the calibration
+
+    true_train : array
+    ecal value to train the calibration
+    
+    lim : float
+    to reject calibration points with ecal + hcal > lim
+    if lim = - 1, there is no limit
+    
+    n_neighbors_ecal_eq_0: int
+    Number of neighbors to use by default for k_neighbors queries.
+    for ecal == 0
+    
+    n_neighbors_ecal_neq_0: int
+    Number of neighbors to use by default for k_neighbors queries.
+    for ecal != 0
+
+    weight : str or callable
+    weight function used in prediction. Possible values:
+    'uniform' : uniform weights. All points in each neighborhood are
+    weighted equally.
+    'distance' : weight points by the inverse of their distance. in
+    this case, closer neighbors of a query point will have a greater
+    influence than neighbors which are further away.
+    [callable] : a user-defined function which accepts an array of
+    distances, and returns an array of the same shape containing the
+    weights.
+    'gaussian'
+    Gaussian weights are used by default.
+    
+    algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
+    Algorithm used to compute the nearest neighbors:
+    'ball_tree' will use BallTree
+    'kd_tree' will use KDtree
+    'brute' will use a brute-force search.
+    'auto' will attempt to decide the most appropriate algorithm based on
+    the values passed to fit method.
+
+    sigma : float
+    sigma for the gaussian if weight == 'gaussian'
+
+    neigh_ecal_neq_0 : sklearn.neighbors.NearestNeighbors
+    the sklearn.neighbors.NearestNeighbors for ecal != 0
+
+    neigh_ecal_eq_0 : sklearn.neighbors.NearestNeighbors
+    the sklearn.neighbors.NearestNeighbors for ecal == 0
     """
+    
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
                  n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,
                  weights='gaussian',algorithm='auto',sigma=5,lim=-1):
+        """
+        Parameters
+        ----------
+        ecal_train : array-like
+        ecal value to train the calibration
 
+        hcal_train : array-like
+        hcal value to train the calibration
 
+        true_train : array-like
+        true value to train the calibration
+
+        n_neighbors_ecal_eq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
+
+        weight : str or callable
+        weight function used in prediction. Possible values:
+        'uniform' : uniform weights. All points in each neighborhood are
+        weighted equally.
+        'distance' : weight points by the inverse of their distance. in this
+        case, closer neighbors of a query point will have a greater influence
+        than neighbors which are further away.
+        [callable] : a user-defined function which accepts an array of
+        distances, and returns an array of the same shape containing the weights.
+        'gaussian'
+        Gaussian weights are used by default.
+
+        algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
+        Algorithm used to compute the nearest neighbors:
+        'ball_tree' will use BallTree
+        'kd_tree' will use KDtree
+        'brute' will use a brute-force search.
+        'auto' will attempt to decide the most appropriate algorithm based on
+        the values passed to fit method.
+
+        sigma : float
+        sigma for the gaussian if weight == 'gaussian'
+
+        lim : float
+        to reject calibration points with ecal + hcal > lim
+        if lim = - 1, there is no limit
+        """
+
+        Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
+        
         if weights == 'gaussian':
             def gaussian(x):
                 return np.exp(-(x**2) / (sigma**2) / 2 )
@@ -30,13 +137,6 @@ class KNN:
         self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
         self.sigma = sigma
-        self.lim = lim
-
-        if lim == -1:
-            lim = max(max(ecal_train),max(hcal_train))
-        self.ecal_train = ecal_train
-        self.hcal_train = hcal_train
-        self.true_train = true_train
 
         self.recalibrated = False
 
@@ -47,8 +147,8 @@ class KNN:
         Y_train = true_train[ecal_train!=0]
         self.Y_train1 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        regr1 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_neq_0, weights=self.weights, algorithm=self.algorithm)
-        regr1.fit(X_train,Y_train)
+        neigh_ecal_neq_0 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_neq_0, weights=self.weights, algorithm=self.algorithm)
+        neigh_ecal_neq_0.fit(X_train,Y_train)
 
         #case ecal == 0
         X_train = hcal_train[ecal_train==0]
@@ -57,11 +157,11 @@ class KNN:
         Y_train = true_train[ecal_train==0]
         self.Y_train2 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        regr2 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_eq_0, weights=self.weights, algorithm=algorithm)
-        regr2.fit(X_train,Y_train)
+        neigh_ecal_eq_0 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_eq_0, weights=self.weights, algorithm=algorithm)
+        neigh_ecal_eq_0.fit(X_train,Y_train)
 
-        self.regr1 = regr1
-        self.regr2 = regr2
+        self.neigh_ecal_neq_0 = neigh_ecal_neq_0
+        self.neigh_ecal_eq_0 = neigh_ecal_eq_0
 
     def predictSingleValue(self,e,h):
         """
@@ -80,9 +180,9 @@ class KNN:
         if e+h < self.lim:
             if e != 0:
                 x =[[e,h]]
-                return self.regr1.predict(x)
+                return self.neigh_ecal_neq_0.predict(x)
             else:
-                return self.regr2.predict(h)
+                return self.neigh_ecal_eq_0.predict(h)
         else:
             return nan
 
@@ -116,8 +216,8 @@ class KNN:
         Y_train = self.true_train[self.ecal_train!=0]
         self.Y_train1 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        regr1 = neighbors.KNeighborsRegressor(n_neighbors=self.n_neighbors, weights=self.weights, algorithm=self.algorithm)
-        regr1.fit(X_train,Y_train)
+        neigh_ecal_neq_0 = neighbors.KNeighborsRegressor(n_neighbors=self.n_neighbors, weights=self.weights, algorithm=self.algorithm)
+        neigh_ecal_neq_0.fit(X_train,Y_train)
 
         #case ecal == 0
         X_train = self.hcal_train[self.ecal_train==0]
@@ -126,11 +226,11 @@ class KNN:
         Y_train = self.true_train[self.ecal_train==0]
         self.Y_train2 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        regr2 = neighbors.KNeighborsRegressor(n_neighbors=self.n_neighbors, weights=self.weights, algorithm=self.algorithm)
-        regr2.fit(X_train,Y_train)
+        neigh_ecal_eq_0 = neighbors.KNeighborsRegressor(n_neighbors=self.n_neighbors, weights=self.weights, algorithm=self.algorithm)
+        neigh_ecal_eq_0.fit(X_train,Y_train)
 
-        self.regr1 = regr1
-        self.regr2 = regr2
+        self.neigh_ecal_neq_0 = neigh_ecal_neq_0
+        self.neigh_ecal_eq_0 = neigh_ecal_eq_0
 
     def deleteTrainPoints(self,e,h,t,refresh=True):
 

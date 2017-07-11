@@ -40,8 +40,13 @@ class KNNGaussianFitDirect(Calibration):
     to reject calibration points with ecal + hcal > lim
     if lim = - 1, there is no limit
     
-    n_neighbors: int
+    n_neighbors_ecal_eq_0: int
     Number of neighbors to use by default for k_neighbors queries.
+    for ecal == 0
+    
+    n_neighbors_ecal_neq_0: int
+    Number of neighbors to use by default for k_neighbors queries.
+    for ecal != 0
 
     algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
     Algorithm used to compute the nearest neighbors:

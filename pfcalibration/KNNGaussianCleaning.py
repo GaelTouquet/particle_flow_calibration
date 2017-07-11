@@ -190,8 +190,13 @@ class KNNGaussianCleaning(Calibration):
         true_train : array-like
         true value to train the calibration
 
-        n_neighbors: int
+        n_neighbors_ecal_eq_0: int
         Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
 
         weight : str or callable
         weight function used in prediction. Possible values:
