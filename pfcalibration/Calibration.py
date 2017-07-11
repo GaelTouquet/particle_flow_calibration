@@ -24,6 +24,12 @@ class Calibration:
     lim : float
     to reject calibration points with ecal + hcal > lim
     if lim = - 1, there is no limit
+    
+    numberPart : int
+    number of particles
+    
+    numberPart_str : str
+    number of particles
     """
     
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],lim=-1):
@@ -36,3 +42,14 @@ class Calibration:
         if lim == -1:
             lim = min(max(ecal_train),max(hcal_train))
         self.lim = lim
+        
+        self.numberPart = len(self.ecal_train)
+        if  len(self.hcal_train) != self.numberPart or len(self.true_train) != self.numberPart or len(self.hcal_train) != len(self.true_train):
+            raise ValueError("ecal_train, hcal_train and true_train do not have the same length")
+            
+        self.numberPart_str = str(int(self.numberPart/1000))+"k"
+        
+        self.classname = type(self).__name__
+    
+    def saveCalib(self):
+        return 0
