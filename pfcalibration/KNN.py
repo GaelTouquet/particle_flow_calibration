@@ -126,10 +126,9 @@ class KNN(Calibration):
 
         Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         
+        # we define the weight
         if weights == 'gaussian':
-            def gaussian(x):
-                return np.exp(-(x**2) / (sigma**2) / 2 )
-            self.weights = gaussian
+            self.weights = lambda x : np.exp(-(x**2) / (sigma**2) / 2 )
         else:
             self.weights = weights
 
@@ -147,21 +146,20 @@ class KNN(Calibration):
         Y_train = true_train[ecal_train!=0]
         self.Y_train1 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        neigh_ecal_neq_0 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_neq_0, weights=self.weights, algorithm=self.algorithm)
-        neigh_ecal_neq_0.fit(X_train,Y_train)
+        self.neigh_ecal_neq_0 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_neq_0, weights=self.weights, algorithm=self.algorithm)
+        self.neigh_ecal_neq_0.fit(X_train,Y_train)
 
         #case ecal == 0
+
         X_train = hcal_train[ecal_train==0]
         self.X_train2 = X_train
         X_train = np.transpose(np.matrix(X_train))
         Y_train = true_train[ecal_train==0]
         self.Y_train2 = Y_train
         Y_train = np.transpose(np.matrix(Y_train))
-        neigh_ecal_eq_0 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_eq_0, weights=self.weights, algorithm=algorithm)
-        neigh_ecal_eq_0.fit(X_train,Y_train)
+        self.neigh_ecal_eq_0 = neighbors.KNeighborsRegressor(n_neighbors=n_neighbors_ecal_eq_0, weights=self.weights, algorithm=algorithm)
+        self.neigh_ecal_eq_0.fit(X_train,Y_train)
 
-        self.neigh_ecal_neq_0 = neigh_ecal_neq_0
-        self.neigh_ecal_eq_0 = neigh_ecal_eq_0
 
     def predictSingleValue(self,e,h):
         """

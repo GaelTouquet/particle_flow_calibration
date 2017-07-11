@@ -271,11 +271,9 @@ class KNNGaussianCleaning(Calibration):
         self.evaluatedPoint_true_max = []
 
 
-        # we define the choice
+        # we define the weight
         if weights == 'gaussian':
-            def gaussian(x):
-                return np.exp(-(x**2) / (sigma**2) / 2 )
-            self.weights = gaussian
+            self.weights = lambda x : np.exp(-(x**2) / (sigma**2) / 2 )
         else:
             self.weights = weights
 

@@ -8,42 +8,46 @@ Script to understand how does KNN works.
 """
 
 import matplotlib.pyplot as plt
-import pfcalibration.usualplots as usplt
-from pfcalibration.tools import savefig
-from pfcalibration.tools import importPickle
+import pfcalibration.usualplots as usplt               # usual plots function 
+from pfcalibration.tools import importData,importCalib # to import binary data
+from pfcalibration.tools import savefig                # to save a figure
+
 
 
 # file to save the pictures
 directory = "pictures/testKNN/"
-#importation of simulated particles
-filename = 'charged_hadrons_100k.energydata'
-data1 = importPickle(filename)
-filename = 'prod2_200_400k.energydata'
-data2 = importPickle(filename)
-# we merge the 2 sets of data
-data1 = data1.mergeWith(importPickle(filename))
-# we split the data in 2 sets
-data1,data2 = data1.splitInTwo()
-#data 1 -> training data
-#data 2 -> data to predict
-
-# parameters of the calibration
-n_neighbors_ecal_eq_0 = 2000
-n_neighbors_ecal_neq_0 = 250
-weights = 'gaussian'
-algorithm = 'auto'
-sigma = 5
-lim = 150
-energystep = 1
-kind = 'cubic'
-cut = 2
-
-
-
-KNN = data1.KNN(n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,
-                             weights,algorithm,sigma,lim)
-
-classname = type(KNN).__name__
+try:
+    filename = "calibration/test"
+    KNNGF = importCalib(filename)
+except FileNotFoundError:
+    #importation of simulated particles
+    filename = 'charged_hadrons_100k.energydata'
+    data1 = importData(filename)
+    filename = 'prod2_200_400k.energydata'
+    data2 = importData(filename)
+    # we merge the 2 sets of data
+    data1 = data1.mergeWith(data2)
+    # we split the data in 2 sets
+    data1,data2 = data1.splitInTwo()
+    #data 1 -> training data
+    #data 2 -> data to predict
+    
+    # parameters of the calibration
+    n_neighbors_ecal_eq_0 = 2000
+    n_neighbors_ecal_neq_0 = 250
+    weights = 'gaussian'
+    algorithm = 'auto'
+    sigma = 5
+    lim = 150
+    energystep = 1
+    kind = 'cubic'
+    cut = 2
+    
+    KNN = data1.KNN(n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,
+                                 weights,algorithm,sigma,lim)
+    KNN.saveCalib()
+    
+classname = KNN.classname
 #plot 3D Training points
 fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_training(data1)
