@@ -161,13 +161,16 @@ class KNNGaussianFitDirect(Calibration):
                 dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
                 dist = dist[0]
                 ind = ind[0]
+                
                 dlim = hcal-self.hcal_train_ecal_eq_0_min + 0.1
+                if hcal < self.hcal_train_ecal_eq_0_min:
+                    dlim = self.hcal_train_ecal_eq_0_min + 0.1
                 ind = ind[dist <= dlim]
 
                 true_neigh = self.true_train_ecal_eq_0[ind]
                 binwidth = 1
-                nbins = np.arange(min(true_neigh), max(true_neigh) + binwidth, binwidth)
 
+                nbins = np.arange(min(true_neigh), max(true_neigh) + binwidth, binwidth)
                 with warnings.catch_warnings():
                     try:
                         #we create the histogram
