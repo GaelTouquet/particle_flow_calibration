@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Developed by Samuel Niang
+For IPNL (Nuclear Physics Institute of Lyon)
+
+Script to understand how does KNNGFD works.
+"""
 import matplotlib.pyplot as plt
 from pfcalibration.tools import gaussian_fit, binwidth_array
 from sklearn import neighbors
