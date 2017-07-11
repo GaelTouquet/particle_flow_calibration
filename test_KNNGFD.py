@@ -83,6 +83,12 @@ usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGFD,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
 
+#courbe de calibration pour ecal = 0
+hcal_train = KNNGFD.hcal_train_ecal_eq_0
+true_train = KNNGFD.true_train_ecal_eq_0
+h = np.arange(min(hcal_train),lim,0.1)
+e = np.zeros(len(h))
+t = KNNGFD.predict(e,h)
 
 #neigh for ecal == 0
 h_neigh = np.arange(10,lim,30)
