@@ -18,12 +18,13 @@ from scipy.optimize import OptimizeWarning
 
 class KNNGaussianFit(Calibration):
     """
+    Inherit from Calibration.
     Class to calibrate the true energy of a particle thanks to training datas.
     We use the a k neareast neighbours method, we fit the histogramm of the
     true energy of the neighbours by a gaussian and consider the mean of the
     gaussian distribution is the approximation of the true energy.
     We do an iterpolation to determine the other values.
-    Inherit from Calibration
+    
     Attributs
     ---------
     
@@ -51,13 +52,9 @@ class KNNGaussianFit(Calibration):
     'auto' will attempt to decide the most appropriate algorithm based
     on the values passed to fit method.
 
-    
-
     kind : str or int, optional
     Specifies the kind of interpolation as a string (‘linear’, 'cubic')
     Default is 'cubic'
-
-    
 
     neigh_ecal_neq_0 : sklearn.neighbors.NearestNeighbors
     the sklearn.neighbors.NearestNeighbors for ecal != 0
@@ -199,7 +196,6 @@ class KNNGaussianFit(Calibration):
         the spline interpolator to use. Default is ‘linear’
 
         """
-        
         Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         
         self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0

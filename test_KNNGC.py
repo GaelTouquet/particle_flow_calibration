@@ -42,33 +42,52 @@ cut = 2
 
 KNNGC = data1.KNNGaussianCleaning(n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,
                              weights,algorithm,sigma,lim,energystep,kind,cut)
+
 classname = type(KNNGC).__name__
+#plot 3D Training points
+fig = plt.figure(1,figsize=(5, 5))
+usplt.plot3D_training(data1)
+#plt.show()
+savefig(fig,directory,classname+"_plot3D_training.png")
+
+#plot 3D surface calibration
+fig = plt.figure(1,figsize=(5, 5))
+usplt.plot3D_surf(KNNGC,data1)
+#plt.show()
+savefig(fig,directory,classname+"_plot3D_surf.png")
+plt.close()
 
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(KNNGC)
 #plt.show()
 savefig(fig,directory,classname+"_calibration.png")
+plt.close()
 
 #ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(KNNGC,data2)
 #plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
+plt.close()
 
 #histogram of ecalib and etrue
-fig = plt.figure(figsize=(10,8))
+fig = plt.figure(figsize=(10,6))
 usplt.hist_ecalib(KNNGC,data2)
+#plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
+plt.close()
 
 #ecalib/etrue in function of ecal,hcal
 fig = plt.figure(figsize=(10,5))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(KNNGC,data2)
-plt.show()
+#plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
+plt.close()
 
 #ecalib/etrue gaussian fit curve
 fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGC,data2)
-plt.show()
+#plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
+plt.close()

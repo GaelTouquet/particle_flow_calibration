@@ -11,9 +11,12 @@ from scipy.interpolate import interp2d, interp1d
 from pfcalibration.tools import gaussian_param
 from scipy.optimize import curve_fit, OptimizeWarning
 import warnings
+from pfcalibration.Calibration import Calibration
 
-class KNNGaussianCleaning:
+class KNNGaussianCleaning(Calibration):
     """
+    Inherit from Calibration.
+    
     Class to calibrate the true energy of a particle thanks to training datas.
     We use the a k neareast neighbours method, we fit the histogramm of the
     true energy of the neighbours  by a gaussian and we only consider the
@@ -24,6 +27,19 @@ class KNNGaussianCleaning:
 
     Attributs
     ---------
+    ecal_train : array
+    ecal value to train the calibration
+
+    hcal_train : array
+    ecal value to train the calibration
+
+    true_train : array
+    ecal value to train the calibration
+    
+    lim : float
+    to reject calibration points with ecal + hcal > lim
+    if lim = - 1, there is no limit
+    
     n_neighbors: int
     Number of neighbors to use by default for k_neighbors queries.
 
@@ -51,10 +67,6 @@ class KNNGaussianCleaning:
     sigma : float
     sigma for the gaussian if weight == 'gaussian'
 
-    lim : float
-    to reject calibration points with ecal + hcal > lim
-    if lim = - 1, there is no limit
-
     kind : str or int, optional
     Specifies the kind of interpolation as a string (‘linear’, ‘nearest’,
     ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’ where ‘zero’, ‘slinear’,
@@ -67,15 +79,6 @@ class KNNGaussianCleaning:
     we only consider the points with true energy between
     mu - cut * sigma and mu - cut * sigma (mu and sigma the mean and std
     of the gaussian fit).
-
-    ecal_train : array
-    ecal value to train the calibration
-
-    hcal_train : array
-    ecal value to train the calibration
-
-    true_train : array
-    ecal value to train the calibration
 
     neigh_ecal_neq_0 : sklearn.neighbors.NearestNeighbors
     the sklearn.neighbors.NearestNeighbors for ecal != 0
@@ -233,7 +236,8 @@ class KNNGaussianCleaning:
         mu - cut * sigma and mu - cut * sigma (mu and sigma the mean and std
         of the gaussian fit)
         """
-
+        Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
+        
         self.n_neighbors_ecal_eq_0 = n_neighbors_ecal_eq_0
         self.n_neighbors_ecal_neq_0 = n_neighbors_ecal_neq_0
         self.algorithm = algorithm
@@ -269,15 +273,6 @@ class KNNGaussianCleaning:
             self.weights = gaussian
         else:
             self.weights = weights
-
-
-        # we reject calibration points with ecal + hcal > lim
-        if lim == -1:
-            lim = max(max(ecal_train),max(hcal_train))
-        self.lim = lim
-        self.ecal_train = ecal_train[ecal_train+hcal_train<=lim]
-        self.hcal_train = hcal_train[ecal_train+hcal_train<=lim]
-        self.true_train = true_train[ecal_train+hcal_train<=lim]
 
 
         #Case ecal == 0

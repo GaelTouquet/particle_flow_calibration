@@ -17,6 +17,8 @@ from scipy.optimize import OptimizeWarning
 
 class KNNGaussianFitDirect(Calibration):
     """
+    Inherit from Calibration.
+    
     Class to calibrate the true energy of a particle thanks to training datas.
     We use the a k neareast neighbours method, we fit the histogramm of the
     true energy of the neighbours by a gaussian and consider the mean of the
