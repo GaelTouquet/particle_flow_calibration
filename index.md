@@ -59,7 +59,6 @@ energystep_ecal_neq_0 = 5
 calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind='cubic')
-calibration.saveCalib()
 ```
 See : [create_all_calibration.py](create_all_calibration.py), [example_KNNGF.py](example_KNNGF.py)
 
@@ -71,7 +70,7 @@ calibration.saveCalib()
 See : [create_all_calibration.py](create_all_calibration.py)
 ### To import
 ```python
-from pfcalibration.tools import importData, importCalib # to import binary data
+from pfcalibration.tools import importCalib # to import binary data
 
 # We import the calibration
 filename = "calibrations/KNNGaussianFit_162Kpart_hcal_train_ecal_eq_0_min_1.00043606758_lim_150_n_neighbors_ecal_eq_0_2000_n_neighbors_ecal_neq_0_250.calibration"
@@ -104,6 +103,7 @@ ecalib = calibration.predict(ecal,hcal)
 
 ## Usual plots
 ```python
+import matplotlib.pyplot as plt
 import pfcalibration.usualplots as usplt  # usual plots function 
 from pfcalibration.tools import savefig   # to save a figure
 
@@ -160,3 +160,4 @@ plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
 ```
 ![ecalib/etrue gaussian fit curve](img_index/KNNGaussianFit_ecalib_over_etrue_curve.png)
+See : [example_KNNGF.py](example_KNNGF.py)

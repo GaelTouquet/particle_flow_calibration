@@ -8,13 +8,9 @@ Script to understand how does KNNGF works.
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pfcalibration.usualplots as usplt               # usual plots function 
 from pfcalibration.tools import importData,importCalib # to import binary data
 from pfcalibration.tools import savefig                # to save a figure
-from pfcalibration.tools import gaussian_param
-from pfcalibration.tools import binwidth_array
-import math
 
 
 
@@ -57,46 +53,39 @@ fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_training(data1)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_training.png")
-savefig(fig,'img_index/',classname+"_plot3D_training.png")
 
 #plot 3D surface calibration
 fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_surf(KNNGF,data1)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
-savefig(fig,'img_index/',classname+"_plot3D_surf.png")
 
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
 usplt.plotCalibrationCurve(KNNGF)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
-savefig(fig,'img_index/',classname+"_calibration.png")
 
 #ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
-savefig(fig,'img_index/',classname+"_ecalib_over_etrue.png")
 
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,6))
 usplt.hist_ecalib(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
-savefig(fig,'img_index/',classname+"_histograms_ecalib_etrue.png")
 
 #ecalib/etrue in function of ecal,hcal
 fig = plt.figure(figsize=(10,5))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
-savefig(fig,'img_index/',classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 
 #ecalib/etrue gaussian fit curve
 fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
-savefig(fig,'img_index/',classname+"_ecalib_over_etrue_curve.png")
