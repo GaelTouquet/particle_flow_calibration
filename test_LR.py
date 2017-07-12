@@ -13,30 +13,30 @@ from pfcalibration.tools import savefig
 from pfcalibration.tools import importData,importCalib
 
 
+#importation of simulated particles
+filename = 'charged_hadrons_100k.energydata'
+data1 = importData(filename)
+filename = 'prod2_200_400k.energydata'
+data2 = importData(filename)
+# we merge the 2 sets of data
+data1 = data1.mergeWith(data2)
+# we split the data in 2 sets
+data1,data2 = data1.splitInTwo()
+#data 1 -> training data
+#data 2 -> data to predict
 
+# parameters of the calibration
+lim_min = 20
+lim_max=80
+lim=150
 
 # file to save the pictures
 directory = "pictures/testLinearRegression/"
 try:
+    # We import the calibration
     filename = "calibrations/LinearRegression_162Kpart_lim_150_lim_max_80_lim_min_20.calibration"
     LR = importCalib(filename)
 except FileNotFoundError:
-    #importation of simulated particles
-    filename = 'charged_hadrons_100k.energydata'
-    data1 = importData(filename)
-    filename = 'prod2_200_400k.energydata'
-    data2 = importData(filename)
-    # we merge the 2 sets of data
-    data1 = data1.mergeWith(data2)
-    # we split the data in 2 sets
-    data1,data2 = data1.splitInTwo()
-    #data 1 -> training data
-    #data 2 -> data to predict
-    
-    # parameters of the calibration
-    lim_min = 20
-    lim_max=80
-    lim=150
     # We create the calibration
     LinearRegression = data1.LinearRegression(lim_min = 20, lim_max=80, lim=150)
     # We save the calibration

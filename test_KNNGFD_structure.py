@@ -16,28 +16,31 @@ from pfcalibration.tools import savefig                # to save a figure
 
 # file to save the pictures
 directory = "pictures/testKNNGFD_structure/"
+
+#importation of simulated particles
+filename = 'charged_hadrons_100k.energydata'
+data1 = importData(filename)
+filename = 'prod2_200_400k.energydata'
+data2 = importData(filename)
+# we merge the 2 sets of data
+data1 = data1.mergeWith(data2)
+# we split the data in 2 sets
+data1,data2 = data1.splitInTwo()
+#data 1 -> training data
+#data 2 -> data to predict
+
+# parameters of the calibration
+lim = 150                   # if ecal + hcal > lim, ecalib = math.nan
+n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
+n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
+energystep_ecal_eq_0 = 1
+energystep_ecal_neq_0 = 5
+    
 try:
+    # We import the calibration
     filename = "calibrations/KNNGaussianFitDirect_162Kpart_ecal_train_ecal_neq_0_min_0.292026728392_hcal_train_ecal_eq_0_min_1.00043606758_hcal_train_ecal_neq_0_min_1.00002634525_lim_150_n_neighbors_ecal_eq_0_2000_n_neighbors_ecal_neq_0_250.calibration"
     KNNGFD = importCalib(filename)
 except FileNotFoundError:
-    #importation of simulated particles
-    filename = 'charged_hadrons_100k.energydata'
-    data1 = importData(filename)
-    filename = 'prod2_200_400k.energydata'
-    data2 = importData(filename)
-    # we merge the 2 sets of data
-    data1 = data1.mergeWith(data2)
-    # we split the data in 2 sets
-    data1,data2 = data1.splitInTwo()
-    #data 1 -> training data
-    #data 2 -> data to predict
-    
-    # parameters of the calibration
-    lim = 150                   # if ecal + hcal > lim, ecalib = math.nan
-    n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
-    n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
-    energystep_ecal_eq_0 = 1
-    energystep_ecal_neq_0 = 5
     # We create the calibration
     KNNGFD = data1.KNNGaussianFitDirect(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                                         n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
