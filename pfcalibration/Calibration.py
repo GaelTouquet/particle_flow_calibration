@@ -85,5 +85,10 @@ class Calibration:
         return res
     
     def __repr__(self):
-        return self.__str__(self)
+        res = self.classname+":"
+        od = collections.OrderedDict(sorted((self.__dict__).items()))
+        for elem, value in od.items():
+            if isinstance(value,(int,float)) and elem != "numberPart_str":
+                res +="\n"+elem+" -> "+str(value)
+        return res
     
