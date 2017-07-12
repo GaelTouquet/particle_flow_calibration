@@ -10,8 +10,6 @@ Script to compare all calibrations.
 from pfcalibration.tools import importData, importCalib # to import binary data
 
 
-# file to save the pictures
-directory = "pictures/testKNNGFD/"
 #importation of simulated particles
 filename = 'charged_hadrons_100k.energydata'
 data1 = importData(filename)

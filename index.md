@@ -53,13 +53,31 @@ n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
 n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
 energystep_ecal_eq_0 = 1
 energystep_ecal_neq_0 = 5
+    
 
 # We create the calibration
-KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind='cubic')
-
+calibration.saveCalib()
 ```
+See : [create_all_calibration.py](create_all_calibration.py), [example_KNNGF.py](example_KNNGF.py)
+
+## To save or to import a calibration
+### To save
+```python
+calibration.saveCalib()
+```
+See : [create_all_calibration.py](create_all_calibration.py)
+### To import
+```python
+from pfcalibration.tools import importData, importCalib # to import binary data
+
+# We import the calibration
+filename = "calibrations/KNNGaussianFit_162Kpart_hcal_train_ecal_eq_0_min_1.00043606758_lim_150_n_neighbors_ecal_eq_0_2000_n_neighbors_ecal_neq_0_250.calibration"
+calibration = importCalib(filename)
+```
+See : [example_KNNGF.py](example_KNNGF.py)
 
 ## To use a calibration
 ```python
