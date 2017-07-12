@@ -88,7 +88,7 @@ calibration = KNNGaussianFit(ecal,hcal,etrue,n_neighbors_ecal_eq_0=n_neighbors_e
 See : [create_all_calibration.py](create_all_calibration.py), [example_KNNGF.py](example_KNNGF.py)
 
 ## To save or to import a calibration
-Because creating a calibration could be long, one it is done, you can save it in a binary file to use it later.
+Because creating a calibration could be long, once it is done, you can save it in a binary file to use it later.
 ### To save
 ```python
 calibration.saveCalib()
@@ -134,7 +134,7 @@ import matplotlib.pyplot as plt
 import pfcalibration.usualplots as usplt  # usual plots function 
 from pfcalibration.tools import savefig   # to save a figure
 
-classname = type(calibration).__name__
+classname = calibration.classname
 # file to save the pictures
 directory = "pictures/testcalibration/"
 ```
