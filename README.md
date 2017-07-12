@@ -30,7 +30,8 @@ Step 3 : you can use the new files in '`.energydata`' in the other programs
 ## To create a calibration
 ### Importation of data
 To create your calibration, you need simulated particles in a '`.energydata`' binary file (see above).
-This introduce to you some useful methods to import this data.
+
+This introduces to you some useful methods to import this data.
 ```python
 from pfcalibration.tools import importPickle # to import binary data
 
@@ -87,12 +88,14 @@ calibration = KNNGaussianFit(ecal,hcal,etrue,n_neighbors_ecal_eq_0=n_neighbors_e
 See : [create_all_calibration.py](create_all_calibration.py), [example_KNNGF.py](example_KNNGF.py)
 
 ## To save or to import a calibration
+Because creating a calibration could be long, one it is done, you can save it in a binary file to use it later.
 ### To save
 ```python
 calibration.saveCalib()
 ```
 See : [create_all_calibration.py](create_all_calibration.py)
 ### To import
+We can use `pfcalibration.tools.importCalib` to import an already saved calibration.
 ```python
 from pfcalibration.tools import importCalib # to import binary data
 
