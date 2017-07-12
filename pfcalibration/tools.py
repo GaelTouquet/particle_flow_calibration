@@ -6,7 +6,7 @@ For IPNL (Nuclear Physics Institute of Lyon)
 """
 
 import numpy as np
-import pickle
+import dill as pickle
 from scipy.optimize import curve_fit
 import math
 import warnings

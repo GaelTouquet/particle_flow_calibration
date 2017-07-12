@@ -127,7 +127,6 @@ class KNN(Calibration):
         Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         
         # we define the weight
-        # we cannot pickle a function !!!
         if weights == 'gaussian':
             self.weights = lambda x : np.exp(-(x**2) / (sigma**2) / 2 )
         else:
