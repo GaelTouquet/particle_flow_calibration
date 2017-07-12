@@ -1,6 +1,6 @@
 # How does it works
-For the particles flow we need to know the energies of the particles thanks to the hadronic calorimeter and electromagnetic calorimeter.
-We use simulated particles to creates models to obtains a calibrate energy thanks to simulated particles.
+For the particles flow, we need to know the energies of the particles thanks to the hadronic calorimeter and electromagnetic calorimeter.
+We use simulated particles to creates models to obtains a calibrated energy thanks to simulated particles.
 
 ![3D plots](img_index/3Dplots.png)
 
@@ -29,6 +29,8 @@ Step 3 : you can use the new files in '`.energydata`' in the other programs
 
 ## To create a calibration
 ### Importation of data
+To create your calibration, you need simulated particles in a '`.energydata`' binary file (see above).
+This introduce to you some useful methods to import this data.
 ```python
 from pfcalibration.tools import importPickle # to import binary data
 
@@ -57,6 +59,28 @@ energystep_ecal_neq_0 = 5
 
 # We create the calibration
 calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
+                             n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
+                             lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind='cubic')
+```
+
+If you have the `ecal`,`hcal`,`etrue` variables in 3 arrays you can also do :
+```python
+from pfcalibration.KNNGaussianFit import KNNGaussianFit
+
+ecal = ...
+hcal = ...
+etrue = ...
+
+# parameters of the calibration
+lim = 150                   # if ecal + hcal > lim, ecalib = math.nan
+n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
+n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
+energystep_ecal_eq_0 = 1
+energystep_ecal_neq_0 = 5
+    
+
+# We create the calibration
+calibration = KNNGaussianFit(ecal,hcal,etrue,n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
                              lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind='cubic')
 ```
