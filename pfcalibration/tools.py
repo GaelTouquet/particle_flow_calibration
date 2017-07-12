@@ -114,9 +114,7 @@ def importData(filename):
 def importCalib(filename):
     calib = importPickle(filename)
     print(calib.classname+" imported")
-    for e in calib.__dict__:
-            if isinstance(calib.__dict__[e],(int,float )) and e != "numberPart" :
-                print(e+" : "+str(calib.__dict__[e]))
+    print(calib)
     return calib
 
 
