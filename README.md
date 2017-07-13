@@ -33,15 +33,15 @@ To create your calibration, you need simulated particles in a '`.energydata`' bi
 
 This introduces to you some useful methods to import this data.
 ```python
-from pfcalibration.tools import importPickle # to import binary data
+from pfcalibration.tools import importData # to import binary data
 
 #importation of simulated particles
 filename = 'charged_hadrons_100k.energydata'
-data1 = importPickle(filename)
+data1 = importData(filename)
 filename = 'prod2_200_400k.energydata'
-data2 = importPickle(filename)
+data2 = importData(filename)
 # we merge the 2 sets of data
-data1 = data1.mergeWith(importPickle(filename))
+data1 = data1.mergeWith(data2)
 # we split the data in 2 sets
 data1,data2 = data1.splitInTwo()
 #data 1 -> training data
