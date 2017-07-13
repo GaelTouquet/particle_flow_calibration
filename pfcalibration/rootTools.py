@@ -41,8 +41,7 @@ def importRootData(filename):
 
 def rootToPython(filename):
     """
-    transforme un fichier root en un fichier binaire contenant une classe
-    EnergyData importable par pickle
+    Turns a root file into a binary file containing a EnergyData object usable by the programs
     """
     splited = filename.split('.')
     if splited[len(splited)-1] == "root":
@@ -52,4 +51,4 @@ def rootToPython(filename):
         exportPickle(filename+'.energydata',energydata)
 
     else:
-        print("Il ne s'agit pas d'un fichier root")
+        print("It is not a root file")
