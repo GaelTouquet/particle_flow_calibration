@@ -61,7 +61,7 @@ class Calibration:
         
         # we reject calibration points with ecal + hcal > lim
         if lim == -1:
-            lim = max(max(ecal_train),max(hcal_train))
+            lim = max(ecal_train) + max(hcal_train)
         self.lim = lim
         
         self.numberPart = len(self.ecal_train)

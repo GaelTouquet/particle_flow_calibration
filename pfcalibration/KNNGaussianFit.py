@@ -38,7 +38,7 @@ class KNNGaussianFit(Calibration):
     ecal value to train the calibration
     
     lim : float
-    to reject calibration points with ecal + hcal > lim
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
     if lim = - 1, there is no limit
     
     n_neighbors_ecal_eq_0: int

@@ -205,6 +205,40 @@ class EnergyData:
         
         Parameters
         ----------
+        n_neighbors_ecal_eq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
+
+        algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
+        Algorithm used to compute the nearest neighbors:
+        'ball_tree' will use BallTree
+        'kd_tree' will use KDtree
+        'brute' will use a brute-force search.
+        'auto' will attempt to decide the most appropriate algorithm based on
+        the values passed to fit method.
+
+        lim : float
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+        if lim = - 1, there is no limit
+
+        energystep_ecal_eq_0 : float
+        step between two points of evaluation
+        for ecal == 0
+        
+        energystep_ecal_neq_0 : float
+        step between two points of evaluation
+        for ecal != 0
+
+        kind : str or int, optional
+        Specifies the kind of interpolation as a string (‘linear’, ‘nearest’,
+        ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’ where ‘zero’, ‘slinear’,
+        ‘quadratic’ and ‘cubic’ refer to a spline interpolation of zeroth,
+        first, second or third order) or as an integer specifying the order of
+        the spline interpolator to use. Default is ‘linear’
         
         Returns
         -------
