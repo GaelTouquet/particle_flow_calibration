@@ -137,6 +137,56 @@ class EnergyData:
         
         Parameters
         ----------
+        n_neighbors_ecal_eq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
+
+        weight : str or callable
+        weight function used in prediction. Possible values:
+        'uniform' : uniform weights. All points in each neighborhood are
+        weighted equally.
+        'distance' : weight points by the inverse of their distance. in this
+        case, closer neighbors of a query point will have a greater influence
+        than neighbors which are further away.
+        [callable] : a user-defined function which accepts an array of
+        distances, and returns an array of the same shape containing the weights.
+        'gaussian'
+        Gaussian weights are used by default.
+
+        algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
+        Algorithm used to compute the nearest neighbors:
+        'ball_tree' will use BallTree
+        'kd_tree' will use KDtree
+        'brute' will use a brute-force search.
+        'auto' will attempt to decide the most appropriate algorithm based on
+        the values passed to fit method.
+
+        sigma : float
+        sigma for the gaussian if weight == 'gaussian'
+
+        lim : float
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+        if lim = - 1, there is no limit
+
+        energystep : float
+        step between two points of evaluation
+
+        kind : str or int, optional
+        Specifies the kind of interpolation as a string (‘linear’, ‘nearest’,
+        ‘zero’, ‘slinear’, ‘quadratic’, ‘cubic’ where ‘zero’, ‘slinear’,
+        ‘quadratic’ and ‘cubic’ refer to a spline interpolation of zeroth,
+        first, second or third order) or as an integer specifying the order of
+        the spline interpolator to use. Default is ‘linear’
+
+        cut : float
+        cut to reject points
+        we only consider the points with true energy between
+        mu - cut * sigma and mu - cut * sigma (mu and sigma the mean and std
+        of the gaussian fit)
         
         Returns
         -------

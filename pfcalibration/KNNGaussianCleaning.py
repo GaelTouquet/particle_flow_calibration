@@ -37,7 +37,7 @@ class KNNGaussianCleaning(Calibration):
     ecal value to train the calibration
     
     lim : float
-    to reject calibration points with ecal + hcal > lim
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
     if lim = - 1, there is no limit
     
     n_neighbors: int
@@ -222,7 +222,7 @@ class KNNGaussianCleaning(Calibration):
         sigma for the gaussian if weight == 'gaussian'
 
         lim : float
-        to reject calibration points with ecal + hcal > lim
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
         if lim = - 1, there is no limit
 
         energystep : float
@@ -272,7 +272,6 @@ class KNNGaussianCleaning(Calibration):
 
 
         # we define the weight
-        # we cannot pickle a function !!!
         if weights == 'gaussian':
             self.weights = lambda x : np.exp(-(x**2) / (sigma**2) / 2 )
         else:
