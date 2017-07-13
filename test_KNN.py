@@ -58,7 +58,7 @@ plt.close()
 
 #plot 3D surface calibration
 fig = plt.figure(1,figsize=(5, 5))
-usplt.plot3D_surf(KNN,data1)
+usplt.plot3D_surf(KNN)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
 plt.close()

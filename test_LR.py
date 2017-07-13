@@ -51,7 +51,7 @@ classname = LinearRegression.classname
 #plot 3D Training points
 fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_training(data1)
-#plt.show()
+plt.show()
 savefig(fig,directory,classname+"_plot3D_training.png")
 plt.close()
 
