@@ -35,7 +35,7 @@ directory = "pictures/testLinearRegression/"
 try:
     # We import the calibration
     filename = "calibrations/LinearRegression_162Kpart_lim_150_lim_max_80_lim_min_20.calibration"
-    LR = importCalib(filename)
+    LinearRegression = importCalib(filename)
 except FileNotFoundError:
     # We create the calibration
     LinearRegression = data1.LinearRegression(lim_min = 20, lim_max=80, lim=150)
@@ -57,7 +57,7 @@ plt.close()
 
 #plot 3D surface calibration
 fig = plt.figure(1,figsize=(5, 5))
-usplt.plot3D_surf(LinearRegression,data1)
+usplt.plot3D_surf(LinearRegression)
 #plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
 plt.close()

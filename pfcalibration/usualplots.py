@@ -308,7 +308,13 @@ def plot3D_training(data1):
     ax.set_zlabel(r'$e_{true}$',fontsize=15)
 
     
-def plot3D_surf(calib,data1):
+def plot3D_surf(calib):
+    """
+    Plot the surface of the calibration
+    Parameters
+    ----------
+    calib : the calibration
+    """
     ecal = np.arange(0,calib.lim,2)
     hcal = np.arange(0,calib.lim,2)
     ecal,hcal = np.meshgrid(ecal,hcal)
@@ -316,9 +322,9 @@ def plot3D_surf(calib,data1):
     ax = plt.axes(projection='3d')
     ax.plot_wireframe(ecal,hcal,ecalib,color='red')
     ax.view_init(10,280)
-    ax.set_xlim([0,data1.ecal_max])
-    ax.set_ylim([0,data1.hcal_max])
-    ax.set_zlim([0,data1.true_max])
+    ax.set_xlim([0,max(calib.ecal_train)])
+    ax.set_ylim([0,max(calib.hcal_train)])
+    ax.set_zlim([0,max(calib.true_train)])
     ax.set_title("Calibration surface")
     ax.set_xlabel(r'$e_{cal}$',fontsize=15)
     ax.set_ylabel(r'$h_{cal}$',fontsize=15)

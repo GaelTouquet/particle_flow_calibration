@@ -37,37 +37,43 @@ def selectionCone(x,y,z,theta,delta):
 
 def projectionPlan(x,y,z,theta):
     """
-    Projette les coordonnées x,y,z sur le plan
+    Projects the points (x,y,z) on the plan turned of the theta angle
     tourné de theta
     Parameters
     ----------
-    x :
-    y :
-    z :
-    theta :
+    x : numpy array
+    the x coordinates
+    y : numpy array
+    the y coordinates
+    z : numpy array
+    the z coordinates
+    theta : float
+    the theta angle
 
     Returns
     -------
+    the coordinates x_theta,z
     """
     return np.array([x*np.cos(theta) + y*np.sin(theta),z])
 
 def projectionPlanInverse(x,z,theta):
     """
-    Transforme les coord du plan tourné de theta
-    en coord x, y, z
+    Transforms the coordinates of the plan turned of the theta angle into x,y,z coordiates
     Parameters
     ----------
-    x :
-    z :
-    theta :
+    x : x_theta coordinates
+    z : z coordinates
+    theta : the theta angle
     Returns
     -------
+    the x,y,z coordinates
     """
     return np.array([x*np.cos(theta), x*np.sin(theta),z])
 
 def projectionCone(x,y,z,theta,delta):
     """
-    Combine les deux fonctions precedentes
+    Combine selectioCone and projectionPlan
+    To project the points in the cone on the plan
     Parameters
     ----------
     x : the x coordinates (an array-like)
@@ -83,23 +89,32 @@ def projectionCone(x,y,z,theta,delta):
 
 def importPickle(filename):
     """
+    To import an object in a binary file
+    
     Parameters
     ----------
+    filename: string
+    the path and name of the file
     Returns
     -------
+    obj : 
+    the imported object 
     """
     datafile = open(filename, "rb")
     mon_depickler = pickle.Unpickler(datafile)
-    data = mon_depickler.load()
+    obj = mon_depickler.load()
     datafile.close()
-    return data
+    return obj
 
 def exportPickle(filename,objectToSave):
     """
+    Te export an object into a binary file
+    
     Parameters
     ----------
-    Returns
-    -------
+    filename : str
+    path+file name
+    objectToSave : object
     """
     dataFile = open(filename, "wb")
     pickler = pickle.Pickler(dataFile)
@@ -107,11 +122,35 @@ def exportPickle(filename,objectToSave):
     dataFile.close()
     
 def importData(filename):
+    """
+    Import the EnergyData
+    
+    Parameters
+    ----------
+    filename : str
+    path+filename
+    
+    Returns
+    -------
+    the EnergyData
+    """
     data = importPickle(filename)
     print("Data imported and includes",len(data.ecal),"particles")
     return data
 
 def importCalib(filename):
+    """
+    Import the calibration
+    
+    Parameters
+    ----------
+    filename : str
+    path+filename
+    
+    Returns
+    -------
+    the calibration
+    """
     calib = importPickle(filename)
     print(calib.classname+" imported")
     print(calib)
@@ -155,18 +194,49 @@ def optimized_binwidth(x_input):
     return optD
 
 def binwidth_array(x_input,binwidth = 'optimized'):
+    """
+    Creates an array on bins adapted to an array (aim : histogram)
+    
+    Parameters
+    ----------
+    x_input: array
+    binwidth : if 'optimized', it will be evaluated thanks to the Shimazaki and Shinomoto methods
+   
+    Returns
+    -------
+    the bin array
+    """
     x = np.array(x_input)
     x = x[np.invert(np.isnan(x))]
     if binwidth == 'optimized':
         binwidth = optimized_binwidth(x)
-        
     return np.arange(min(x), max(x) + binwidth, binwidth)
 
 
 
 
 def gaussian_fit(x_input,binwidth = 'optimized',giveReducedChi2 = False, reducedChi2Max = 5,info=False):
-
+    """
+    Gaussian fit of an histogram of a set of data
+    
+    Parameters
+    ---------
+    x_input: array
+    binwidth : if 'optimized', it will be evaluated thanks to the Shimazaki and Shinomoto methods
+    giveReducedChi2 : Boolean
+    default value, False
+    If true, will return the reduced Chi2 
+    reducedChi2Max : float
+    if reducedChi2 > reducedChi2Max the fit is rejected
+    
+    Returns
+    -------
+    parameters : array
+    parameters[0], sigma
+    parameters[1], mean
+    parameters[2], coefficient
+    if giveReducedChi2 is True returns will be (parameters,reducedChi2)
+    """
     with warnings.catch_warnings():
         try:
             #we create the histogram
@@ -216,6 +286,25 @@ def gaussian_fit(x_input,binwidth = 'optimized',giveReducedChi2 = False, reduced
                 return [math.nan,math.nan,math.nan]
 
 def gaussian_fit_plot_issues(x_input,filename,binwidth = 0.1,info=False,giveReducedChi2 = False):
+    """
+    Gaussian fit of an histogram of a set of data
+    If the calibration is rejected, it will plot the histogram
+    Parameters
+    ---------
+    x_input: array
+    binwidth : if 'optimized', it will be evaluated thanks to the Shimazaki and Shinomoto methods
+    giveReducedChi2 : Boolean
+    default value, False
+    If true, will return the reduced Chi2 
+    
+    Returns
+    -------
+    parameters : array
+    parameters[0], sigma
+    parameters[1], mean
+    parameters[2], coefficient
+    if giveReducedChi2 is True returns will be (parameters,reducedChi2)
+    """
     with warnings.catch_warnings():
         try:
             #we create the histogram
