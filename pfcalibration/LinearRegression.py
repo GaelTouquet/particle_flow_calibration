@@ -32,7 +32,7 @@ class LinearRegression(Calibration):
     ecal value to train the calibration
     
     lim : float
-    to reject calibration points with ecal + hcal > lim
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
     if lim = - 1, there is no limit
     
     lim_min : float
@@ -51,6 +51,34 @@ class LinearRegression(Calibration):
 
     """
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],lim_min=-1,lim_max=-1,lim=-1):
+        """
+        Constructor of the class
+        
+        Parameters
+        ---------
+        ecal_train : array
+        ecal value to train the calibration
+    
+        hcal_train : array
+        ecal value to train the calibration
+    
+        true_train : array
+        ecal value to train the calibration
+        
+        lim_min : float
+        linear regression is done with points with ecal + hcal > lim_min
+        if lim_min = - 1, there is no limit
+        
+        lim_max : float
+        linear regression is done with points with ecal + hcal < lim_max
+        if lim_max = - 1, there is no limit
+        
+        lim : float
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+        if lim = - 1, there is no limit
+        """
+        
+        # We use the constructor of the mother class 
         Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         
         self.lim_min = lim_min
