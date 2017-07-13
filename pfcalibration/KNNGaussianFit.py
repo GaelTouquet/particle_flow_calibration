@@ -182,7 +182,7 @@ class KNNGaussianFit(Calibration):
         the values passed to fit method.
 
         lim : float
-        to reject calibration points with ecal + hcal > lim
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
         if lim = - 1, there is no limit
 
         energystep_ecal_eq_0 : float

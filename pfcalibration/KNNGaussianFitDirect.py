@@ -37,7 +37,7 @@ class KNNGaussianFitDirect(Calibration):
     ecal value to train the calibration
 
     lim : float
-    to reject calibration points with ecal + hcal > lim
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
     if lim = - 1, there is no limit
     
     n_neighbors_ecal_eq_0: int
@@ -118,7 +118,7 @@ class KNNGaussianFitDirect(Calibration):
         the values passed to fit method.
 
         lim : float
-        to reject calibration points with ecal + hcal > lim
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
         if lim = - 1, there is no limit
         """
 
@@ -245,6 +245,19 @@ class KNNGaussianFitDirect(Calibration):
         return vect(e,h)
     
     def neighborhoodSingleValue(self,ecal,hcal):
+        """
+        neingbourhood of a point (ecal, hcal)
+
+        Parameters
+        ----------
+        e : a numpy array of ecal energies
+        h : a numpy array of hcal energies
+
+        Returns
+        -------
+        true : a numpy array of predicted true energies
+        the value is NaN if the asked value is off-limit
+        """
         if ecal+hcal > self.lim:
             return [[],[],[]]
 
@@ -266,7 +279,7 @@ class KNNGaussianFitDirect(Calibration):
         
     def neighborhood(self,e,h):
         """
-        neingbourhood of a point ecal, hcal
+        neingbourhood of points (ecal, hcal)
 
         Parameters
         ----------
