@@ -25,7 +25,7 @@ class Calibration:
     ecal value to train the calibration
     
     lim : float
-    to reject calibration points with ecal + hcal > lim
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
     if lim = - 1, there is no limit
     
     numberPart : int
@@ -36,6 +36,24 @@ class Calibration:
     """
     
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],lim=-1):
+        """
+        Constructor of the class
+        
+        Parameters
+        ----------
+        ecal_train : array
+        ecal value to train the calibration
+    
+        hcal_train : array
+        ecal value to train the calibration
+    
+        true_train : array
+        ecal value to train the calibration
+        
+        lim : float
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+        if lim = - 1, there is no limit
+        """
         
         self.ecal_train = ecal_train
         self.hcal_train = hcal_train
@@ -55,6 +73,19 @@ class Calibration:
         self.classname = type(self).__name__
     
     def saveCalib(self,directory = "calibrations"):
+        """
+        To save the calibration in a binary file
+        
+        Parameters
+        ----------
+        directory : str
+        the directory where the file will be created
+        if the directory does not exist, it will be created
+        
+        Example
+        -------
+        calibration.saveCalib("dir1/dir2/dir3/")
+        """
         
         splitted = directory.split('/')
         director = ""
@@ -66,6 +97,7 @@ class Calibration:
                     mkdir(director)
                 except FileExistsError:
                     pass
+                
         filename  = director      
         filename += self.classname+"_"
         filename += str(self.numberPart_str)+"part"
@@ -77,6 +109,9 @@ class Calibration:
         exportPickle(filename,self)
     
     def __str__(self):
+        """
+        To present the calibration as a string
+        """
         res = self.classname+":"
         od = collections.OrderedDict(sorted((self.__dict__).items()))
         for elem, value in od.items():
@@ -85,6 +120,9 @@ class Calibration:
         return res
     
     def __repr__(self):
+        """
+        To present the calibration as a string
+        """
         res = self.classname+":"
         od = collections.OrderedDict(sorted((self.__dict__).items()))
         for elem, value in od.items():
