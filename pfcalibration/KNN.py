@@ -31,7 +31,7 @@ class KNN(Calibration):
     ecal value to train the calibration
     
     lim : float
-    to reject calibration points with ecal + hcal > lim
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
     if lim = - 1, there is no limit
     
     n_neighbors_ecal_eq_0: int
@@ -120,10 +120,11 @@ class KNN(Calibration):
         sigma for the gaussian if weight == 'gaussian'
 
         lim : float
-        to reject calibration points with ecal + hcal > lim
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
         if lim = - 1, there is no limit
         """
-
+        
+        # We use the constructor of the mother class
         Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         
         # we define the weight
@@ -137,7 +138,6 @@ class KNN(Calibration):
         self.algorithm = algorithm
         self.sigma = sigma
 
-        self.recalibrated = False
 
         # Case ecal != 0
         X_train = [ecal_train[ecal_train!=0],hcal_train[ecal_train!=0]]
@@ -206,32 +206,11 @@ class KNN(Calibration):
             print("Calibration made in",end-begin,"s")
         return ecalib
 
-    def refresh(self):
-        # Case ecal != 0
-        X_train = [self.ecal_train[self.ecal_train!=0],self.hcal_train[self.ecal_train!=0]]
-        self.X_train1 = X_train
-        X_train = np.transpose(np.matrix(X_train))
-        Y_train = self.true_train[self.ecal_train!=0]
-        self.Y_train1 = Y_train
-        Y_train = np.transpose(np.matrix(Y_train))
-        neigh_ecal_neq_0 = neighbors.KNeighborsRegressor(n_neighbors=self.n_neighbors, weights=self.weights, algorithm=self.algorithm)
-        neigh_ecal_neq_0.fit(X_train,Y_train)
-
-        #case ecal == 0
-        X_train = self.hcal_train[self.ecal_train==0]
-        self.X_train2 = X_train
-        X_train = np.transpose(np.matrix(X_train))
-        Y_train = self.true_train[self.ecal_train==0]
-        self.Y_train2 = Y_train
-        Y_train = np.transpose(np.matrix(Y_train))
-        neigh_ecal_eq_0 = neighbors.KNeighborsRegressor(n_neighbors=self.n_neighbors, weights=self.weights, algorithm=self.algorithm)
-        neigh_ecal_eq_0.fit(X_train,Y_train)
-
-        self.neigh_ecal_neq_0 = neigh_ecal_neq_0
-        self.neigh_ecal_eq_0 = neigh_ecal_eq_0
-
-    def deleteTrainPoints(self,e,h,t,refresh=True):
-
+    def deleteTrainPoints(self,e,h,t):
+        """
+        To delete points of the training value
+        """
+        
         if len(e)!=0 and len(h)!=0 and len(t) != 0:
 
             def deleleteOnePoint(e0,h0,t0):
@@ -247,6 +226,8 @@ class KNN(Calibration):
 
             vect = np.vectorize(deleleteOnePoint)
             vect(e,h,t)
-
-            if refresh:
-                self.refresh()
+            
+            self = KNN(self.ecal_train,self.hcal_train,self.true_train,
+                 self.n_neighbors_ecal_eq_0,self.n_neighbors_ecal_neq_0,
+                 self.weights,self.algorithm,self.sigma,self.lim)
+                

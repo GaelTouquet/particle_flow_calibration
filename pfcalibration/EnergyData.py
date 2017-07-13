@@ -43,26 +43,88 @@ class EnergyData:
 
     def LinearRegression(self,lim_min = 20, lim_max=80, lim=150):
         """
-
+        To create a LinearRegression Calibration with this EnergyData as training values.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        calib : pfcalibration.LinearRegression
+        The calibration
         """
+        
         begin = time.time()
         calib = LinearRegression(self.ecal,self.hcal,self.true,lim_min, lim_max, lim)
         end = time.time()
         print("LinearRegression - Calibration made in",end-begin,"s")
         return calib
 
-    def calibrationLego(self,nbLego,timeInfo = True):
+    def calibrationLego(self,nbLego):
         """
-        Effectue une calibration lego
-
+        To create a CalibrationLego with this EnergyData as training values.
+        
+        Parameters
+        ----------
+        
         Returns
         -------
-        cal : CalibrationLego()
-
+        calib : pfcalibration.CalibrationLego
+        The calibration
         """
-        return CalibrationLego(self,nbLego,timeInfo)
+        
+        begin = time.time()
+        calib = CalibrationLego(self,nbLego)
+        end = time.time()
+        print("LinearRegression - Calibration made in",end-begin,"s")
+        return calib
 
     def KNN(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,weights='gaussian',algorithm='auto',sigma=5,lim=-1):
+        """
+        To create a KNN Calibration with this EnergyData as training values.
+        
+        Parameters
+        ----------
+        n_neighbors_ecal_eq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal == 0
+        
+        n_neighbors_ecal_neq_0: int
+        Number of neighbors to use by default for k_neighbors queries.
+        for ecal != 0
+
+        weight : str or callable
+        weight function used in prediction. Possible values:
+        'uniform' : uniform weights. All points in each neighborhood are
+        weighted equally.
+        'distance' : weight points by the inverse of their distance. in this
+        case, closer neighbors of a query point will have a greater influence
+        than neighbors which are further away.
+        [callable] : a user-defined function which accepts an array of
+        distances, and returns an array of the same shape containing the weights.
+        'gaussian'
+        Gaussian weights are used by default.
+
+        algortihm : {‘auto’, ‘ball_tree’, ‘kd_tree’, ‘brute’}, optional
+        Algorithm used to compute the nearest neighbors:
+        'ball_tree' will use BallTree
+        'kd_tree' will use KDtree
+        'brute' will use a brute-force search.
+        'auto' will attempt to decide the most appropriate algorithm based on
+        the values passed to fit method.
+
+        sigma : float
+        sigma for the gaussian if weight == 'gaussian'
+
+        lim : float
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+        if lim = - 1, there is no limit
+        
+        Returns
+        -------
+        calib : pfcalibration.KNN
+        The calibration
+        """
         begin = time.time()
         calib = KNN(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,weights,algorithm,sigma,lim)
         end = time.time()
@@ -70,6 +132,17 @@ class EnergyData:
         return calib
 
     def KNNGaussianCleaning(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,weights='gaussian',algorithm='auto',sigma=5,lim=-1,energystep=1,kind='cubic',cut=2):
+        """
+        To create a KNNGaussianCleaning Calibration with this EnergyData as training values.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        calib : pfcalibration.KNNGaussianCleaning
+        The calibration
+        """
         begin = time.time()
         calib = KNNGaussianCleaning(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,weights,algorithm,sigma,lim,energystep,kind,cut)
         end = time.time()
@@ -77,6 +150,17 @@ class EnergyData:
         return calib
 
     def KNNGaussianFit(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1,energystep_ecal_eq_0=1,energystep_ecal_neq_0 = 5,kind='cubic'):
+        """
+        To create a KNNGaussianFit Calibration with this EnergyData as training values.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        calib : pfcalibration.KNNGaussianFit
+        The calibration
+        """
         begin = time.time()
         calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim,energystep_ecal_eq_0,energystep_ecal_neq_0,kind)
         end = time.time()
@@ -84,6 +168,17 @@ class EnergyData:
         return calib
 
     def KNNGaussianFitDirect(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,algorithm='auto',lim=-1):
+        """
+        To create a KNNGaussianFitDirect Calibration with this EnergyData as training values.
+        
+        Parameters
+        ----------
+        
+        Returns
+        -------
+        calib : pfcalibration.KNNGaussianFitDirect
+        The calibration
+        """
         begin = time.time()
         calib = KNNGaussianFitDirect(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim)
         end = time.time()
@@ -96,6 +191,8 @@ class EnergyData:
 
         Returns
         -------
+        data1,data2 : pfcalibration.EnergyData, pfcalibration.EnergyData
+        the both pfcalibration.EnergyData
 
         """
         true1 = []
@@ -128,6 +225,10 @@ class EnergyData:
     def oneOverTen(self):
         """
         To keep only one over ten particules
+        
+        Returns
+        -------
+        data1 : pfcalibration.EnergyData
         """
         true1 = []
         p1 = []
@@ -146,15 +247,15 @@ class EnergyData:
     
     def mergeWith(self,another):
         """
-        Fusionne les données de self et de another
+        To meger the data of 'self' with those of 'another'
 
         Parameters
         ----------
-        another : EnergyData
+        another : pfcalibration.EnergyData
 
         Returns
         -------
-        merged : EnergyData
+        merged : pfcalibration.EnergyData
 
         """
         true = np.concatenate([self.true,another.true])
