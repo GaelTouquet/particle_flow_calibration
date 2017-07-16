@@ -53,14 +53,14 @@ except FileNotFoundError:
     
 classname = KNNGF.classname
 #plot 3D Training points
-fig = plt.figure(1,figsize=(5, 5))
+fig = plt.figure(1,figsize=(6, 4))
 usplt.plot3D_training(data1)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_training.png")
 savefig(fig,'img_index/',classname+"_plot3D_training.png")
 
 #plot 3D surface calibration
-fig = plt.figure(1,figsize=(5, 5))
+fig = plt.figure(1,figsize=(6, 4))
 usplt.plot3D_surf(KNNGF)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
@@ -68,21 +68,21 @@ savefig(fig,directory,classname+"_plot3D_surf.eps")
 savefig(fig,'img_index/',classname+"_plot3D_surf.png")
 
 #courbe de calibration pour ecal = 0
-fig = plt.figure(figsize=(10,4))
+fig = plt.figure(figsize=(12,4))
 usplt.plotCalibrationCurve(KNNGF)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
 savefig(fig,'img_index/',classname+"_calibration.png")
 
 #ecalib/true in function of etrue
-fig = plt.figure(figsize=(10,4))
+fig = plt.figure(figsize=(12,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
 savefig(fig,'img_index/',classname+"_ecalib_over_etrue.png")
 
 #histogram of ecalib and etrue
-fig = plt.figure(figsize=(10,6))
+fig = plt.figure(figsize=(12,5))
 usplt.hist_ecalib(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
@@ -90,14 +90,14 @@ savefig(fig,directory,classname+"_histograms_ecalib_etrue.eps")
 savefig(fig,'img_index/',classname+"_histograms_ecalib_etrue.png")
 
 #ecalib/etrue in function of ecal,hcal
-fig = plt.figure(figsize=(10,5))
+fig = plt.figure(figsize=(12,4))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 savefig(fig,'img_index/',classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 
 #ecalib/etrue gaussian fit curve
-fig = plt.figure(figsize=(10,12))
+fig = plt.figure(figsize=(12,10))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
@@ -116,7 +116,7 @@ rrchi2_ecal_neq_0[eecal_ecal_neq_0 + hhcal_ecal_neq_0 > lim] = math.nan
 x = np.array(KNNGF.evaluatedPoint_reducedchi2)
 x = x[np.array(KNNGF.evaluatedPoint_hcal)+np.array(KNNGF.evaluatedPoint_ecal) < lim]
 
-fig = plt.figure(figsize=(10,8))
+fig = plt.figure(figsize=(12,8))
 plt.subplot(2,2,1)
 plt.plot(hcal_ecal_eq_0,KNNGF.evaluatedPoint_reducedchi2_ecal_eq_0)
 plt.xlabel(r"$h_{cal}$",fontsize=12)
@@ -163,7 +163,7 @@ bin_middles2 = KNNGF.evaluatedPoint_bin_middles[i2]
 error2 = np.sqrt(entries2)
 params2 = KNNGF.evaluatedPoint_parameters[i2]
 
-fig = plt.figure(figsize=(10,4))
+fig = plt.figure(figsize=(12,4))
 plt.subplot(1,2,1)
 plt.errorbar(bin_middles1, entries1, yerr=error1, fmt='o')
 xplot = np.arange(min(bin_middles1),max(bin_middles1),1)
@@ -182,7 +182,7 @@ savefig(fig,directory,classname+"_hist_calib.png")
 savefig(fig,directory,classname+"_hist_calib.eps")
 
 #NEIGHBORS
-fig = plt.figure(figsize=(10,4))
+fig = plt.figure(figsize=(12,4))
 #neigh for ecal == 0
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,

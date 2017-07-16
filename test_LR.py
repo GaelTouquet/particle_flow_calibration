@@ -49,14 +49,14 @@ except FileNotFoundError:
 
 classname = LinearRegression.classname
 #plot 3D Training points
-fig = plt.figure(1,figsize=(5, 5))
+fig = plt.figure(1,figsize=(6, 4))
 usplt.plot3D_training(data1)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_training.png")
 plt.close()
 
 #plot 3D surface calibration
-fig = plt.figure(1,figsize=(5, 5))
+fig = plt.figure(1,figsize=(6, 4))
 usplt.plot3D_surf(LinearRegression)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
@@ -64,21 +64,21 @@ savefig(fig,directory,classname+"_plot3D_surf.eps")
 plt.close()
 
 #courbe de calibration pour ecal = 0
-fig = plt.figure(figsize=(10,4))
+fig = plt.figure(figsize=(12,4))
 usplt.plotCalibrationCurve(LinearRegression)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
 plt.close()
 
 #ecalib/true in function of etrue
-fig = plt.figure(figsize=(10,4))
+fig = plt.figure(figsize=(12,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(LinearRegression,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
 plt.close()
 
 #histogram of ecalib and etrue
-fig = plt.figure(figsize=(10,6))
+fig = plt.figure(figsize=(12,5))
 usplt.hist_ecalib(LinearRegression,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
@@ -86,14 +86,14 @@ savefig(fig,directory,classname+"_histograms_ecalib_etrue.eps")
 plt.close()
 
 #ecalib/etrue in function of ecal,hcal
-fig = plt.figure(figsize=(10,5))
+fig = plt.figure(figsize=(12,4))
 usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(LinearRegression,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 plt.close()
 
 #ecalib/etrue gaussian fit curve
-fig = plt.figure(figsize=(10,12))
+fig = plt.figure(figsize=(12,10))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(LinearRegression,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")

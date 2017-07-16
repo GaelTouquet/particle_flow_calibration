@@ -48,14 +48,14 @@ except FileNotFoundError:
 
 classname = KNNGFD.classname
 #plot 3D Training points
-fig = plt.figure(1,figsize=(5, 5))
+fig = plt.figure(1,figsize=(5, 4))
 usplt.plot3D_training(data1)
 #plt.show()
 savefig(fig,directory,classname+"_plot3D_training.png")
 plt.close()
 
 #plot 3D surface calibration
-fig = plt.figure(1,figsize=(5, 5))
+fig = plt.figure(1,figsize=(5, 4))
 usplt.plot3D_surf(KNNGFD)
 #plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
@@ -90,7 +90,7 @@ savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 plt.close()
 
 #ecalib/etrue gaussian fit curve
-fig = plt.figure(figsize=(10,12))
+fig = plt.figure(figsize=(10,10))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGFD,data2)
 #plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
