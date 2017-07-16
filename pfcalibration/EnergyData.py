@@ -80,7 +80,7 @@ class EnergyData:
         print("LinearRegression - Calibration made in",end-begin,"s")
         return calib
 
-    def calibrationLego(self,nbLego):
+    def CalibrationLego(self,nbLego=60,lim=150):
         """
         To create a CalibrationLego with this EnergyData as training values.
         
@@ -94,9 +94,9 @@ class EnergyData:
         """
         
         begin = time.time()
-        calib = CalibrationLego(self,nbLego)
+        calib = CalibrationLego(self.ecal,self.hcal,self.true,nbLego,lim)
         end = time.time()
-        print("LinearRegression - Calibration made in",end-begin,"s")
+        print("CalibrationLego - Calibration made in",end-begin,"s")
         return calib
 
     def KNN(self,n_neighbors_ecal_eq_0=2000,n_neighbors_ecal_neq_0=250,weights='gaussian',algorithm='auto',sigma=5,lim=-1):

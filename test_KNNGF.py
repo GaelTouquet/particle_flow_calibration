@@ -64,6 +64,7 @@ fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_surf(KNNGF)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
+savefig(fig,directory,classname+"_plot3D_surf.eps")
 savefig(fig,'img_index/',classname+"_plot3D_surf.png")
 
 #courbe de calibration pour ecal = 0
@@ -85,6 +86,7 @@ fig = plt.figure(figsize=(10,6))
 usplt.hist_ecalib(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
+savefig(fig,directory,classname+"_histograms_ecalib_etrue.eps")
 savefig(fig,'img_index/',classname+"_histograms_ecalib_etrue.png")
 
 #ecalib/etrue in function of ecal,hcal
@@ -99,6 +101,7 @@ fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGF,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
+savefig(fig,directory,classname+"_ecalib_over_etrue_curve.eps")
 savefig(fig,'img_index/',classname+"_ecalib_over_etrue_curve.png")
 
 #chi2 for each point of the calibration
@@ -142,6 +145,7 @@ plt.title(r"$\chi^2/df$ for $e_{cal} \neq 0$",fontsize=12)
 plt.tight_layout()
 plt.show()
 savefig(fig,directory,classname+"_chi2_calib.png")
+savefig(fig,directory,classname+"_chi2_calib.eps")
 
 # some histograms
 i1 = int(len(KNNGF.evaluatedPoint_hcal_ecal_eq_0)/2)
@@ -175,7 +179,7 @@ plt.title(r"histogram of $e_{true}$ for $(e_{cal}="+str(np.around(e2,2))+",h_{ca
 plt.tight_layout()
 plt.show()
 savefig(fig,directory,classname+"_hist_calib.png")
-
+savefig(fig,directory,classname+"_hist_calib.eps")
 
 #NEIGHBORS
 fig = plt.figure(figsize=(10,4))

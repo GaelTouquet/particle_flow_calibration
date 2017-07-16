@@ -4,18 +4,18 @@
 Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
 
-Script to understand how does KNN works.
+Script to understand how does CalibrationLego works.
 """
 
 import matplotlib.pyplot as plt
 import pfcalibration.usualplots as usplt               # usual plots function 
 from pfcalibration.tools import importData,importCalib # to import binary data
 from pfcalibration.tools import savefig                # to save a figure
-
+import numpy as np
 
 
 # file to save the pictures
-directory = "pictures/testKNN/"
+directory = "pictures/testCalibrationLego/"
 #importation of simulated particles
 filename = 'charged_hadrons_100k.energydata'
 data1 = importData(filename)
@@ -29,26 +29,17 @@ data1,data2 = data1.splitInTwo()
 #data 2 -> data to predict
 
 # parameters of the calibration
-n_neighbors_ecal_eq_0 = 2000
-n_neighbors_ecal_neq_0 = 250
-weights = 'gaussian'
-algorithm = 'auto'
-sigma = 5
-lim = 150
-energystep = 1
-kind = 'cubic'
-cut = 2
+nbLego = 60
     
 try:
-    filename = "calibrations/KNN_162Kpart_lim_150_n_neighbors_ecal_eq_0_2000_n_neighbors_ecal_neq_0_250_recalibrated_False_sigma_5.calibration"
-    KNN = importCalib(filename)
+    filename = "calibrations/CalibrationLego_162Kpart_delta_2.66856677123_ecal_max_262.853826966_hcal_max_262.853826966_lim_150_nbLego_100.calibration"
+    CalibrationLego = importCalib(filename)
 except FileNotFoundError:    
     # We create the calibration
-    KNN = data1.KNN(n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,
-                                 weights,algorithm,sigma,lim)
-    KNN.saveCalib()
+    CalibrationLego = data1.CalibrationLego(nbLego=nbLego)
+    CalibrationLego.saveCalib()
     
-classname = KNN.classname
+classname = CalibrationLego.classname
 #plot 3D Training points
 fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_training(data1)
@@ -58,7 +49,7 @@ plt.close()
 
 #plot 3D surface calibration
 fig = plt.figure(1,figsize=(5, 5))
-usplt.plot3D_surf(KNN)
+usplt.plot3D_surf(CalibrationLego)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
 savefig(fig,directory,classname+"_plot3D_surf.eps")
@@ -66,21 +57,21 @@ plt.close()
 
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(10,4))
-usplt.plotCalibrationCurve(KNN)
+usplt.plotCalibrationCurve(CalibrationLego)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
 plt.close()
 
 #ecalib/true in function of etrue
 fig = plt.figure(figsize=(10,4))
-usplt.plot_ecalib_over_etrue_functionof_etrue(KNN,data2)
+usplt.plot_ecalib_over_etrue_functionof_etrue(CalibrationLego,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
 plt.close()
 
 #histogram of ecalib and etrue
 fig = plt.figure(figsize=(10,6))
-usplt.hist_ecalib(KNN,data2)
+usplt.hist_ecalib(CalibrationLego,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.eps")
@@ -88,15 +79,42 @@ plt.close()
 
 #ecalib/etrue in function of ecal,hcal
 fig = plt.figure(figsize=(10,5))
-usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(KNN,data2)
+usplt.plot_ecalib_over_etrue_functionof_ecal_hcal(CalibrationLego,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_functionof_ecal_hcal.png")
 plt.close()
 
 #ecalib/etrue gaussian fit curve
 fig = plt.figure(figsize=(10,12))
-usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNN,data2)
+usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(CalibrationLego,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.eps")
+plt.close()
+
+# Plot of the Legos
+ecal = CalibrationLego.ecal
+hcal = CalibrationLego.hcal
+true = CalibrationLego.true
+true[np.isnan(true)] = 0
+ind = true != 0
+
+fig = plt.figure(1,figsize=(5, 5))
+ax = plt.axes(projection='3d')
+x = ecal[ind]
+y = hcal[ind]
+z = np.zeros(len(x))
+dx = CalibrationLego.delta*np.ones(len(x))
+dy = CalibrationLego.delta*np.ones(len(y))
+dz =  true[ind]
+ax.bar3d(x,y,z,dx,dy,dz,color='yellow')
+ax.view_init(20,-110)
+ax.set_xlim([0,max(x)])
+ax.set_ylim([0,max(y)])
+ax.set_xlabel(r"$e_{cal}$",fontsize=20)
+ax.set_ylabel(r"$h_{cal}$",fontsize=20)
+ax.set_zlabel(r"$e_{true}$",fontsize=20)
+plt.show()
+savefig(fig,directory,classname+"_plot3D_legos.png")
+savefig(fig,directory,classname+"_plot3D_legos.eps")
 plt.close()

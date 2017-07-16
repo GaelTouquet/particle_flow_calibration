@@ -8,23 +8,63 @@ For IPNL (Nuclear Physics Institute of Lyon)
 import numpy as np
 import time
 import math
+from pfcalibration.Calibration import Calibration
 
-class CalibrationLego:
+
+class CalibrationLego(Calibration):
     """
-    Class to calibrate data
+    Inherit from Calibration.
     The aim :
-        given one ecal, hcal, what is the true energie?
+    given one ecal, hcal, what is the true energie?
     The way :
-        The plane (ecal,hcal) is divided in nbLego*nbLego squares an for each
-        square, we estimate the mean value of true energy
+    The plane (ecal,hcal) is divided in nbLego*nbLego squares an for each
+    square, we estimate the mean value of true energy
+        
+     Attributs
+    ---------
+    ecal_train : array
+    ecal value to train the calibration
+
+    hcal_train : array
+    ecal value to train the calibration
+
+    true_train : array
+    ecal value to train the calibration
+    
+    lim : float
+    if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+    if lim = - 1, there is no limit
+    
+    nbLego : int
+    The plane (ecal,hcal) is divided in nbLego*nbLego
     """
-    def __init__(self,data,nbLego,timeInfo = False):
-        begin = time.time()
+    def __init__(self,ecal_train=[],hcal_train=[],true_train=[],nbLego=60,lim=150):
+        """
+        Parameters
+        ----------
+        ecal_train : array
+        ecal value to train the calibration
+        
+        hcal_train : array
+        ecal value to train the calibration
+        
+        true_train : array
+        ecal value to train the calibration
+        
+        lim : float
+        if ecal + hcal > lim, the calibrated energy ecalib = math.nan
+        if lim = - 1, there is no limit
+        
+        nbLego : int
+        The plane (ecal,hcal) is divided in nbLego*nbLego
+        """
+        Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         nbLego = int(nbLego)
         self.nbLego = nbLego
 
-        ecal = np.linspace(0,data.ener_max,nbLego)
-        hcal = np.linspace(0,data.ener_max,nbLego)
+        ener_max = max(max(self.hcal_train),max(self.ecal_train))
+        ecal = np.linspace(0,ener_max,nbLego)
+        hcal = np.linspace(0,ener_max,nbLego)
         self.delta = hcal[1]-hcal[0]
         self.nbLego = nbLego
         ecal_calib = []
@@ -37,29 +77,29 @@ class CalibrationLego:
         bins_ecal = np.arange(nbLego-1)
         bins_hcal = np.arange(nbLego-1)
         for i in bins_ecal:
-                ind_ecal = np.logical_and(data.ecal>= ecal[i],data.ecal<ecal[i+1])
-                ind_ecal = np.logical_and(data.ecal!=0,ind_ecal)
+                ind_ecal = np.logical_and(self.ecal_train>= ecal[i],self.ecal_train<ecal[i+1])
+                ind_ecal = np.logical_and(self.ecal_train!=0,ind_ecal)
                 for j in bins_hcal:
-                    ind_hcal = np.logical_and(data.hcal>= hcal[j],data.hcal<hcal[j+1])
+                    ind_hcal = np.logical_and(self.hcal_train>= hcal[j],self.hcal_train<hcal[j+1])
                     ind_true = np.logical_and(ind_ecal,ind_hcal)
-                    true = data.true[ind_true]
+                    true = self.true_train[ind_true]
                     if true.size != 0:
                         true_calib.append(np.mean(true))
                         precision.append(np.std(true)/np.sqrt(len(true))/np.mean(true))
                     else :
-                        true_calib.append(0)
+                        true_calib.append(math.nan)
                         precision.append(None)
                     ecal_calib.append(np.mean([ecal[i],ecal[i+1]]))
                     hcal_calib.append(np.mean([hcal[j],hcal[j+1]]))
         # when ecal == 0
         for i in bins_hcal:
-            ind_hcal = np.logical_and(data.hcal>= hcal[i],data.hcal<hcal[i+1])
-            ind_true = np.logical_and(data.ecal == 0,ind_hcal)
-            true = data.true[ind_true]
+            ind_hcal = np.logical_and(self.hcal_train>= hcal[i],self.hcal_train<hcal[i+1])
+            ind_true = np.logical_and(self.ecal_train == 0,ind_hcal)
+            true = self.true_train[ind_true]
             if true.size != 0:
                 true_calib_lim.append(np.mean(true))
             else :
-                true_calib_lim.append(0)
+                true_calib_lim.append(math.nan)
 
         self.ecal = np.array(ecal_calib)
         self.ecal_max = max(self.ecal)
@@ -68,9 +108,6 @@ class CalibrationLego:
         self.true = np.array(true_calib)
         self.true_lim = np.array(true_calib_lim)
         self.precision = np.array(precision)
-        end = time.time()
-        if timeInfo:
-            print("Lego profile made in",end-begin,"s")
 
     def predictSingleValue(self,e,h):
         """
@@ -86,7 +123,7 @@ class CalibrationLego:
         true : the predicted true energy
         """
 
-        if (e >  self.ecal_max or h > self.hcal_max):
+        if (e + h > self.lim):
             true = math.nan
         else:
             if e != 0:

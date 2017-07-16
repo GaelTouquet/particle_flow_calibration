@@ -60,6 +60,7 @@ fig = plt.figure(1,figsize=(5, 5))
 usplt.plot3D_surf(KNNGC)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")
+savefig(fig,directory,classname+"_plot3D_surf.eps")
 plt.close()
 
 #courbe de calibration pour ecal = 0
@@ -81,6 +82,7 @@ fig = plt.figure(figsize=(10,6))
 usplt.hist_ecalib(KNNGC,data2)
 plt.show()
 savefig(fig,directory,classname+"_histograms_ecalib_etrue.png")
+savefig(fig,directory,classname+"_histograms_ecalib_etrue.eps")
 plt.close()
 
 #ecalib/etrue in function of ecal,hcal
@@ -95,4 +97,5 @@ fig = plt.figure(figsize=(10,12))
 usplt.plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(KNNGC,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
+savefig(fig,directory,classname+"_ecalib_over_etrue_curve.eps")
 plt.close()

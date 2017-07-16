@@ -315,8 +315,8 @@ def plot3D_surf(calib):
     ----------
     calib : the calibration
     """
-    ecal = np.arange(0,calib.lim,2)
-    hcal = np.arange(0,calib.lim,2)
+    ecal = np.arange(0,calib.lim,3)
+    hcal = np.arange(0,calib.lim,3)
     ecal,hcal = np.meshgrid(ecal,hcal)
     ecalib = calib.predict(ecal,hcal)
     ax = plt.axes(projection='3d')
