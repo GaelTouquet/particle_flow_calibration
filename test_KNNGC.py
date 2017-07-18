@@ -12,7 +12,8 @@ import pfcalibration.usualplots as usplt               # usual plots function
 from pfcalibration.tools import importData,importCalib # to import binary data
 from pfcalibration.tools import savefig                # to save a figure
 import numpy as np
-
+from pfcalibration.tools import gaussian_param, binwidth_array
+import math
 
 # file to save the pictures
 directory = "pictures/testKNNGC/"
@@ -141,7 +142,7 @@ plt.xlabel(r"$\chi^2/df$",fontsize=12)
 plt.title(r"$\chi^2/df$ for $e_{cal} \neq 0$",fontsize=12)
 plt.tight_layout()
 plt.show()
-savefig(fig,directory,classname+"_chi2_calib.png")s
+savefig(fig,directory,classname+"_chi2_calib.png")
 savefig(fig,directory,classname+"_chi2_calib.eps")
 
 # some histograms

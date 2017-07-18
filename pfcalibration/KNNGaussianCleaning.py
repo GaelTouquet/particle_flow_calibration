@@ -240,6 +240,15 @@ class KNNGaussianCleaning(Calibration):
         we only consider the points with true energy between
         mu - cut * sigma and mu - cut * sigma (mu and sigma the mean and std
         of the gaussian fit)
+        
+        evaluatedPoint_reducedchi2 : array
+    the reduced chi2 for each fit
+    for ecal != 0
+    
+    evaluatedPoint_reducedchi2_ecal_eq_0 : array
+    the reduced chi2 for each fit
+    for ecal = 0
+    
         """
         Calibration.__init__(self,ecal_train,hcal_train,true_train,lim)
         
@@ -269,6 +278,8 @@ class KNNGaussianCleaning(Calibration):
         self.evaluatedPoint_bin_middles = []
         self.evaluatedPoint_true_min = []
         self.evaluatedPoint_true_max = []
+        self.evaluatedPoint_reducedchi2 = []
+        self.evaluatedPoint_reducedchi2_ecal_eq_0 = []
 
 
         # we define the weight
@@ -289,18 +300,30 @@ class KNNGaussianCleaning(Calibration):
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = h)
             true = z[ind][0]
             hcal = y[ind][0]
-            nbins = int(max(true))
+            binwidth = 1
+            nbins = np.arange(min(true), max(true) + binwidth, binwidth)
             with warnings.catch_warnings():
                 try:
                     #we create the histogram
                     warnings.simplefilter("error", OptimizeWarning)
                     entries, bin_edges = np.histogram(true,bins=nbins)
                     bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
+                    bin_middles = bin_middles[entries != 0]
+                    entries = entries[entries != 0]
+                    reduced = math.nan
 
                     # we fit the histogram
                     p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
-                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,p0=p0)
+                    error = np.sqrt(entries)
+                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
+                    res = parameters[1]
 
+                    chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
+                    reduced = chi2/(len(bin_middles)-len(parameters))
+                    if reduced > 10:
+                        print(reduced)
+                        raise OptimizeWarning
+                        
                     true_max = parameters[1]+self.cut*parameters[0]
                     true_min = parameters[1]-self.cut*parameters[0]
                     # we select the good neighbours
@@ -334,6 +357,7 @@ class KNNGaussianCleaning(Calibration):
                     self.evaluatedPoint_true_max_ecal_eq_0.append(true_max)
                     self.evaluatedPoint_hcal_ecal_eq_0.append(h)
                     self.evaluatedPoint_true_ecal_eq_0.append(res)
+                    self.evaluatedPoint_reducedchi2_ecal_eq_0.append(reduced)
 
                     return res
 
@@ -362,17 +386,30 @@ class KNNGaussianCleaning(Calibration):
             true = z[ind][0]
             hcal = y[ind][0]
             ecal = x[ind][0]
-            nbins = int(max(true))
+            binwidth = 1
+            nbins = np.arange(min(true), max(true) + binwidth, binwidth)
             with warnings.catch_warnings():
                 try:
                     #we create the histogram
                     warnings.simplefilter("error", OptimizeWarning)
                     entries, bin_edges = np.histogram(true,bins=nbins)
                     bin_middles = 0.5*(bin_edges[1:] + bin_edges[:-1])
+                    bin_middles = bin_middles[entries != 0]
+                    entries = entries[entries != 0]
+                    reduced = math.nan
 
                     # we fit the histogram
                     p0 = np.sqrt(np.std(entries)),bin_middles[np.argmax(entries)],max(entries)
-                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,p0=p0)
+                    error = np.sqrt(entries)
+                    parameters, cov_matrix = curve_fit(gaussian_param, bin_middles, entries,sigma=error,p0=p0)
+                    res = parameters[1]
+
+                    chi2 = np.sum(((gaussian_param(bin_middles,*parameters)-entries)/error)**2)
+                    reduced = chi2/(len(bin_middles)-len(parameters))
+
+                    if reduced > 10:
+                        raise OptimizeWarning
+                        
                     # we define the max and the min te reject points
                     true_max = parameters[1]+self.cut*parameters[0]
                     true_min = parameters[1]-self.cut*parameters[0]
@@ -412,6 +449,7 @@ class KNNGaussianCleaning(Calibration):
                     self.evaluatedPoint_parameters.append(parameters)
                     self.evaluatedPoint_true_min.append(true_min)
                     self.evaluatedPoint_true_max.append(true_max)
+                    self.evaluatedPoint_reducedchi2.append(reduced)
                     return res
 
         #we define the first point of evaluation
