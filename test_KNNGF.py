@@ -116,7 +116,7 @@ rrchi2_ecal_neq_0[eecal_ecal_neq_0 + hhcal_ecal_neq_0 > lim] = math.nan
 x = np.array(KNNGF.evaluatedPoint_reducedchi2)
 x = x[np.array(KNNGF.evaluatedPoint_hcal)+np.array(KNNGF.evaluatedPoint_ecal) < lim]
 
-fig = plt.figure(figsize=(12,8))
+fig = plt.figure(figsize=(7,6))
 plt.subplot(2,2,1)
 plt.plot(hcal_ecal_eq_0,KNNGF.evaluatedPoint_reducedchi2_ecal_eq_0)
 plt.xlabel(r"$h_{cal}$",fontsize=12)

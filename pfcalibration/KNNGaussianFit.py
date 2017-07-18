@@ -148,6 +148,16 @@ class KNNGaussianFit(Calibration):
     evaluatedPoint_bin_middles : array of arrays
     the histograms bin middles of each distributions of neighbours,
     for ecal != 0
+    
+    evaluatedPoint_reducedchi2 : array
+    the reduced chi2 for each fit
+    for ecal != 0
+    
+    evaluatedPoint_reducedchi2_ecal_eq_0 : array
+    the reduced chi2 for each fit
+    for ecal = 0
+    
+    
 
     """
     def __init__(self,ecal_train=[],hcal_train=[],true_train=[],
