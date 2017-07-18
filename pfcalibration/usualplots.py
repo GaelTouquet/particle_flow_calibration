@@ -31,16 +31,16 @@ def plotCalibrationCurve(calib):
     plt.subplot(gs[0])
     plt.plot(hcal_train,true_train,'.',markersize=1)
     plt.plot(h,t,lw=2)
-    plt.xlabel(r"$h_{cal}$",fontsize=15)
-    plt.ylabel(r"$e_{true}$",fontsize=15)
-    plt.title(r"$e_{cal} = 0$",fontsize=15)
+    plt.xlabel(r"$h_{cal}$",fontsize=20)
+    plt.ylabel(r"$e_{true}$",fontsize=20)
+    plt.title(r"$e_{cal} = 0$",fontsize=20)
     plt.axis([0,max(h),0,max(t)])
     plt.subplot(gs[1])
     plt.plot(hcal_train,true_train,'.',markersize=1)
     plt.plot(h,t,lw=2)
-    plt.xlabel(r"$h_{cal}$",fontsize=15)
-    plt.ylabel(r"$e_{true}$",fontsize=15)
-    plt.title(r"$e_{cal} = 0$",fontsize=15)
+    plt.xlabel(r"$h_{cal}$",fontsize=20)
+    plt.ylabel(r"$e_{true}$",fontsize=20)
+    plt.title(r"$e_{cal} = 0$",fontsize=20)
     plt.axis([0,12,0,calib.predict(0,12)])
     plt.tight_layout()
 
@@ -125,18 +125,20 @@ def plot_ecalib_over_etrue_functionof_etrue(calib,dataToPredict):
     
     plt.subplot(1,2,1)
     plt.plot(t,r,'.',markersize=1)
-    plt.axis([0,200,0,2])
+    plt.axis([0,200,0.5,1.5])
     plt.plot(energy,mean_gaussianfit,lw=3)
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
-    plt.title(r"$e_{cal} = 0$",fontsize=15)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='yellow')
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=20)
+    plt.title(r"$e_{cal} = 0$",fontsize=20)
     plt.subplot(1,2,2)
     plt.plot(t2,r2,'.',markersize=1)
-    plt.axis([0,200,0,2])
+    plt.axis([0,200,0.5,1.5])
     plt.plot(energy2,mean_gaussianfit2,lw=3)
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=15)
-    plt.title(r"$e_{cal} \neq 0$",fontsize=15)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='yellow')
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$e_{calib}/e_{true}$",fontsize=20)
+    plt.title(r"$e_{cal} \neq 0$",fontsize=20)
     plt.tight_layout()
     
 def plot_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
@@ -191,23 +193,23 @@ def hist_ecalib(calib,dataToPredict):
 
     plt.subplot(2,2,1)
     plt.hist(c,binwidth_array(c,2))
-    plt.xlabel(r"$e_{calib}$",fontsize=15)
-    plt.title(r"$e_{cal} = 0$",fontsize=15)
+    plt.xlabel(r"$e_{calib}$",fontsize=20)
+    plt.title(r"$e_{cal} = 0$",fontsize=20)
     plt.subplot(2,2,2)
     c2 = c2[np.invert(np.isnan(c2))]
     plt.hist(c2,binwidth_array(c2,2))
-    plt.xlabel(r"$e_{calib}$",fontsize=15)
-    plt.title(r"$e_{cal} \neq 0$",fontsize=15)
+    plt.xlabel(r"$e_{calib}$",fontsize=20)
+    plt.title(r"$e_{cal} \neq 0$",fontsize=20)
     plt.subplot(2,2,3)
     t = t[np.invert(np.isnan(t))]
     plt.hist(t,binwidth_array(t,2))
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.title(r"$e_{cal} = 0$",fontsize=15)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.title(r"$e_{cal} = 0$",fontsize=20)
     plt.subplot(2,2,4)
     t2 = t2[np.invert(np.isnan(t2))]
     plt.hist(t2,binwidth_array(t2,2))
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.title(r"$e_{cal} \neq 0$",fontsize=15)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.title(r"$e_{cal} \neq 0$",fontsize=20)
     plt.tight_layout()
 
 def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
@@ -232,9 +234,9 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
     ax = plt.subplot(4,1,1)
     plt.plot(energy,mean_gaussianfit,lw=3, label = r"$e_{cal} = 0$")
     plt.plot(energy2,mean_gaussianfit2,lw=3, label = r"$e_{cal} \neq 0$")
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.title(r"$e_{calib}/e_{true}$",fontsize=15)
-    plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=15)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.title(r"$e_{calib}/e_{true}$",fontsize=20)
+    plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=20)
     plt.legend(loc='upper right')
     major_ticks = np.arange(0, 200, 50)
     minor_ticks = np.arange(0, 200, 10)
@@ -249,8 +251,8 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
     ax = plt.subplot(4,1,2)
     plt.plot(energy,sigma_gaussianfit,lw=3, label = r"$e_{cal} = 0$")
     plt.plot(energy2,sigma_gaussianfit2,lw=3, label = r"$e_{cal} \neq 0$")
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.ylabel(r"$\sigma (e_{calib}/e_{true})$",fontsize=15)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$\sigma (e_{calib}/e_{true})$",fontsize=20)
     plt.legend(loc='upper right')
     major_ticks = np.arange(0, 200, 50)
     minor_ticks = np.arange(0, 200, 10)
@@ -265,8 +267,8 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
     ax = plt.subplot(4,1,3)
     plt.plot(energy,reducedChi2,lw=3, label = r"$e_{cal} = 0$")
     plt.plot(energy2,reducedChi22,lw=3, label = r"$e_{cal} \neq 0$")
-    plt.xlabel(r"$e_{true}$",fontsize=15)
-    plt.ylabel(r"$\chi^2/df$",fontsize=15)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$\chi^2/df$",fontsize=20)
     plt.legend(loc='upper right')
     major_ticks = np.arange(0, 200, 50)
     minor_ticks = np.arange(0, 200, 10)
@@ -283,7 +285,7 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
     x = x[np.invert(np.isnan(x))]
     bins = binwidth_array(x,binwidth = 0.5)
     plt.hist(x,bins,label = r"$e_{cal} = 0$")
-    plt.xlabel(r"$\chi^2/df$",fontsize=15)
+    plt.xlabel(r"$\chi^2/df$",fontsize=20)
     plt.legend(loc='upper right')
     #hist chi2/df for ecal != 0
     ax = plt.subplot(4,2,8)
@@ -291,7 +293,7 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
     x = x[np.invert(np.isnan(x))]
     bins = binwidth_array(x,binwidth = 0.5)
     plt.hist(x,bins,label = r"$e_{cal} \neq 0$")
-    plt.xlabel(r"$\chi^2/df$",fontsize=15)
+    plt.xlabel(r"$\chi^2/df$",fontsize=20)
     plt.legend(loc='upper right')
     plt.tight_layout()
 
@@ -303,9 +305,9 @@ def plot3D_training(data1):
     ax.set_ylim([0,data1.hcal_max])
     ax.set_zlim([0,data1.true_max])
     ax.set_title("Training points")
-    ax.set_xlabel(r'$e_{cal}$',fontsize=15)
-    ax.set_ylabel(r'$h_{cal}$',fontsize=15)
-    ax.set_zlabel(r'$e_{true}$',fontsize=15)
+    ax.set_xlabel(r'$e_{cal}$',fontsize=20)
+    ax.set_ylabel(r'$h_{cal}$',fontsize=20)
+    ax.set_zlabel(r'$e_{true}$',fontsize=20)
 
     
 def plot3D_surf(calib):
@@ -326,6 +328,115 @@ def plot3D_surf(calib):
     ax.set_ylim([0,max(calib.hcal_train)])
     ax.set_zlim([0,max(calib.true_train)])
     ax.set_title("Calibration surface")
-    ax.set_xlabel(r'$e_{cal}$',fontsize=15)
-    ax.set_ylabel(r'$h_{cal}$',fontsize=15)
-    ax.set_zlabel(r'$e_{true}$',fontsize=15)
+    ax.set_xlabel(r'$e_{cal}$',fontsize=20)
+    ax.set_ylabel(r'$h_{cal}$',fontsize=20)
+    ax.set_zlabel(r'$e_{true}$',fontsize=20)
+    
+def comparison(calibs,dataToPredict):
+    """
+    To compare the comparisons
+    
+    Parameters
+    ----------
+    calibs : array of calibration
+    """
+    
+    calib = calibs[0]
+    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t = dataToPredict.true[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e = np.zeros(len(h))
+    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    
+    r = []
+    r2 = []
+    
+    for calib in calibs:
+        c = calib.predict(e,h)
+        r.append(c/t)
+        c2 = calib.predict(e2,h2)
+        r2.append(c2/t2)
+    
+    ax = plt.subplot(2,2,1)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='black')
+    for i in np.arange(len(calibs)):
+        energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r[i])
+        plt.plot(energy,mean_gaussianfit,label = calibs[i].classname,lw=2)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=20)
+    plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} = 0$",fontsize=20)
+    plt.axis([0,160,0.8,1.2])
+    plt.legend(loc="upper right")
+    major_ticks = np.arange(0, 200, 20)
+    minor_ticks = np.arange(0, 200, 2)
+    ax.set_xticks(major_ticks)
+    ax.set_xticks(minor_ticks, minor=True)
+    # and a corresponding grid
+    ax.grid(which='both')
+    # or if you want differnet settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=1)
+    
+    ax = plt.subplot(2,2,2)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='black')
+    for i in np.arange(len(calibs)):
+        energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t2,r2[i])
+        plt.plot(energy,mean_gaussianfit,label = calibs[i].classname,lw=2)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$<e_{calib}/e_{true}>$",fontsize=20)
+    plt.title(r"$e_{calib}/e_{true}$ for $e_{cal} \neq 0$",fontsize=20)
+    plt.axis([0,160,0.8,1.2])
+    plt.legend(loc="upper right")
+    major_ticks = np.arange(0, 200, 20)
+    minor_ticks = np.arange(0, 200, 2)
+    ax.set_xticks(major_ticks)
+    ax.set_xticks(minor_ticks, minor=True)
+    # and a corresponding grid
+    ax.grid(which='both')
+    # or if you want differnet settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=1)
+    
+    ax = plt.subplot(2,2,3)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='black')
+    for i in np.arange(len(calibs)):
+        energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t,r[i])
+        plt.plot(energy,sigma_gaussianfit,label = calibs[i].classname,lw=2)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$\sigma(e_{calib}/e_{true})$",fontsize=20)
+    plt.title(r"$\sigma(e_{calib}/e_{true})$ for $e_{cal} = 0$",fontsize=20)
+    plt.axis([0,160,0,0.6])
+    plt.legend(loc="upper right")
+    major_ticks = np.arange(0, 200, 20)
+    minor_ticks = np.arange(0, 200, 2)
+    ax.set_xticks(major_ticks)
+    ax.set_xticks(minor_ticks, minor=True)
+    # and a corresponding grid
+    ax.grid(which='both')
+    # or if you want differnet settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=1)
+    
+    ax = plt.subplot(2,2,4)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='black')
+    for i in np.arange(len(calibs)):
+        energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(t2,r2[i])
+        plt.plot(energy,sigma_gaussianfit,label = calibs[i].classname,lw=2)
+    plt.xlabel(r"$e_{true}$",fontsize=20)
+    plt.ylabel(r"$\sigma(e_{calib}/e_{true})$",fontsize=20)
+    plt.title(r"$\sigma(e_{calib}/e_{true})$ for $e_{cal} \neq 0$",fontsize=20)
+    plt.axis([0,160,0,0.6])
+    plt.legend(loc="upper right")
+    major_ticks = np.arange(0, 200, 20)
+    minor_ticks = np.arange(0, 200, 2)
+    ax.set_xticks(major_ticks)
+    ax.set_xticks(minor_ticks, minor=True)
+    # and a corresponding grid
+    ax.grid(which='both')
+    # or if you want differnet settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=1)
+    
+    plt.tight_layout()
+    

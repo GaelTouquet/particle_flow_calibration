@@ -152,6 +152,8 @@ i1 = int(len(KNNGF.evaluatedPoint_hcal_ecal_eq_0)/2)
 i2 = int(len(KNNGF.evaluatedPoint_hcal)/5)
 e1 = 0
 h1 = KNNGF.evaluatedPoint_hcal_ecal_eq_0[i1]
+t1 = KNNGF.evaluatedPoint_neighbours_true_ecal_eq_0[i1]
+m1 = np.mean(KNNGF.evaluatedPoint_neighbours_true_ecal_eq_0[i1])
 entries1 = KNNGF.evaluatedPoint_entries_ecal_eq_0[i1]
 bin_middles1 = KNNGF.evaluatedPoint_bin_middles_ecal_eq_0[i1]
 error1 = np.sqrt(entries1)
@@ -181,8 +183,23 @@ plt.show()
 savefig(fig,directory,classname+"_hist_calib.png")
 savefig(fig,directory,classname+"_hist_calib.eps")
 
+fig = plt.figure(figsize=(5,3))
+plt.errorbar(bin_middles1, entries1, yerr=error1, fmt='o')
+xplot = np.arange(min(bin_middles1),max(bin_middles1),1)
+plt.plot(xplot,gaussian_param(xplot,*params1),lw=3)
+plt.plot([params1[1],params1[1]],[0,max(entries1)],'--',lw=2,label="gaussian fit mean "+str(np.around(params1[1],2)))
+plt.plot([m1,m1],[0,max(entries1)],'--',lw=2,label = "classical mean "+str(np.around(m1,2)))
+plt.xlabel(r"$e_{true}$",fontsize=12)
+plt.ylabel(r"frequence",fontsize=12)
+plt.title(r"Neighbors of $(e_{cal}="+str(np.around(e1,2))+",h_{cal}="+str(np.around(h1,2))+")$",fontsize=12)
+plt.legend(loc="upper right",fontsize=9)
+plt.tight_layout()
+plt.show()
+savefig(fig,directory,classname+"_example_hist.png")
+savefig(fig,directory,classname+"_example_hist.eps")
+
 #NEIGHBORS
-fig = plt.figure(figsize=(12,4))
+fig = plt.figure(figsize=(12,3))
 #neigh for ecal == 0
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
@@ -193,11 +210,11 @@ hcal_train = KNNGF.hcal_train[KNNGF.ecal_train == 0]
 true_train = KNNGF.true_train[KNNGF.ecal_train == 0]
 plt.subplot(1,2,1)
 plt.plot(hcal_train,true_train,'.',markersize=1)
-plt.xlabel(r"$h_{cal}$",fontsize=12)
-plt.ylabel(r"$e_{true}$",fontsize=12)
+plt.xlabel(r"$h_{cal}$",fontsize=20)
+plt.ylabel(r"$e_{true}$",fontsize=20)
 for i in np.arange(len(neigh_hcal_ecal_eq_0)):
     plt.plot(neigh_hcal_ecal_eq_0[i],neigh_true_ecal_eq_0[i],'.',color='red',markersize=1)
-plt.title(r"neighbors for $e_{cal} = 0$",fontsize=12)
+plt.title(r"neighbors for $e_{cal} = 0$",fontsize=18)
 plt.axis([0,lim,0,lim])
 
 
@@ -207,11 +224,11 @@ neigh_ecal_ecal_neq_0 = neigh_ecal_ecal_neq_0[np.array(KNNGF.evaluatedPoint_ecal
 neigh_hcal_ecal_neq_0 = np.array(KNNGF.evaluatedPoint_neighbours_hcal)
 neigh_hcal_ecal_neq_0 = neigh_hcal_ecal_neq_0[np.array(KNNGF.evaluatedPoint_ecal)+np.array(KNNGF.evaluatedPoint_hcal)<lim]
 plt.subplot(1,2,2)
-plt.xlabel(r"$e_{cal}$",fontsize=12)
-plt.ylabel(r"$h_{cal}$",fontsize=12)
+plt.xlabel(r"$e_{cal}$",fontsize=20)
+plt.ylabel(r"$h_{cal}$",fontsize=20)
 for i in np.arange(len(neigh_hcal_ecal_neq_0)):
     plt.plot(neigh_ecal_ecal_neq_0[i],neigh_hcal_ecal_neq_0[i],'.',markersize=1)
-plt.title(r"neighbors for $e_{cal} \neq 0$",fontsize=12)
+plt.title(r"neighbors for $e_{cal} \neq 0$",fontsize=18)
 plt.axis([0,lim,0,lim])
 plt.tight_layout()
 plt.show()

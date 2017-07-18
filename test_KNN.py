@@ -49,20 +49,20 @@ except FileNotFoundError:
     KNN.saveCalib()
     
 classname = KNN.classname
-#plot 3D Training points
-fig = plt.figure(1,figsize=(6, 4))
-usplt.plot3D_training(data1)
-plt.show()
-savefig(fig,directory,classname+"_plot3D_training.png")
-plt.close()
-
-#plot 3D surface calibration
-fig = plt.figure(1,figsize=(6, 4))
-usplt.plot3D_surf(KNN)
-plt.show()
-savefig(fig,directory,classname+"_plot3D_surf.png")
-savefig(fig,directory,classname+"_plot3D_surf.eps")
-plt.close()
+##plot 3D Training points
+#fig = plt.figure(1,figsize=(6, 4))
+#usplt.plot3D_training(data1)
+#plt.show()
+#savefig(fig,directory,classname+"_plot3D_training.png")
+#plt.close()
+#
+##plot 3D surface calibration
+#fig = plt.figure(1,figsize=(6, 4))
+#usplt.plot3D_surf(KNN)
+#plt.show()
+#savefig(fig,directory,classname+"_plot3D_surf.png")
+#savefig(fig,directory,classname+"_plot3D_surf.eps")
+#plt.close()
 
 #courbe de calibration pour ecal = 0
 fig = plt.figure(figsize=(12,4))

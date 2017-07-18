@@ -60,6 +60,7 @@ fig = plt.figure(figsize=(12,4))
 usplt.plotCalibrationCurve(CalibrationLego)
 plt.show()
 savefig(fig,directory,classname+"_calibration.png")
+savefig(fig,directory,classname+"_calibration.eps")
 plt.close()
 
 #ecalib/true in function of etrue
@@ -67,6 +68,7 @@ fig = plt.figure(figsize=(12,4))
 usplt.plot_ecalib_over_etrue_functionof_etrue(CalibrationLego,data2)
 plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue.png")
+savefig(fig,directory,classname+"_ecalib_over_etrue.eps")
 plt.close()
 
 #histogram of ecalib and etrue
