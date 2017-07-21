@@ -41,8 +41,7 @@ except FileNotFoundError:
     LinearRegression = data1.LinearRegression(lim_min = 20, lim_max=80, lim=150)
     # We save the calibration
     LinearRegression.saveCalib()
-
-
+    print(LinearRegression)
 
 
 

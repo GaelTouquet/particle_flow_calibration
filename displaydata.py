@@ -43,9 +43,9 @@ true_ecal_eq_0 = data1.true[ecal == 0]
 
 fig = plt.figure(figsize=(12,6))
 plt.subplot(2,2,2)
-plt.title(r"Points with $e_{cal} = 0$",fontsize = 18)
-plt.xlabel(r"$h_{cal}$",fontsize = 18)
-plt.ylabel(r"$e_{true}$",fontsize = 18)
+plt.title(r"Points with $E_{\rm ecal} = 0$",fontsize = 18)
+plt.xlabel(r"$E_{\rm hcal}$",fontsize = 18)
+plt.ylabel(r"$E_{\rm true}$",fontsize = 18)
 
 plt.plot(hcal_ecal_eq_0,true_ecal_eq_0,'.',markersize=1)
 ind = hcal_ecal_eq_0 > lim
@@ -54,8 +54,8 @@ plt.plot([lim,lim],[0,max(true_ecal_eq_0)],'--',lw=2)
 
 plt.subplot(2,2,4)
 plt.title(r"Points with $\theta \in [\pi/4;\pi/4 + \pi/40]$",fontsize = 18)
-plt.xlabel(r"$e_{\theta}$",fontsize = 18)
-plt.ylabel(r"$e_{true}$",fontsize = 18)
+plt.xlabel(r"$E_{\rm \theta}$",fontsize = 18)
+plt.ylabel(r"$E_{\rm true}$",fontsize = 18)
 
 plt.plot(proj[0],proj[1],'.',markersize=1)
 ind = proj[0] > rlim
@@ -67,8 +67,8 @@ plt.plot(ecal,hcal,'.',markersize=1)
 ind = ecal+hcal > lim
 plt.plot(ecal[ind],hcal[ind],'.',markersize=1, label = r"rejected points")
 plt.plot(select[0],select[1],'.',markersize=1, label = r"$\theta \in [\pi/4;\pi/4 + \pi/40]$")
-plt.xlabel(r"$e_{cal}$",fontsize = 18)
-plt.ylabel(r"$h_{cal}$",fontsize = 18)
+plt.xlabel(r"$E_{\rm ecal}$",fontsize = 18)
+plt.ylabel(r"$E_{\rm hcal}$",fontsize = 18)
 plt.legend(loc="upper right",fontsize = 16 )
 
 plt.tight_layout()

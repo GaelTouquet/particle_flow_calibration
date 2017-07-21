@@ -161,11 +161,26 @@ class LinearRegression(Calibration):
         if timeInfo:
             print("Prediction made in",end-begin,"s")
         return ecalib
+            
+        
+    def __str__(self):
+        """
+        To present the calibration as a string
+        """
+        res = Calibration.__str__(self)
+        res += "\nfor ecal == 0 : "
+        res += "\n\tecalib = "+str(self.linRegr_ecal_eq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_eq_0.intercept_[0])
+        res += "\nfor ecal != 0 : "
+        res += "\n\tecalib = "+str(self.linRegr_ecal_neq_0.coef_[0][0])+" ecal + "+str(self.linRegr_ecal_neq_0.coef_[0][1])+" ecal + "+str(self.linRegr_ecal_neq_0.intercept_[0])
+        return res
     
-    def display(self):
-        print("for ecal != 0 : ")
-        print("\t coef : ",self.linRegr_ecal_neq_0.coef_)
-        print("\t intercept : ",self.linRegr_ecal_neq_0.intercept_)
-        print("for ecal == 0 : ")
-        print("\t coef : ",self.linRegr_ecal_eq_0.coef_)
-        print("\t intercept : ",self.linRegr_ecal_eq_0.intercept_)
+    def __repr__(self):
+        """
+        To present the calibration as a string
+        """
+        res = Calibration.__str__(self)
+        res += "\nfor ecal == 0 : "
+        res += "\n\tecalib = "+str(self.linRegr_ecal_eq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_eq_0.intercept_[0])
+        res += "\nfor ecal != 0 : "
+        res += "\n\tecalib = "+str(self.linRegr_ecal_neq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_neq_0.coef_[0][1])+" ecal + "+str(self.linRegr_ecal_neq_0.intercept_[0])
+        return res

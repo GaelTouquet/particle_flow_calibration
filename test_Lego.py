@@ -29,7 +29,7 @@ data1,data2 = data1.splitInTwo()
 #data 2 -> data to predict
 
 # parameters of the calibration
-nbLego = 60
+nbLego = 100
     
 try:
     filename = "calibrations/CalibrationLego_162Kpart_delta_2.66856677123_ecal_max_262.853826966_hcal_max_262.853826966_lim_150_nbLego_100.calibration"
@@ -38,6 +38,7 @@ except FileNotFoundError:
     # We create the calibration
     CalibrationLego = data1.CalibrationLego(nbLego=nbLego)
     CalibrationLego.saveCalib()
+    print(CalibrationLego)
     
 classname = CalibrationLego.classname
 #plot 3D Training points
@@ -113,9 +114,9 @@ ax.bar3d(x,y,z,dx,dy,dz,color='yellow')
 ax.view_init(20,-110)
 ax.set_xlim([0,max(x)])
 ax.set_ylim([0,max(y)])
-ax.set_xlabel(r"$e_{cal}$",fontsize=20)
-ax.set_ylabel(r"$h_{cal}$",fontsize=20)
-ax.set_zlabel(r"$e_{true}$",fontsize=20)
+ax.set_xlabel(r"$E_{\rm ecal}$",fontsize=20)
+ax.set_ylabel(r"$E_{\rm hcal}$",fontsize=20)
+ax.set_zlabel(r"$E_{\rm true}$",fontsize=20)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_legos.png")
 savefig(fig,directory,classname+"_plot3D_legos.eps")
