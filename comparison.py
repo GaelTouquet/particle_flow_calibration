@@ -29,7 +29,7 @@ data1,data2 = data1.splitInTwo()
 directory = "pictures/comparisons/"
 
 # We import LR
-filename = "calibrations/LinearRegression_162Kpart_lim_150_lim_max_80_lim_min_20.calibration"
+filename = "calibrations/LinearRegression_162Kpart_lim_150_lim_max_150_lim_min_10.calibration"
 LR = importCalib(filename)
 
 # We import KNNGFD

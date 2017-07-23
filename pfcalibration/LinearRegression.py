@@ -171,7 +171,7 @@ class LinearRegression(Calibration):
         res += "\nfor ecal == 0 : "
         res += "\n\tecalib = "+str(self.linRegr_ecal_eq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_eq_0.intercept_[0])
         res += "\nfor ecal != 0 : "
-        res += "\n\tecalib = "+str(self.linRegr_ecal_neq_0.coef_[0][0])+" ecal + "+str(self.linRegr_ecal_neq_0.coef_[0][1])+" ecal + "+str(self.linRegr_ecal_neq_0.intercept_[0])
+        res += "\n\tecalib = "+str(self.linRegr_ecal_neq_0.coef_[0][0])+" ecal + "+str(self.linRegr_ecal_neq_0.coef_[0][1])+" hcal + "+str(self.linRegr_ecal_neq_0.intercept_[0])
         return res
     
     def __repr__(self):
@@ -182,5 +182,5 @@ class LinearRegression(Calibration):
         res += "\nfor ecal == 0 : "
         res += "\n\tecalib = "+str(self.linRegr_ecal_eq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_eq_0.intercept_[0])
         res += "\nfor ecal != 0 : "
-        res += "\n\tecalib = "+str(self.linRegr_ecal_neq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_neq_0.coef_[0][1])+" ecal + "+str(self.linRegr_ecal_neq_0.intercept_[0])
+        res += "\n\tecalib = "+str(self.linRegr_ecal_neq_0.coef_[0][0])+" hcal + "+str(self.linRegr_ecal_neq_0.coef_[0][1])+" hcal + "+str(self.linRegr_ecal_neq_0.intercept_[0])
         return res

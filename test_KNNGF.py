@@ -200,7 +200,7 @@ savefig(fig,directory,classname+"_example_hist.png")
 savefig(fig,directory,classname+"_example_hist.eps")
 
 #NEIGHBORS
-fig = plt.figure(figsize=(12,3))
+fig = plt.figure(figsize=(12,6))
 #neigh for ecal == 0
 KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                              n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
