@@ -39,6 +39,7 @@ n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
 n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
 energystep_ecal_eq_0 = 1
 energystep_ecal_neq_0 = 5
+kind = 'cubic'
     
 try:
     # We import the calibration
@@ -48,7 +49,7 @@ except FileNotFoundError:
     # We create the calibration
     KNNGF = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
                                  n_neighbors_ecal_neq_0=n_neighbors_ecal_neq_0,
-                                 lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind='cubic')
+                                 lim=lim,energystep_ecal_eq_0=energystep_ecal_eq_0,energystep_ecal_neq_0=energystep_ecal_neq_0,kind=kind)
     KNNGF.saveCalib()
     print(KNNGF)
     

@@ -250,7 +250,7 @@ class KNNGaussianFit(Calibration):
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = h)
             dist = dist[0]
             ind = ind[0]
-            dlim = h-self.hcal_train_ecal_eq_0_min + 0.1
+            dlim = np.abs(h-self.hcal_train_ecal_eq_0_min) + 0.1
             ind = ind[dist <= dlim]
             true = z[ind]
             hcal = y[ind]
@@ -305,7 +305,11 @@ class KNNGaussianFit(Calibration):
 
         #we define the first point of evaluation
         dist, ind = self.neigh_ecal_eq_0.kneighbors(X = 0)
-        hcal = y[ind][0]
+        dist = dist[0]
+        ind = ind[0]
+        dlim = self.hcal_train_ecal_eq_0_min + 0.1
+        ind = ind[dist <= dlim]
+        hcal = y[ind]
         hcal_min = (max(hcal)+min(hcal))/2
         # we evaluate the true energies
         hcal = np.arange(hcal_min,self.lim+energystep_ecal_eq_0,energystep_ecal_eq_0)
