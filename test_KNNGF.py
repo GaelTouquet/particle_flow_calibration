@@ -54,14 +54,14 @@ except FileNotFoundError:
     
 classname = KNNGF.classname
 #plot 3D Training points
-fig = plt.figure(1,figsize=(6, 4))
+fig = plt.figure(1,figsize=(7, 7))
 usplt.plot3D_training(data1)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_training.png")
 savefig(fig,'img_index/',classname+"_plot3D_training.png")
 
 #plot 3D surface calibration
-fig = plt.figure(1,figsize=(6, 4))
+fig = plt.figure(1,figsize=(7, 7))
 usplt.plot3D_surf(KNNGF)
 plt.show()
 savefig(fig,directory,classname+"_plot3D_surf.png")

@@ -162,7 +162,7 @@ def plot_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
     plt.plot([0,200],[1,1],'--',lw = 3, color = "yellow")
     plt.ylabel(r"$E_{\rm calib}/E_{\rm true}$",fontsize = 15)
     plt.xlabel(r"$E_{\rm hcal}$",fontsize = 15)
-    plt.axis([0,calib.lim,0,2])
+    plt.axis([0,calib.lim,0.5,1.5])
     energy_ecal_eq_0, means_ecal_eq_0, mean_gaussianfit_ecal_eq_0, sigma_gaussianfit_ecal_eq_0, reducedChi2_ecal_eq_0 = getMeans(h,r)
     plt.plot(energy_ecal_eq_0,mean_gaussianfit_ecal_eq_0,lw=3,label="mean (gaussian fit)")
     plt.plot(energy_ecal_eq_0,means_ecal_eq_0,lw=3,label="mean")
