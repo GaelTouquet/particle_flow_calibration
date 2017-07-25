@@ -299,7 +299,7 @@ def plot_gaussianfitcurve_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPre
 
 def plot3D_training(data1):
     ax = plt.axes(projection='3d')
-    ax.scatter(data1.ecal, data1.hcal, data1.true,s=1)
+    ax.scatter(data1.ecal[data1.ecal != 0], data1.hcal[data1.ecal != 0], data1.true[data1.ecal != 0],s=1)
     ax.view_init(10,280)
     ax.set_xlim([0,data1.ecal_max])
     ax.set_ylim([0,data1.hcal_max])
@@ -308,6 +308,7 @@ def plot3D_training(data1):
     ax.set_xlabel(r'$E_{\rm ecal}$',fontsize=20)
     ax.set_ylabel(r'$E_{\rm hcal}$',fontsize=20)
     ax.set_zlabel(r'$E_{\rm true}$',fontsize=20)
+    plt.tight_layout()
 
     
 def plot3D_surf(calib):
@@ -331,6 +332,7 @@ def plot3D_surf(calib):
     ax.set_xlabel(r'$E_{\rm ecal}$',fontsize=20)
     ax.set_ylabel(r'$E_{\rm hcal}$',fontsize=20)
     ax.set_zlabel(r'$E_{\rm true}$',fontsize=20)
+    plt.tight_layout()
     
 def comparison(calibs,dataToPredict):
     """
