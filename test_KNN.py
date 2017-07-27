@@ -11,8 +11,7 @@ import matplotlib.pyplot as plt
 import pfcalibration.usualplots as usplt               # usual plots function 
 from pfcalibration.tools import importData,importCalib # to import binary data
 from pfcalibration.tools import savefig                # to save a figure
-
-
+import numpy as np
 
 # file to save the pictures
 directory = "pictures/testKNN/"
@@ -48,9 +47,8 @@ except FileNotFoundError:
                                  weights,algorithm,sigma,lim)
     KNN.saveCalib()
     print(KNN)
-    
-
 classname = KNN.classname
+
 #plot 3D Training points
 fig = plt.figure(1,figsize=(7, 7))
 usplt.plot3D_training(data1)
@@ -102,3 +100,40 @@ plt.show()
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.png")
 savefig(fig,directory,classname+"_ecalib_over_etrue_curve.eps")
 plt.close()
+
+
+#NEIGHBORS
+fig = plt.figure(figsize=(12,6))
+hcal_train = KNN.hcal_train[KNN.ecal_train == 0]
+true_train = KNN.true_train[KNN.ecal_train == 0]
+plt.subplot(1,2,1)
+plt.plot(hcal_train,true_train,'.',markersize=1)
+plt.xlabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize=20)
+plt.ylabel(r"$E_{\rm true} \rm{(GeV)}$",fontsize=20)
+for i in np.arange(0,KNN.lim,30):
+    ind = KNN.neigh_ecal_eq_0.kneighbors([[i]])[1][0]
+    hcal_neigh = hcal_train[ind]
+    true_neigh = true_train[ind]
+    plt.plot(hcal_neigh,true_neigh,'.',color='red',markersize=1)
+plt.title(r"neighbors for $E_{\rm ecal} = 0$",fontsize=18)
+plt.axis([0,lim,0,lim])
+
+
+#neigh for ecal != 0
+plt.subplot(1,2,2)
+ecal_train = KNN.ecal_train[KNN.ecal_train != 0]
+hcal_train = KNN.hcal_train[KNN.ecal_train != 0]
+plt.xlabel(r"$E_{\rm ecal} \rm{(GeV)}$",fontsize=20)
+plt.ylabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize=20)
+for i in np.arange(0,KNN.lim,14):
+    for j in np.arange(0,KNN.lim,14):
+        if i+j < KNN.lim:
+            ind = KNN.neigh_ecal_neq_0.kneighbors([[i,j]])[1][0]
+            ecal_neigh = ecal_train[ind]
+            hcal_neigh = hcal_train[ind]
+            plt.plot(ecal_neigh,hcal_neigh,'.',markersize=1)
+plt.title(r"neighbors for $E_{\rm ecal} \neq 0$",fontsize=18)
+plt.axis([0,lim,0,lim])
+plt.tight_layout()
+plt.show()
+savefig(fig,directory,classname+"_neighborhood.png")
