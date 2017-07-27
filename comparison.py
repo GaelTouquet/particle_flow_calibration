@@ -130,16 +130,16 @@ except FileNotFoundError:
     CL.saveCalib()
     print(CL)
 
-calibs = [LR,CL,KNNGF]
-fig = plt.figure(figsize=(12,8))
-usplt.comparison(calibs,data2)
+calibs = [LR,CL,KNN,KNNGC,KNNGF]
+fig = plt.figure(figsize=(12,5))
+usplt.comparison_ecaliboveretrue_ecal_eq_0(calibs,data2)
 plt.show()
 savefig(fig,directory,"comparison1.png")
 savefig(fig,directory,"comparison1.eps")
 plt.close()
 
-calibs = [KNN,KNNGC,KNNGF]
-fig = plt.figure(figsize=(12,8))
+calibs = [LR,CL,KNN,KNNGC,KNNGF]
+fig = plt.figure(figsize=(12,12))
 usplt.comparison(calibs,data2)
 plt.show()
 savefig(fig,directory,"comparison2.png")

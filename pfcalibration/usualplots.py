@@ -370,7 +370,7 @@ def comparison(calibs,dataToPredict):
     plt.ylabel(r"$<E_{\rm calib}/E_{\rm true}>$",fontsize=20)
     plt.title(r"$E_{\rm calib}/E_{\rm true}$ for $E_{\rm ecal} = 0$",fontsize=20)
     plt.axis([0,160,0.8,1.2])
-    plt.legend(loc="upper right")
+    plt.legend(loc="lower left")
     major_ticks = np.arange(0, 200, 20)
     minor_ticks = np.arange(0, 200, 2)
     ax.set_xticks(major_ticks)
@@ -390,7 +390,7 @@ def comparison(calibs,dataToPredict):
     plt.ylabel(r"$<E_{\rm calib}/E_{\rm true}>$",fontsize=20)
     plt.title(r"$E_{\rm calib}/E_{\rm true}$ for $E_{\rm ecal} \neq 0$",fontsize=20)
     plt.axis([0,160,0.8,1.2])
-    plt.legend(loc="upper right")
+    plt.legend(loc="lower left")
     major_ticks = np.arange(0, 200, 20)
     minor_ticks = np.arange(0, 200, 2)
     ax.set_xticks(major_ticks)
@@ -443,3 +443,45 @@ def comparison(calibs,dataToPredict):
     
     plt.tight_layout()
     
+def comparison_ecaliboveretrue_ecal_eq_0(calibs,dataToPredict):
+    """
+    To compare the comparisons
+    
+    Parameters
+    ----------
+    calibs : array of calibration
+    """
+    
+    calib = calibs[0]
+    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t = dataToPredict.true[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e = np.zeros(len(h))
+    r = []
+    
+    for calib in calibs:
+        c = calib.predict(e,h)
+        r.append(c/t)
+    max_ener = 0
+
+    ax = plt.subplot(1,1,1)
+    plt.plot([0,200],[1,1],'--',lw = 2,color='black')
+    for i in np.arange(len(calibs)):
+        energy, means, mean_gaussianfit, sigma_gaussianfit, reducedChi2 = getMeans(h,r[i])
+        plt.plot(energy,mean_gaussianfit,label = calibs[i].classname,lw=2)
+        max_ener = max(max(energy),max_ener)
+    plt.xlabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize=20)
+    plt.ylabel(r"$<E_{\rm calib}/E_{\rm true}>$",fontsize=20)
+    plt.title(r"$E_{\rm calib}/E_{\rm true}$ for $E_{\rm ecal} = 0$",fontsize=20)
+    plt.axis([0,max_ener,0.9,1.1])
+    plt.legend(loc="upper right")
+    major_ticks = np.arange(0, max_ener, 20)
+    minor_ticks = np.arange(0, max_ener, 2)
+    ax.set_xticks(major_ticks)
+    ax.set_xticks(minor_ticks, minor=True)
+    # and a corresponding grid
+    ax.grid(which='both')
+    # or if you want differnet settings for the grids:
+    ax.grid(which='minor', alpha=0.2)
+    ax.grid(which='major', alpha=1)
+    
+    plt.tight_layout()
