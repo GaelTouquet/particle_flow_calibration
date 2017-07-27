@@ -34,7 +34,7 @@ def plotCalibrationCurve(calib):
     plt.xlabel(r"$E_{\rm hcal} \rm{(GeV)}$ ",fontsize=20)
     plt.ylabel(r"$E_{\rm true} \rm{(GeV)}$",fontsize=20)
     plt.title(r"$E_{\rm ecal} = 0$",fontsize=20)
-    plt.axis([0,max(h),0,max(t)])
+    plt.axis([0,max(h),0,max(true_train)])
     plt.subplot(gs[1])
     plt.plot(hcal_train,true_train,'.',markersize=1)
     plt.plot(h,t,lw=2)
