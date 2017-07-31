@@ -1,16 +1,16 @@
 Programs developped during my internship at the IPNL.
-For more details on the programms see [my report](https://github.com/sniang/rapport-de-stage-M2/raw/master/main.pdf).
+For more details on the programs see [my report](https://github.com/sniang/rapport-de-stage-M2/raw/master/main.pdf).
 
 # How does it works
 For the particles flow, we need to know the energies of the particles thanks to the hadronic calorimeter and electromagnetic calorimeter.
-We use simulated particles to creates models to obtains a calibrated energy thanks to simulated particles.
+We use simulated particles to create models to obtains a calibrated energy thanks to simulated particles.
 
 ![3D plots](img_index/3Dplots.png)
 
 ## Root file to python
 First of all you have to install [ROOT](https://root.cern.ch).
 
-After, if you have a root file with simulated particles, you have to convert them in a python file understandable by the program.
+After, if you have Root files with simulated particles, you have to convert them in binary files understandable by the program.
 
 For this you have to use the program '`convertRootFile.py`'
 
@@ -59,7 +59,7 @@ n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
 n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
 energystep_ecal_eq_0 = 1
 energystep_ecal_neq_0 = 5
-    
+
 
 # We create the calibration
 calibration = data1.KNNGaussianFit(n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
@@ -81,7 +81,7 @@ n_neighbors_ecal_eq_0=2000  # number of neighbors for ecal = 0
 n_neighbors_ecal_neq_0=250  # number of neighbors for ecal ≠ 0
 energystep_ecal_eq_0 = 1
 energystep_ecal_neq_0 = 5
-    
+
 
 # We create the calibration
 calibration = KNNGaussianFit(ecal,hcal,etrue,n_neighbors_ecal_eq_0=n_neighbors_ecal_eq_0,
@@ -134,7 +134,7 @@ ecalib = calibration.predict(ecal,hcal)
 ## Usual plots
 ```python
 import matplotlib.pyplot as plt
-import pfcalibration.usualplots as usplt  # usual plots function 
+import pfcalibration.usualplots as usplt  # usual plots function
 from pfcalibration.tools import savefig   # to save a figure
 
 classname = calibration.classname

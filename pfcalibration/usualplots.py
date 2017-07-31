@@ -176,6 +176,26 @@ def plot_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
     plt.xlabel(r"$E_{\rm ecal} \rm{(GeV)}$",fontsize = 15)
     plt.ylabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize = 15)
     plt.tight_layout()
+    
+def plot_ecalib_over_etrue_functionof_ecal_hcal_ecal_neq_0(calib,dataToPredict):
+    """
+    plot ecalib/etrue = f(ecal,hcal)
+    for ecal != 0
+    """
+
+    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    
+    c2 = calib.predict(e2,h2)
+    r2 = c2/t2
+    Z_mean, Z_sigma = getMeans2D(e2,h2,r2,calib.lim)
+    im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,calib.lim,0,calib.lim), origin='lower',vmin=0.9,vmax=1.1)
+    plt.colorbar(im)
+    plt.title(r"$E_{\rm ecal} \neq 0$",fontsize = 15)
+    plt.xlabel(r"$E_{\rm ecal} \rm{(GeV)}$",fontsize = 15)
+    plt.ylabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize = 15)
+    plt.tight_layout()
 
     
 def hist_ecalib(calib,dataToPredict):

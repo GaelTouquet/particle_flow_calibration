@@ -139,9 +139,18 @@ savefig(fig,directory,"comparison1.eps")
 plt.close()
 
 calibs = [LR,CL,KNN,KNNGC,KNNGF]
-fig = plt.figure(figsize=(12,12))
+fig = plt.figure(figsize=(12,10))
 usplt.comparison(calibs,data2)
 plt.show()
 savefig(fig,directory,"comparison2.png")
 savefig(fig,directory,"comparison2.eps")
 plt.close()
+
+for calib in calibs :
+    fig = plt.figure(figsize=(6,4))
+    usplt.plot_ecalib_over_etrue_functionof_ecal_hcal_ecal_neq_0(calib,data2)
+    plt.show()
+    savefig(fig,directory,"ecaliboveretrue_"+calib.classname+".png")
+    savefig(fig,directory,"ecaliboveretrue_"+calib.classname+".eps")
+    plt.close()
+    
