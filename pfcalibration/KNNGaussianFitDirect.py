@@ -23,7 +23,6 @@ class KNNGaussianFitDirect(Calibration):
     We use the a k neareast neighbours method, we fit the histogramm of the
     true energy of the neighbours by a gaussian and consider the mean of the
     gaussian distribution is the approximation of the true energy.
-    We do an iterpolation to determine the other values.
 
     Attributs
     ---------
@@ -130,17 +129,17 @@ class KNNGaussianFitDirect(Calibration):
 
         #Case ecal == 0
         self.neigh_ecal_eq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_eq_0, algorithm=algorithm)
-        self.hcal_train_ecal_eq_0 = self.hcal_train[self.ecal_train == 0]
+        self.hcal_train_ecal_eq_0 = self.hcal_train[self.ecal_train < 0.8]
         self.hcal_train_ecal_eq_0_min = min(self.hcal_train_ecal_eq_0)
-        self.true_train_ecal_eq_0 = self.true_train[self.ecal_train == 0]
+        self.true_train_ecal_eq_0 = self.true_train[self.ecal_train < 0.8]
         self.neigh_ecal_eq_0.fit(np.transpose(np.matrix(self.hcal_train_ecal_eq_0)))
         
 
         # Case ecal != 0
         self.neigh_ecal_neq_0 = neighbors.NearestNeighbors(n_neighbors=self.n_neighbors_ecal_neq_0, algorithm=algorithm)
-        self.ecal_train_ecal_neq_0 = self.ecal_train[self.ecal_train != 0]
-        self.hcal_train_ecal_neq_0 = self.hcal_train[self.ecal_train != 0]
-        self.true_train_ecal_neq_0 = self.true_train[self.ecal_train != 0]
+        self.ecal_train_ecal_neq_0 = self.ecal_train[self.ecal_train > 0.8]
+        self.hcal_train_ecal_neq_0 = self.hcal_train[self.ecal_train > 0.8]
+        self.true_train_ecal_neq_0 = self.true_train[self.ecal_train > 0.8]
         self.hcal_train_ecal_neq_0_min = min(self.hcal_train_ecal_neq_0)
         self.ecal_train_ecal_neq_0_min = min(self.ecal_train_ecal_neq_0)
         self.neigh_ecal_neq_0.fit(np.transpose(np.matrix([self.ecal_train_ecal_neq_0,self.hcal_train_ecal_neq_0])))
@@ -164,7 +163,7 @@ class KNNGaussianFitDirect(Calibration):
             if ecal+hcal > self.lim:
                 return math.nan
             reduced = math.nan
-            if ecal == 0:
+            if ecal < 0.8:
                 dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
                 dist = dist[0]
                 ind = ind[0]
@@ -261,7 +260,7 @@ class KNNGaussianFitDirect(Calibration):
         if ecal+hcal > self.lim:
             return [[],[],[]]
 
-        if ecal == 0:
+        if ecal < 0.8:
             dist, ind = self.neigh_ecal_eq_0.kneighbors(X = hcal)
             dist = dist[0]
             ind = ind[0]

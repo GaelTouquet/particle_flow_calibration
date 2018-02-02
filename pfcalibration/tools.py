@@ -13,6 +13,8 @@ import warnings
 from scipy.optimize import OptimizeWarning
 import matplotlib.pyplot as plt
 from os import mkdir
+import shelve
+
 
 def selectionCone(x,y,z,theta,delta):
     """
@@ -87,25 +89,23 @@ def projectionCone(x,y,z,theta,delta):
     res = selectionCone(x,y,z,theta,delta)
     return projectionPlan(res[0],res[1],res[2],theta)
 
-def importPickle(filename):
-    """
-    To import an object in a binary file
-    
-    Parameters
-    ----------
-    filename: string
-    the path and name of the file
-    Returns
-    -------
-    obj : 
-    the imported object 
-    """
-    datafile = open(filename, "rb")
-    mon_depickler = pickle.Unpickler(datafile)
-    obj = mon_depickler.load()
-    datafile.close()
-    return obj
 
+
+#def exportPickle(filename,objectToSave):
+    #"""
+    #Te export an object into a binary file
+    
+    #Parameters
+    #----------
+    #filename : str
+    #path+file name
+    #objectToSave : object
+    #"""
+    #dataFile = open(filename, "wb")
+    #pickler = pickle.Pickler(dataFile)
+    #pickler.dump(objectToSave)
+    #dataFile.close()
+    
 def exportPickle(filename,objectToSave):
     """
     Te export an object into a binary file
@@ -116,45 +116,16 @@ def exportPickle(filename,objectToSave):
     path+file name
     objectToSave : object
     """
-    dataFile = open(filename, "wb")
-    pickler = pickle.Pickler(dataFile)
-    pickler.dump(objectToSave)
-    dataFile.close()
-    
-def importData(filename):
-    """
-    Import the EnergyData
-    
-    Parameters
-    ----------
-    filename : str
-    path+filename
-    
-    Returns
-    -------
-    the EnergyData
-    """
-    data = importPickle(filename)
-    print("Data imported and includes",len(data.ecal),"particles")
-    return data
+    np.save(filename,objectToSave)
+    ##d = shelve.open(filename)
+    ##d['key'] = objectToSave
+    ##d.close()
+    #dataFile = open(filename, "w")
+    #dataFile.write(str(objectToSave))
+    ## pickler = pickle.Pickler(dataFile)
+    ## pickler.dump(objectToSave)
+    ##dataFile.close()
 
-def importCalib(filename):
-    """
-    Import the calibration
-    
-    Parameters
-    ----------
-    filename : str
-    path+filename
-    
-    Returns
-    -------
-    the calibration
-    """
-    calib = importPickle(filename)
-    print(calib.classname+" imported")
-    print(calib)
-    return calib
 
 
 def gaussian_param(x,sigma=1,mu=0,k=1):
@@ -389,3 +360,68 @@ def savefig(fig,directory="img/",filename="img.png"):
             except FileExistsError:
                 pass
     fig.savefig(directory+filename,bbox_inches='tight')
+    
+    
+from pfcalibration.EnergyData import EnergyData
+
+    
+def importPickle(filename):
+    """
+    To import an object in a binary file
+    
+    Parameters
+    ----------
+    filename: string
+    the path and name of the file
+    Returns
+    -------
+    obj : 
+    the imported object 
+    """
+    print('opening :', filename)
+    obj = np.load(filename+'.npy')
+    #d = shelve.open(filename)
+    #obj = d['key']
+    #return obj
+    #datafile = open(filename, "rb")
+    #mon_depickler = pickle.Unpickler(datafile)
+    #obj = mon_depickler.load()
+    obj = EnergyData(obj[:,0],obj[:,1],obj[:,2],obj[:,3],obj[:,4],obj[:,5])
+    #datafile.close()
+    return obj
+
+    
+def importData(filename):
+    """
+    Import the EnergyData
+    
+    Parameters
+    ----------
+    filename : str
+    path+filename
+    
+    Returns
+    -------
+    the EnergyData
+    """
+    data = importPickle(filename)
+    print("Data imported and includes",len(data.ecal),"particles")
+    return data
+
+def importCalib(filename):
+    """
+    Import the calibration
+    
+    Parameters
+    ----------
+    filename : str
+    path+filename
+    
+    Returns
+    -------
+    the calibration
+    """
+    calib = importPickle(filename)
+    print(calib.classname+" imported")
+    print(calib)
+    return calib

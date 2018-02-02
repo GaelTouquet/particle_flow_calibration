@@ -17,7 +17,8 @@ class EnergyData:
     """
     Stores all the datas of the simulated hadrons
     """
-    def __init__(self,true = np.array([]),p = np.array([]),ecal = np.array([]),hcal = np.array([]),eta = np.array([])):
+    def __init__(self,true = np.array([]),p = np.array([]),ecal = np.array([]),hcal = np.array([]),eta = np.array([]),
+                 Ecalib = np.array([])):
         """
         Constructeur de la classe
 
@@ -34,6 +35,7 @@ class EnergyData:
         self.ecal = ecal
         self.hcal = hcal
         self.eta = eta
+        self.Ecalib = Ecalib
         self.ecal_max = np.max(ecal)
         self.hcal_max = np.max(hcal)
         self.ecal_min = np.min(ecal)
@@ -266,7 +268,8 @@ class EnergyData:
         The calibration
         """
         begin = time.time()
-        calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim,energystep_ecal_eq_0,energystep_ecal_neq_0,kind)
+        calib = KNNGaussianFit(self.ecal,self.hcal,self.true,n_neighbors_ecal_eq_0,n_neighbors_ecal_neq_0,algorithm,lim,energystep_ecal_eq_0,energystep_ecal_neq_0,kind,
+                               )
         end = time.time()
         print("KNNGaussianFit - Calibration made in",end-begin,"s")
         return calib
@@ -323,26 +326,41 @@ class EnergyData:
         ecal1 = []
         hcal1 = []
         eta1 = []
+        Ecalib = []
         true2 = []
         p2 = []
         ecal2 = []
         hcal2 = []
         eta2 = []
+        Ecalib2 = []
+        ntot = len(self.ecal)
+        print('ntot =',ntot)        
         for i in np.arange(len(self.ecal)):
-            if i%2 == 0:
+            #if i == 13000000:
+                #break
+            if (self.Ecalib[i]>434.55 and self.Ecalib[i]<434.56) or (self.Ecalib[i]>407.3 and self.Ecalib[i]<407.4):
+                continue
+            if i%10000==0:
+                print('treating event ',i,'/',ntot)
+            if abs(self.eta[i])>1.5:
+                continue
+            if i%10 != 0:
                 true1.append(self.true[i])
                 p1.append(self.p[i])
                 ecal1.append(self.ecal[i])
                 hcal1.append(self.hcal[i])
                 eta1.append(self.eta[i])
+                Ecalib.append(self.Ecalib[i])
             else:
                 true2.append(self.true[i])
                 p2.append(self.p[i])
                 ecal2.append(self.ecal[i])
                 hcal2.append(self.hcal[i])
                 eta2.append(self.eta[i])
-        data1 = EnergyData(np.array(true1),np.array(p1),np.array(ecal1),np.array(hcal1),np.array(eta1))
-        data2 = EnergyData(np.array(true2),np.array(p2),np.array(ecal2),np.array(hcal2),np.array(eta2))
+                Ecalib2.append(self.Ecalib[i])
+        data1 = EnergyData(np.array(true1),np.array(p1),np.array(ecal1),np.array(hcal1),np.array(eta1),np.array(Ecalib))
+        data2 = EnergyData(np.array(true2),np.array(p2),np.array(ecal2),np.array(hcal2),np.array(eta2),np.array(Ecalib2))
+        print('data_splitted')
         return data1, data2
 
     def oneOverTen(self):

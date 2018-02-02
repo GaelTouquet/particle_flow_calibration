@@ -5,8 +5,29 @@ Developed by Samuel Niang
 For IPNL (Nuclear Physics Institute of Lyon)
 """
 from os import mkdir
-from pfcalibration.tools import exportPickle
+#from pfcalibration.tools import exportPickle
 import collections
+import numpy as np
+
+def exportPickle(filename,objectToSave):
+    """
+    Te export an object into a binary file
+    
+    Parameters
+    ----------
+    filename : str
+    path+file name
+    objectToSave : object
+    """
+    np.save(filename,objectToSave)
+    ##d = shelve.open(filename)
+    ##d['key'] = objectToSave
+    ##d.close()
+    #dataFile = open(filename, "w")
+    #dataFile.write(str(objectToSave))
+    ## pickler = pickle.Pickler(dataFile)
+    ## pickler.dump(objectToSave)
+    ##dataFile.close()
 
 class Calibration:
     """

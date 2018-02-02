@@ -7,12 +7,34 @@ For IPNL (Nuclear Physics Institute of Lyon)
 
 import numpy as np
 from ROOT import TFile
-from pfcalibration.EnergyData import EnergyData
-from pfcalibration.tools import exportPickle
+#import shelve
+#from pfcalibration.EnergyData import EnergyData
+#from pfcalibration.tools import exportPickle
+# import pickle
 
 """
 Fuctions using ROOT
 """
+
+def exportPickle(filename,objectToSave):
+    """
+    Te export an object into a binary file
+    
+    Parameters
+    ----------
+    filename : str
+    path+file name
+    objectToSave : object
+    """
+    np.save(filename,objectToSave)
+    ##d = shelve.open(filename)
+    ##d['key'] = objectToSave
+    ##d.close()
+    #dataFile = open(filename, "w")
+    #dataFile.write(str(objectToSave))
+    ## pickler = pickle.Pickler(dataFile)
+    ## pickler.dump(objectToSave)
+    ##dataFile.close()
 
 def importRootData(filename):
     """
@@ -34,9 +56,16 @@ def importRootData(filename):
     tree = root_file.Get('s')
     tmpdata = []
     # we place the datas in a numpy array
+    ntot = tree.GetEntries()
+    n= 0
     for event in tree:
-        if len(event.pfcs) == 1 and event.pfcs[0] == 1 and event.hcal != 0:
-            tmpdata.append((event.true, event.p, event.ecal, event.hcal, event.eta))
+        n+=1
+        if n == 15120000:
+            break
+        if n%10000==0:
+            print 'event :', n, '/', ntot
+        if len(event.pfcs) == 1 and event.pfcs[0] == 1 and event.hcal != 0 and abs(event.eta)<1.5:
+            tmpdata.append((event.true, event.p, event.ecal, event.hcal, event.eta, event.Ecalib))
     return np.array(tmpdata)
 
 def rootToPython(filename):
@@ -47,8 +76,8 @@ def rootToPython(filename):
     if splited[len(splited)-1] == "root":
         data = importRootData(filename)
         filename = ''.join(splited[0:len(splited)-1])
-        energydata = EnergyData(data[:,0],data[:,1],data[:,2],data[:,3],data[:,4])
-        exportPickle(filename+'.energydata',energydata)
+        energydata = data#EnergyData(data[:,0],data[:,1],data[:,2],data[:,3],data[:,4])
+        exportPickle(filename+'_Data',energydata)
 
     else:
         print("It is not a root file")

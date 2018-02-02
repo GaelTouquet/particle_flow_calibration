@@ -49,7 +49,7 @@ def getMeans(energy_x,y):
     y = y[ind]
     energy_x = energy_x[ind]
 
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=1000)
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=5000)
     neighborhood.fit(np.transpose(np.matrix(energy_x)))
     step = 0.1
     ener = np.arange(min(energy_x),max(energy_x),step)
@@ -75,7 +75,7 @@ def getMeans2D(energy_x,energy_y,z,lim):
     z = z[ind]
     energy_x = energy_x[ind]
     energy_y = energy_y[ind]
-    neighborhood = neighbors.NearestNeighbors(n_neighbors=250)
+    neighborhood = neighbors.NearestNeighbors(n_neighbors=1500)
     neighborhood.fit(np.transpose(np.matrix([energy_x,energy_y])))
     step = 0.5
     ener_x = np.arange(0,lim+step,step)
@@ -108,12 +108,12 @@ def plot_ecalib_over_etrue_functionof_etrue(calib,dataToPredict):
     """
     plot ecalib/etrue = f(etrue)
     """
-    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    t = dataToPredict.true[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal < 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t = dataToPredict.true[np.logical_and(dataToPredict.ecal < 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
     e = np.zeros(len(h))
-    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal > 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal > 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal > 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
     
     c = calib.predict(e,h) 
     r = c/t
@@ -143,21 +143,63 @@ def plot_ecalib_over_etrue_functionof_etrue(calib,dataToPredict):
     plt.title(r"$E_{\rm ecal} \neq 0$",fontsize=20)
     plt.tight_layout()
     
-def plot_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
+def plot_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict, save = True):
     """
     plot ecalib/etrue = f(ecal,hcal)
     """
-    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    t = dataToPredict.true[np.logical_and(dataToPredict.ecal == 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    e = np.zeros(len(h))
-    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal != 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
-    
+    print('start plotting scheme')
+    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal < 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t = dataToPredict.true[np.logical_and(dataToPredict.ecal < 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e = dataToPredict.ecal[np.logical_and(dataToPredict.ecal < 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    print('got vals','\n','calibrating...')
     c = calib.predict(e,h) 
     r = c/t
     c2 = calib.predict(e2,h2)
     r2 = c2/t2
+    
+    if save:
+        hcal = dataToPredict.hcal[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        etrue = dataToPredict.true[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        ecal = dataToPredict.ecal[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        eta = dataToPredict.eta[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        hcal3 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal < 0.8, dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        etrue3 = dataToPredict.true[np.logical_and(dataToPredict.ecal < 0.8, dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        ecal3 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal < 0.8, dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        #import pdb;pdb.set_trace()
+        eta3 = dataToPredict.eta[np.logical_and(dataToPredict.ecal < 0.8, dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        ecal = np.append(ecal,ecal3)
+        eta = np.append(eta,eta3)
+        hcal = np.append(hcal,hcal3)
+        etrue = np.append(etrue,etrue3)
+        cal = calib.predict(ecal,hcal)
+        ###
+        #import pdb;pdb.set_trace()
+        ###
+        hcal2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        etrue2 = dataToPredict.true[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        ecal2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        eta2 = dataToPredict.eta[np.logical_and(dataToPredict.ecal >= 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        cal2 = calib.predict(ecal2,hcal2)
+        cals = dataToPredict.Ecalib[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+        cals3 = dataToPredict.Ecalib[np.logical_and(dataToPredict.ecal < 0.8, dataToPredict.ecal > 0,dataToPredict.ecal+dataToPredict.hcal < calib.lim)] 
+        cals2 = dataToPredict.Ecalib[np.logical_and(dataToPredict.ecal > 0.8,dataToPredict.ecal+dataToPredict.hcal < calib.lim)] 
+        hcal = np.append(hcal,hcal2)
+        ecal = np.append(ecal,ecal2)
+        eta = np.append(eta,eta2)
+        etrue = np.append(etrue,etrue2)
+        cal = np.append(cal,cal2)
+        cals = np.append(cals,cals3)
+        cals = np.append(cals,cals2)
+        tosave = np.array([hcal,ecal,etrue,cal,cals,eta])
+        np.save('calib_save_01_02', tosave)
+        #import pdb;pdb.set_trace()
+        return 0
+        
+        
+    print('finished calibrating','\n','plotting...')
     plt.subplot(1,2,1)
     plt.title(r" $E_{\rm ecal} = 0$",fontsize = 15)
     plt.plot(h,r,'.',markersize=1,label=r"$E_{\rm calib}/E_{\rm true}$")
@@ -170,11 +212,49 @@ def plot_ecalib_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
     plt.legend(loc='upper right')
     plt.subplot(1,2,2)
     Z_mean, Z_sigma = getMeans2D(e2,h2,r2,calib.lim)
-    im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,calib.lim,0,calib.lim), origin='lower',vmin=0.9,vmax=1.1)
+    im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,calib.lim,0,calib.lim), origin='lower',vmin=0.5,vmax=1.5)
     plt.colorbar(im)
     plt.title(r"$E_{\rm ecal} \neq 0$",fontsize = 15)
     plt.xlabel(r"$E_{\rm ecal} \rm{(GeV)}$",fontsize = 15)
     plt.ylabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize = 15)
+    print('beginning tight layout ...')
+    plt.tight_layout()
+    
+def plot_eref_over_etrue_functionof_ecal_hcal(calib,dataToPredict):
+    """
+    plot ecalib/etrue = f(ecal,hcal)
+    """
+    print('start plotting scheme')
+    h = dataToPredict.hcal[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t = dataToPredict.true[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e = np.zeros(len(h))
+    h2 = dataToPredict.hcal[np.logical_and(dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    t2 = dataToPredict.true[np.logical_and(dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    e2 = dataToPredict.ecal[np.logical_and(dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    print('got vals','\n','calibrating...')
+    c = dataToPredict.Ecalib[np.logical_and(dataToPredict.ecal == 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)]
+    r = c/t
+    c2 = dataToPredict.Ecalib[np.logical_and(dataToPredict.ecal > 0.,dataToPredict.ecal+dataToPredict.hcal < calib.lim)] 
+    r2 = c2/t2
+    print('finished calibrating','\n','plotting...')
+    plt.subplot(1,2,1)
+    plt.title(r" $E_{\rm ecal} = 0$",fontsize = 15)
+    plt.plot(h,r,'.',markersize=1,label=r"$E_{\rm calib}/E_{\rm true}$")
+    plt.plot([0,200],[1,1],'--',lw = 3, color = "yellow")
+    plt.ylabel(r"$E_{\rm calib}/E_{\rm true}$",fontsize = 15)
+    plt.xlabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize = 15)
+    plt.axis([0,calib.lim,0.5,1.5])
+    energy_ecal_eq_0, means_ecal_eq_0, mean_gaussianfit_ecal_eq_0, sigma_gaussianfit_ecal_eq_0, reducedChi2_ecal_eq_0 = getMeans(h,r)
+    plt.plot(energy_ecal_eq_0,mean_gaussianfit_ecal_eq_0,lw=3,label="mean (gaussian fit)")
+    plt.legend(loc='upper right')
+    plt.subplot(1,2,2)
+    Z_mean, Z_sigma = getMeans2D(e2,h2,r2,calib.lim)
+    im = plt.imshow(Z_mean, cmap=plt.cm.seismic, extent=(0,calib.lim,0,calib.lim), origin='lower',vmin=0.5,vmax=1.5)
+    plt.colorbar(im)
+    plt.title(r"$E_{\rm ecal} \neq 0$",fontsize = 15)
+    plt.xlabel(r"$E_{\rm ecal} \rm{(GeV)}$",fontsize = 15)
+    plt.ylabel(r"$E_{\rm hcal} \rm{(GeV)}$",fontsize = 15)
+    print('beginning tight layout ...')
     plt.tight_layout()
     
 def plot_ecalib_over_etrue_functionof_ecal_hcal_ecal_neq_0(calib,dataToPredict):
